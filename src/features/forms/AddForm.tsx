@@ -1,0 +1,155 @@
+import {
+  Alert,
+  AlertIcon,
+  Button,
+  FormControl,
+  FormLabel,
+  HStack,
+  Input
+} from "@chakra-ui/react";
+import { css } from "@emotion/react";
+import { ErrorMessage } from "@hookform/error-message";
+import { AddOrgPayload, useAddOrgMutation } from "features/api/orgsApi";
+import { ErrorMessageText } from "features/common";
+import { Layout } from "features/layout";
+import useFormPersist from "hooks/useFormPersist";
+import { useLeaveConfirm } from "hooks/useLeaveConfirm";
+import { useToast } from "hooks/useToast";
+import { useRouter } from "next/router";
+import React, { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Session } from "utils/auth";
+import { handleError } from "utils/form";
+
+type FormValues = { treeName: string; formErrorMessage?: string };
+
+export const AddForm = ({
+  session,
+  ...props
+}: {
+  session: Session;
+  onCancel?: () => void;
+}) => {
+  const router = useRouter();
+  const toast = useToast({ position: "top" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [addOrg] = useAddOrgMutation();
+
+  const defaultValues = {
+    treeName: ""
+  };
+  const {
+    control,
+    register,
+    handleSubmit,
+    errors,
+    setError,
+    clearErrors,
+    setValue,
+    getValues,
+    formState
+  } = useFormPersist(
+    useForm<FormValues>({
+      defaultValues,
+      mode: "onChange"
+    })
+  );
+  useLeaveConfirm({ formState });
+  const refs = useMemo(
+    () =>
+      Object.keys(defaultValues).reduce(
+        (acc: Record<string, React.RefObject<any>>, fieldName) => {
+          acc[fieldName] = React.createRef();
+          return acc;
+        },
+        {}
+      ),
+    [defaultValues]
+  );
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      const fieldName = Object.keys(errors)[0];
+      const fieldRef = refs[fieldName].current;
+      if (fieldRef)
+        fieldRef.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+    }
+  }, [errors]);
+  const onChange = () => {
+    clearErrors("formErrorMessage");
+  };
+  const onSubmit = async (form: { treeName: string }) => {
+    console.log("submitted", form);
+    setIsLoading(true);
+
+    try {
+      let payload: AddOrgPayload = { orgName: form.treeName };
+
+      const org = await addOrg(payload).unwrap();
+      const orgUrl = org.orgUrl;
+
+      toast({
+        title: `Vous allez être redirigé vers l'arbre : ${form.treeName}...`,
+        status: "success"
+      });
+
+      setIsLoading(false);
+      router.push(`${session.user.userName}/${orgUrl}`);
+    } catch (error) {
+      setIsLoading(false);
+      handleError(error, (message, field) => {
+        setError(field || "formErrorMessage", {
+          type: "manual",
+          message
+        });
+      });
+    }
+  };
+
+  return (
+    <form
+      css={css`
+        button {
+          margin-top: 12px;
+        }
+      `}
+      onChange={onChange}
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <FormControl ref={refs.treeName}>
+        <FormLabel>How do you want to name the new tree?</FormLabel>
+        <Input name="treeName" />
+      </FormControl>
+
+      <ErrorMessage
+        errors={errors}
+        name="formErrorMessage"
+        render={({ message }) => (
+          <Alert status="error" mb={3}>
+            <AlertIcon />
+            <ErrorMessageText>{message}</ErrorMessageText>
+          </Alert>
+        )}
+      />
+
+      <HStack justifyContent="space-between">
+        {props.onCancel && (
+          <Button colorScheme="red" onClick={props.onCancel}>
+            Annuler
+          </Button>
+        )}
+
+        <Button
+          colorScheme="green"
+          type="submit"
+          isDisabled={Object.keys(errors).length > 0}
+          isLoading={isLoading}
+        >
+          Ajouter
+        </Button>
+      </HStack>
+    </form>
+  );
+};
