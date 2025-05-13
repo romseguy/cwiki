@@ -1,25 +1,21 @@
 import { ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
   BoxProps,
+  HStack,
   IconButton,
-  Tooltip,
   Spinner,
   Text,
-  useColorMode,
-  HStack,
-  VStack
+  Tooltip,
+  VStack,
+  useColorMode
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import { FaBell } from "react-icons/fa";
-import { useSelector } from "react-redux";
 import {
   useAddSubscriptionMutation,
   useDeleteSubscriptionMutation
 } from "features/api/subscriptionsApi";
 import {
-  useEditTopicMutation,
-  useDeleteTopicMutation
+  useDeleteTopicMutation,
+  useEditTopicMutation
 } from "features/api/topicsApi";
 import { DeleteButton, EditIconButton, PushPinIcon } from "features/common";
 import { useSession } from "hooks/useSession";
@@ -27,12 +23,16 @@ import { useToast } from "hooks/useToast";
 import { IEntity, /*isEvent,*/ isOrg } from "models/Entity";
 import { ISubscription } from "models/Subscription";
 import { ITopic } from "models/Topic";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { FaBell } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { selectIsMobile } from "store/uiSlice";
 import { ServerError } from "utils/errors";
+import { getErrorMessageString } from "utils/query";
 import { normalize } from "utils/string";
 import { AppQuery, AppQueryWithData } from "utils/types";
 import { TopicModalState } from "./TopicsList";
-import { getErrorMessageString } from "utils/query";
 
 interface TopicsListItemHeaderButtonsProps {
   executeScroll: () => void;

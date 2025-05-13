@@ -3,32 +3,32 @@ import {
   BoxProps,
   HStack,
   Spinner,
-  useColorMode,
-  VStack
+  VStack,
+  useColorMode
 } from "@chakra-ui/react";
+import { css } from "@emotion/react";
+import { Link } from "features/common";
+import { useSession } from "hooks/useSession";
+import { useTranslation } from "next-i18next";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { PageProps } from "pages/_app";
 import { ReactNode } from "react";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { useSelector } from "react-redux";
-import { css } from "@emotion/react";
-import { Link } from "features/common";
-import { PageProps } from "pages/_app";
-import { selectScreenHeight } from "store/uiSlice";
-import { ServerError } from "utils/errors";
-import { capitalize } from "utils/string";
-import { breakpoints, rainbowBorder } from "./theme";
-import { useSession } from "hooks/useSession";
-import { magic } from "utils/auth";
-import api from "utils/api";
 import { useAppDispatch } from "store";
 import {
   selectIsSessionLoading,
   setIsSessionLoading,
   setSession
 } from "store/sessionSlice";
+import { selectScreenHeight } from "store/uiSlice";
 import { resetUserEmail } from "store/userSlice";
-import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next";
+import api from "utils/api";
+import { magic } from "utils/auth";
+import { ServerError } from "utils/errors";
+import { capitalize } from "utils/string";
+import { breakpoints, rainbowBorder } from "./theme";
 
 export interface LayoutProps extends PageProps, BoxProps {
   mainContainer?: boolean;

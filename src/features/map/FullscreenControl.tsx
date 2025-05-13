@@ -1,6 +1,6 @@
 import { Button } from "@chakra-ui/react";
-import React, { useState } from "react";
 import { css } from "@emotion/react";
+import React, { useState } from "react";
 
 export const FullscreenControl = ({
   onClick

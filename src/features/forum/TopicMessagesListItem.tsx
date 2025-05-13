@@ -1,18 +1,18 @@
-import { Avatar, Box, BoxProps, Flex, Tooltip, Text } from "@chakra-ui/react";
+import { Avatar, Box, BoxProps, Flex, Text, Tooltip } from "@chakra-ui/react";
 
+import { EditTopicPayload } from "features/api/topicsApi";
+import { DeleteIconButton, EditIconButton } from "features/common";
+import { IEntity, isUser } from "models/Entity";
+import { ITopic, isEdit } from "models/Topic";
+import { ITopicMessage } from "models/TopicMessage";
 import { useRouter } from "next/router";
 import React from "react";
 import { useSelector } from "react-redux";
-import { DeleteIconButton, EditIconButton } from "features/common";
-import { isEdit, ITopic } from "models/Topic";
-import { ITopicMessage } from "models/TopicMessage";
+import { selectIsMobile } from "store/uiSlice";
 import { Session } from "utils/auth";
 import * as dateUtils from "utils/date";
 import { sanitize } from "utils/string";
 import { AppQuery } from "utils/types";
-import { IEntity, isUser } from "models/Entity";
-import { selectIsMobile } from "store/uiSlice";
-import { EditTopicPayload } from "features/api/topicsApi";
 
 export const TopicMessagesListItem = ({
   index,

@@ -8,13 +8,13 @@ import {
 } from "@chakra-ui/react";
 import { useToast } from "hooks/useToast";
 
-import React from "react";
-import { IconType } from "react-icons";
-import { GrWorkshop } from "react-icons/gr";
-import { FaGlobeEurope } from "react-icons/fa";
 import { IEntity, isEvent, isOrg } from "models/Entity";
 import { orgTypeFull } from "models/Org";
 import { ITopic } from "models/Topic";
+import React from "react";
+import { IconType } from "react-icons";
+import { FaGlobeEurope } from "react-icons/fa";
+import { GrWorkshop } from "react-icons/gr";
 import { hasItems } from "utils/array";
 import { AppIcon, AppQueryWithData } from "utils/types";
 
@@ -42,8 +42,8 @@ export const TopicsListItemVisibility = ({
   const suffix = isE
     ? "de " + entity.eventName
     : isO
-    ? `${orgTypeFull(entity.orgType)} "${entity.orgName}"`
-    : "";
+      ? `${orgTypeFull(entity.orgType)} "${entity.orgName}"`
+      : "";
 
   if (Array.isArray(customLists) && customLists.length > 0) {
     icons = [

@@ -1,19 +1,19 @@
-import { EditIcon, SmallAddIcon, ChatIcon } from "@chakra-ui/icons";
+import { ChatIcon, EditIcon, SmallAddIcon } from "@chakra-ui/icons";
 import {
-  ModalOverlay,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalBody,
-  ModalCloseButton
+  ModalOverlay
 } from "@chakra-ui/react";
 import { useToast } from "hooks/useToast";
 
-import React from "react";
 import { Modal } from "features/common";
 import { TopicForm } from "features/forms/TopicForm";
 import { IEntity } from "models/Entity";
 import { ISubscription } from "models/Subscription";
 import { ITopic } from "models/Topic";
+import React from "react";
 import { AppQuery, AppQueryWithData } from "utils/types";
 
 export const TopicFormModal = (props: {

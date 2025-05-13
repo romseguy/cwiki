@@ -1,8 +1,8 @@
 import { addHours, getUnixTime } from "date-fns";
+import { IUser } from "models/User";
 import { Document } from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
-import { IUser } from "models/User";
 import { getSession } from "server/auth";
 import database, { models } from "server/database";
 import { sendMail } from "server/email";
@@ -12,8 +12,8 @@ import {
   databaseErrorCodes,
   duplicateError
 } from "utils/errors";
-import { logJson, normalize, phoneR } from "utils/string";
 import { randomNumber } from "utils/randomNumber";
+import { logJson, normalize, phoneR } from "utils/string";
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 

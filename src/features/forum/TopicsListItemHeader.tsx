@@ -1,38 +1,38 @@
 import { CalendarIcon, ChatIcon } from "@chakra-ui/icons";
 import {
   Badge,
-  Icon,
-  Link,
-  Tooltip,
   Box,
   Flex,
-  Text,
   FlexProps,
   HStack,
+  Icon,
+  Link,
   StackProps,
-  useColorMode,
-  VStack
+  Text,
+  Tooltip,
+  VStack,
+  useColorMode
 } from "@chakra-ui/react";
-import React from "react";
-import { FaFolder, FaFolderOpen, FaUserCircle } from "react-icons/fa";
 import { css } from "@emotion/react";
 import { CategoryTag } from "features/common";
 import {
   EEntityCategoryKey,
-  getCategoryLabel,
   IEntity,
   IEntityCategory,
+  getCategoryLabel,
   isEvent,
   isOrg
 } from "models/Entity";
 import { ITopic } from "models/Topic";
+import React from "react";
+import { FaFolder, FaFolderOpen, FaUserCircle } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { selectIsMobile } from "store/uiSlice";
+import { hasItems } from "utils/array";
 import * as dateUtils from "utils/date";
 import { AppQueryWithData } from "utils/types";
 import { TopicsListItemShare } from "./TopicsListItemShare";
 import { TopicsListItemVisibility } from "./TopicsListItemVisibility";
-import { useSelector } from "react-redux";
-import { selectIsMobile } from "store/uiSlice";
-import { hasItems } from "utils/array";
 
 interface TopicsListItemHeader {
   isCurrent: boolean;

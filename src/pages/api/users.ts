@@ -1,9 +1,9 @@
+import { AddUserPayload, GetUsersParams } from "features/api/usersApi";
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
-import database, { models } from "server/database";
-import { AddUserPayload, GetUsersParams } from "features/api/usersApi";
-import { getCurrentId } from "store/utils";
 import { getSession } from "server/auth";
+import database, { models } from "server/database";
+import { getCurrentId } from "store/utils";
 import { createEndpointError } from "utils/errors";
 import { logJson, normalize } from "utils/string";
 import { unauthorizedEntityUrls } from "utils/url";

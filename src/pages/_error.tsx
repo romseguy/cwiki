@@ -26,10 +26,10 @@ Error.getInitialProps = (ctx: NextPageContext) => {
   const message = err
     ? err.message
     : statusCode === 404
-    ? // ? "la page n'a pas été trouvée"
-      // : "aucun message d'erreur";
-      "the page could not be found"
-    : "no error message";
+      ? // ? "la page n'a pas été trouvée"
+        // : "aucun message d'erreur";
+        "the page could not be found"
+      : "no error message";
   return { statusCode, message };
 };
 

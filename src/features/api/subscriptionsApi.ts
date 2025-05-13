@@ -1,6 +1,6 @@
 import { getRefId } from "models/Entity";
 import type { ISubscription } from "models/Subscription";
-import { api, TagTypes } from "./";
+import { TagTypes, api } from "./";
 
 export type AddSubscriptionPayload = Omit<ISubscription, "_id" | "createdBy">;
 export type EditSubscriptionPayload = Partial<ISubscription>;

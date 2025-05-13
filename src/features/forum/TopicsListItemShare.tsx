@@ -10,10 +10,10 @@ import {
 } from "@chakra-ui/react";
 import { useToast } from "hooks/useToast";
 
-import React, { useState } from "react";
-import { FaShare } from "react-icons/fa";
 import { LinkShare } from "features/common";
 import { ITopic } from "models/Topic";
+import React, { useState } from "react";
+import { FaShare } from "react-icons/fa";
 import { normalize } from "utils/string";
 
 export const TopicsListItemShare = ({

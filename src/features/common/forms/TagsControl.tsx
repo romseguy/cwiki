@@ -13,6 +13,7 @@ import {
   AutoCompleteTag,
   ItemTag
 } from "@choc-ui/chakra-autocomplete";
+import { css } from "@emotion/react";
 import { ErrorMessage } from "@hookform/error-message";
 import React, { useEffect, useState } from "react";
 import {
@@ -24,7 +25,6 @@ import {
   UseFormMethods,
   useWatch
 } from "react-hook-form";
-import { css } from "@emotion/react";
 import { hasItems } from "utils/array";
 
 export const TagsControl = ({

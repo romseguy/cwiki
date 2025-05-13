@@ -1,5 +1,5 @@
-import { appWithTranslation } from "next-i18next";
 import { unseal } from "@hapi/iron";
+import { appWithTranslation } from "next-i18next";
 import "allsettled-polyfill";
 import { parse } from "cookie";
 import { GlobalConfig } from "features/GlobalConfig";

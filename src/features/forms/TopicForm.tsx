@@ -1,21 +1,17 @@
 import {
-  Text,
-  Input,
-  Button,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Flex,
   Alert,
   AlertIcon,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Input,
   Switch,
-  HStack
+  Text
 } from "@chakra-ui/react";
 import { ErrorMessage } from "@hookform/error-message";
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import Creatable from "react-select/creatable";
-import { ErrorMessageText, MultiSelect, RTEditor } from "features/common";
 //import { useEditEventMutation } from "features/api/eventsApi";
 import { useEditOrgMutation } from "features/api/orgsApi";
 import {
@@ -24,6 +20,7 @@ import {
   useAddTopicMutation,
   useEditTopicMutation
 } from "features/api/topicsApi";
+import { ErrorMessageText, MultiSelect, RTEditor } from "features/common";
 import useFormPersist from "hooks/useFormPersist";
 import { useLeaveConfirm } from "hooks/useLeaveConfirm";
 import { useSession } from "hooks/useSession";
@@ -32,6 +29,9 @@ import { IEntity, isEvent, isOrg } from "models/Entity";
 //import { EEventVisibility, IEvent } from "models/Event";
 import { EOrgVisibility, IOrg, orgTypeFull } from "models/Org";
 import { ITopic } from "models/Topic";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import Creatable from "react-select/creatable";
 import { handleError } from "utils/form";
 import { AppQueryWithData } from "utils/types";
 
@@ -67,8 +67,8 @@ export const TopicForm = ({
   const topicCategories = isE
     ? entity.eventTopicCategories
     : isO
-    ? entity.orgTopicCategories
-    : [];
+      ? entity.orgTopicCategories
+      : [];
   const topicCategory =
     props.topic &&
     props.topic.topicCategory &&
@@ -259,8 +259,8 @@ export const TopicForm = ({
                           isE
                             ? "de l'événement"
                             : isO
-                            ? orgTypeFull(entity.orgType)
-                            : ""
+                              ? orgTypeFull(entity.orgType)
+                              : ""
                         } pour ajouter une catégorie`
                       });
                       return;

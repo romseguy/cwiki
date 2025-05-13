@@ -6,8 +6,8 @@ import { equals, logJson } from "utils/string";
 import { AppQuery } from "utils/types";
 import {
   EOrgSubscriptionType,
-  IOrgSubscription,
   IEventSubscription,
+  IOrgSubscription,
   ISubscription,
   TagType
 } from "./ISubscription";

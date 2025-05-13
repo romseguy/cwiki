@@ -1,21 +1,18 @@
 import {
-  ChakraProps,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  Flex,
   Alert,
-  AlertIcon
+  AlertIcon,
+  Button,
+  ChakraProps,
+  Flex,
+  FormControl,
+  FormErrorMessage
 } from "@chakra-ui/react";
 import { useToast } from "hooks/useToast";
 
 import { ErrorMessage } from "@hookform/error-message";
-import { useRouter } from "next/router";
-import React from "react";
-import { Controller, useForm } from "react-hook-form";
-import useFormPersist from "hooks/useFormPersist";
 import { AddTopicPayload, useAddTopicMutation } from "features/api/topicsApi";
 import { ErrorMessageText, RTEditor } from "features/common";
+import useFormPersist from "hooks/useFormPersist";
 import { useLeaveConfirm } from "hooks/useLeaveConfirm";
 import { useSession } from "hooks/useSession";
 import { IEntity, isEvent, isOrg } from "models/Entity";
@@ -23,6 +20,9 @@ import { IEvent } from "models/Event";
 import { IOrg } from "models/Org";
 import { ITopic } from "models/Topic";
 import { ITopicMessage } from "models/TopicMessage";
+import { useRouter } from "next/router";
+import React from "react";
+import { Controller, useForm } from "react-hook-form";
 import { handleError } from "utils/form";
 import { AppQueryWithData } from "utils/types";
 
@@ -209,8 +209,8 @@ export const TopicMessageForm = ({
             {isDisabled
               ? "Réponses désactivées"
               : props.topicMessage
-              ? "Modifier"
-              : "Ajouter"}
+                ? "Modifier"
+                : "Ajouter"}
           </Button>
         )}
       </Flex>

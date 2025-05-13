@@ -1,24 +1,24 @@
 import {
+  Box,
   BoxProps,
   Button,
-  Box,
   Flex,
-  VStack,
   HStack,
+  VStack,
   useColorMode
 } from "@chakra-ui/react";
 
-import { useRouter } from "next/router";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TopicMessageForm } from "features/forms/TopicMessageForm";
 import { useScroll } from "hooks/useScroll";
 import { IEntity, isEvent, isOrg } from "models/Entity";
+import { ISubscription } from "models/Subscription";
 import { ITopic, isEdit } from "models/Topic";
+import { useRouter } from "next/router";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Session } from "utils/auth";
 import { normalize } from "utils/string";
 import { AppQuery, AppQueryWithData } from "utils/types";
 import { TopicMessagesList } from "./TopicMessagesList";
-import { ISubscription } from "models/Subscription";
 import { TopicModalState } from "./TopicsList";
 import {
   TopicsListItemHeader,
@@ -152,8 +152,8 @@ export const TopicsListItem = ({
               ? "gray.600"
               : "orange.200"
             : isDark
-            ? "gray.500"
-            : "orange.100"
+              ? "gray.500"
+              : "orange.100"
         }
         cursor="pointer"
         _hover={{ bg: isDark ? "#314356" : "orange.300" }}

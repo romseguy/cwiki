@@ -1,6 +1,6 @@
-import { getSession } from "server/auth";
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
+import { getSession } from "server/auth";
 import { createEndpointError } from "utils/errors";
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();

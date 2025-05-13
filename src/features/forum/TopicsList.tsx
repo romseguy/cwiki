@@ -17,9 +17,9 @@ import { TopicFormModal } from "features/modals/TopicFormModal";
 import { useSession } from "hooks/useSession";
 import { useToast } from "hooks/useToast";
 import {
+  IEntity,
   //getCategoryLabel,
   getRefId,
-  IEntity,
   //isEvent,
   isOrg
 } from "models/Entity";

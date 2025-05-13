@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { IOrg, EOrgType, EOrgVisibility } from "./IOrg";
+import { EOrgType, EOrgVisibility, IOrg } from "./IOrg";
 
 export const OrgSchema = new Schema<IOrg>(
   {

@@ -1,9 +1,9 @@
 import { Link } from "features/common";
 import { Layout } from "features/layout";
 import { useSession } from "hooks/useSession";
-import { PageProps } from "./_app";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { PageProps } from "./_app";
 
 const IndexPage = (props: PageProps) => {
   const { data: session } = useSession();

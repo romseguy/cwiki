@@ -6,7 +6,7 @@ import { ITopic } from "models/Topic";
 import { ITopicMessage } from "models/TopicMessage";
 import { globalEmail } from "pages/_app";
 import { objectToQueryString } from "utils/query";
-import { api, TagTypes } from "./";
+import { TagTypes, api } from "./";
 
 export interface AddTopicPayload {
   topic: Omit<Partial<ITopic>, "document"> & { document?: string | IDocument };

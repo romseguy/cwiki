@@ -34,7 +34,7 @@ import { useForm } from "react-hook-form";
 import { FaPowerOff } from "react-icons/fa";
 import { useAppDispatch } from "store";
 import api from "utils/api";
-import { magic, TOKEN_NAME } from "utils/auth";
+import { TOKEN_NAME, magic } from "utils/auth";
 import { handleError } from "utils/form";
 
 const onLoginWithSocial = async (provider: OAuthProvider) => {

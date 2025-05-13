@@ -7,10 +7,10 @@ import {
 } from "@chakra-ui/react";
 import { useToast } from "hooks/useToast";
 
+import { css } from "@emotion/react";
 import { rainbowTextCss } from "features/layout/theme";
 import theme from "features/layout/theme";
 import { forwardRef } from "react";
-import { css } from "@emotion/react";
 
 export const AppHeading = forwardRef(
   (

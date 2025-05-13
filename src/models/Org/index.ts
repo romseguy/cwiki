@@ -1,8 +1,8 @@
-import { ChatIcon, CalendarIcon, SettingsIcon } from "@chakra-ui/icons";
-import { GrWorkshop } from "react-icons/gr";
-import { FaHome, FaTools, FaImages, FaGlobeEurope } from "react-icons/fa";
+import { CalendarIcon, ChatIcon, SettingsIcon } from "@chakra-ui/icons";
 import { getOrgs, useGetOrgsQuery } from "features/api/orgsApi";
 import { EOrgSubscriptionType, ISubscription } from "models/Subscription";
+import { FaGlobeEurope, FaHome, FaImages, FaTools } from "react-icons/fa";
+import { GrWorkshop } from "react-icons/gr";
 import { AppDispatch } from "store";
 import { hasItems } from "utils/array";
 import { Session } from "utils/auth";
@@ -12,8 +12,8 @@ import {
   EOrgType,
   EOrgVisibility,
   IOrg,
-  IOrgList,
   IOrgEventCategory,
+  IOrgList,
   IOrgTabWithMetadata
 } from "./IOrg";
 
