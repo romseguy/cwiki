@@ -1,4 +1,4 @@
-import { TopicMessageSchema } from "models/TopicMessage";
+import { TopicMessageSchema } from "./TopicMessageSchema";
 import { Schema } from "mongoose";
 import { ITopic } from "./ITopic";
 

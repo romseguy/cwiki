@@ -45,6 +45,7 @@
     "autoprefixer": "10.4.15",
     "axios": "0.21.4",
     "babel-plugin-import": "1.13.3",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "bcryptjs": "2.4.3",
     "body-scroll-lock": "4.0.0-beta.0",
     "cookie": "0.5.0",

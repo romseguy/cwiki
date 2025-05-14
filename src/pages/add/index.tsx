@@ -1,6 +1,7 @@
 import { AddForm } from "features/forms/AddForm";
 import { Layout } from "features/layout";
 import { useSession } from "hooks/useSession";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
 import React, { useEffect } from "react";
@@ -38,5 +39,11 @@ const AddPage = ({
     </Layout>
   );
 };
+
+export const getStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? "en", ["add"]))
+  }
+});
 
 export default AddPage;

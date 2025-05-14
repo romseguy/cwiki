@@ -19,7 +19,8 @@ export const uiSlice = createSlice({
       state.isMobile = action.payload;
     },
     setScreenHeight: (state, action: PayloadAction<number>) => {
-      state.screenHeight = action.payload;
+      if (typeof action.payload === "number" && action.payload > 0)
+        state.screenHeight = action.payload;
     },
     setScreenWidth: (state, action: PayloadAction<number>) => {
       state.screenWidth = action.payload;

@@ -11,15 +11,16 @@ import { css } from "@emotion/react";
 import { ErrorMessage } from "@hookform/error-message";
 import { AddOrgPayload, useAddOrgMutation } from "features/api/orgsApi";
 import { ErrorMessageText } from "features/common";
-import { Layout } from "features/layout";
 import useFormPersist from "hooks/useFormPersist";
 import { useLeaveConfirm } from "hooks/useLeaveConfirm";
 import { useToast } from "hooks/useToast";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "next-i18next";
 import { Session } from "utils/auth";
 import { handleError } from "utils/form";
+import { EOrgType } from "models/Org";
 
 type FormValues = { treeName: string; formErrorMessage?: string };
 
@@ -31,6 +32,7 @@ export const AddForm = ({
   onCancel?: () => void;
 }) => {
   const router = useRouter();
+  const { t } = useTranslation("add");
   const toast = useToast({ position: "top" });
   const [isLoading, setIsLoading] = useState(false);
   const [addOrg] = useAddOrgMutation();
@@ -85,7 +87,10 @@ export const AddForm = ({
     setIsLoading(true);
 
     try {
-      let payload: AddOrgPayload = { orgName: form.treeName };
+      let payload: AddOrgPayload = {
+        orgName: form.treeName,
+        orgType: EOrgType.NETWORK
+      };
 
       const org = await addOrg(payload).unwrap();
       const orgUrl = org.orgUrl;
@@ -96,7 +101,7 @@ export const AddForm = ({
       });
 
       setIsLoading(false);
-      router.push(`${session.user.userName}/${orgUrl}`);
+      router.push(`/a/${orgUrl}`);
     } catch (error) {
       setIsLoading(false);
       handleError(error, (message, field) => {
@@ -119,8 +124,18 @@ export const AddForm = ({
       onSubmit={handleSubmit(onSubmit)}
     >
       <FormControl ref={refs.treeName}>
-        <FormLabel>How do you want to name the new tree?</FormLabel>
-        <Input name="treeName" />
+        <FormLabel>{t("orgNameLabel")}</FormLabel>
+        <Input
+          name="treeName"
+          ref={register({
+            required: `Veuillez saisir un nom`
+            // pattern: {
+            //   value: /^[A-zÀ-ú0-9 ]+$/i,
+            //   message:
+            //     "Veuillez saisir un nom composé de lettres et de chiffres uniquement"
+            // }
+          })}
+        />
       </FormControl>
 
       <ErrorMessage
@@ -147,7 +162,7 @@ export const AddForm = ({
           isDisabled={Object.keys(errors).length > 0}
           isLoading={isLoading}
         >
-          Ajouter
+          {t("submitButton")}
         </Button>
       </HStack>
     </form>

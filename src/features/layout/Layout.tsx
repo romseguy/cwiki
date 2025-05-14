@@ -1,15 +1,18 @@
+import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Box,
   BoxProps,
   HStack,
   Spinner,
   VStack,
-  useColorMode
+  useColorMode,
+  Flex
 } from "@chakra-ui/react";
 import { css } from "@emotion/react";
 import { Link } from "features/common";
 import { useSession } from "hooks/useSession";
 import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
@@ -43,7 +46,11 @@ export const Layout = ({
   ...props
 }: React.PropsWithChildren<LayoutProps>) => {
   const router = useRouter();
-  const { t, i18n } = useTranslation("common");
+  let [entityUrl] =
+    "treeName" in router.query && Array.isArray(router.query.treeName)
+      ? router.query.treeName
+      : [];
+  const { t } = useTranslation();
   const changeTo = router.locale === "en" ? "fr" : "en";
   // const clientSideLanguageChange = (newLocale: string) => {
   //   i18n.changeLanguage(newLocale);
@@ -68,87 +75,114 @@ export const Layout = ({
 
   const main = (c: ReactNode) =>
     mainContainer ? (
-      <Box
-        as="main"
+      <Flex
         css={css`
+          flex-direction: column;
           background-color: ${isDark ? "#2D3748" : "#FAFAFA"};
 
           @media (min-width: ${breakpoints["2xl"]}) {
             margin: 0 auto;
-            min-height: ${screenHeight}px;
             width: 1180px;
+            height: 100%;
             border-left: 12px solid transparent;
             border-right: 12px solid transparent;
             ${rainbowBorder(isDark)}
           }
         `}
       >
-        <VStack
+        <Flex
           css={css`
-            align-items: start;
-            background-color: #cffffe;
-            /*width: 1156px;*/
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            border-left: 12px solid black;
+            border-bottom: 12px solid black;
+            a {
+              border-right: 12px solid black;
+              padding: 0 12px 0 6px;
+            }
+            button {
+              margin-left: 6px;
+            }
           `}
         >
-          <header>
-            <HStack
-              css={css`
-                border-bottom: 12px solid black;
-                a {
-                  border-right: 12px solid black;
-                  padding-left: 6px;
-                  padding-right: 12px;
-                }
-              `}
-            >
-              <HStack>
-                <button onClick={() => onToggleLanguageClick(changeTo)}>
-                  {router.locale === "fr" ? (
-                    <img src="/icons/en.png" />
-                  ) : (
-                    <img src="/icons/fr.png" />
-                  )}
-                </button>
-                {/* <button onClick={() => clientSideLanguageChange(changeTo)}>
-                  {t("change-locale", { changeTo })}
-                </button> */}
-                <Link href="/">Home</Link>
-              </HStack>
-              <HStack>
-                {session ? (
-                  <Link
-                    onClick={async () => {
-                      dispatch(setIsSessionLoading(true));
-                      dispatch(resetUserEmail());
-                      const magicIsLoggedIn = await magic.user.isLoggedIn();
-                      console.log(
-                        "checkLoginStatus: magicIsLoggedIn",
-                        magicIsLoggedIn
-                      );
+          <HStack>
+            <button onClick={() => onToggleLanguageClick(changeTo)}>
+              {router.locale === "fr" ? (
+                <img src="/icons/en.png" />
+              ) : (
+                <img src="/icons/fr.png" />
+              )}
+            </button>
 
-                      if (magicIsLoggedIn) {
-                        await magic.user.logout();
-                      }
-                      await api.get("logout");
-                      dispatch(setSession(null));
-                      dispatch(setIsSessionLoading(false));
-                    }}
-                  >
-                    {!isSessionLoading ? "Logout" : <Spinner size="sm" />}
-                  </Link>
-                ) : (
-                  <Link href="/login">
-                    {!isSessionLoading ? "Login" : <Spinner size="sm" />}
-                  </Link>
-                )}
-                <Link href="/add">Add a tree</Link>
-              </HStack>
-            </HStack>
-          </header>
-        </VStack>
+            {router.asPath === "/" && <ChevronRightIcon />}
+            <Link href="/" shallow>
+              {t("home")}
+            </Link>
 
-        <VStack
+            {router.asPath.includes("/a/") ? (
+              <>
+                <ChevronRightIcon />
+                <Link href={"/a/" + entityUrl} shallow>
+                  {entityUrl}
+                </Link>
+
+                {router.asPath.includes("add") && <ChevronRightIcon />}
+                <Link
+                  href={
+                    router.asPath.includes("/b/add")
+                      ? "#"
+                      : `/b/add${router.asPath}`
+                  }
+                  shallow
+                >
+                  {t("add-branch")}
+                </Link>
+              </>
+            ) : (
+              <>
+                {router.asPath.includes("add") && <ChevronRightIcon />}
+                <Link href="/add" shallow>
+                  {t("add")}
+                </Link>
+              </>
+            )}
+          </HStack>
+
+          <HStack>
+            {session ? (
+              <Link
+                onClick={async () => {
+                  dispatch(setIsSessionLoading(true));
+                  dispatch(resetUserEmail());
+                  const magicIsLoggedIn = await magic.user.isLoggedIn();
+                  console.log(
+                    "checkLoginStatus: magicIsLoggedIn",
+                    magicIsLoggedIn
+                  );
+
+                  if (magicIsLoggedIn) {
+                    await magic.user.logout();
+                  }
+                  await api.get("logout");
+                  dispatch(setSession(null));
+                  dispatch(setIsSessionLoading(false));
+                }}
+              >
+                {!isSessionLoading ? t("logout") : <Spinner size="sm" />}
+              </Link>
+            ) : (
+              <Link href="/login">
+                {!isSessionLoading ? "Login" : <Spinner size="sm" />}
+              </Link>
+            )}
+          </HStack>
+        </Flex>
+
+        <div
           css={css`
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(
               to bottom,
               #cffffe 0%,
@@ -157,14 +191,12 @@ export const Layout = ({
               #fafafa 75%,
               #fafafa 100%
             );
-            height: 100%;
-            /*width: 1156px;*/
-            margin: 0 !important;
+            padding: 12px 0 0 12px;
           `}
         >
-          <main>{c}</main>
-        </VStack>
-      </Box>
+          {c}
+        </div>
+      </Flex>
     ) : (
       <main>c</main>
     );

@@ -2,7 +2,7 @@ import { EOrgType, EOrgVisibility, IOrg } from "models/Org";
 import { objectToQueryString } from "utils/query";
 import { TagTypes, api } from "./";
 
-export type AddOrgPayload = Pick<Partial<IOrg>, "orgName">;
+export type AddOrgPayload = Pick<Partial<IOrg>, "orgName", "orgType">;
 
 export type EditOrgPayload = Partial<IOrg> | string[];
 

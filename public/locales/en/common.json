@@ -1,4 +1,8 @@
 {
-  "change-locale": "s",
-  "test": "en"
+  "home": "All trees",
+  "home-list": "Pick a tree",
+  "logout": "Logout",
+  "add": "Add a tree",
+  "add-branch": "Add a branch",
+  "change-locale": "s"
 }

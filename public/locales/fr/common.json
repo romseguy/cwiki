@@ -1,4 +1,7 @@
 {
-  "change-locale": "t",
-  "test": "fr"
+  "home": "Tous les arbres",
+  "home-list": "Choisissez un arbre",
+  "logout": "Déconnexion",
+  "add": "Ajouter un arbre",
+  "change-locale": "t"
 }

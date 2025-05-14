@@ -1,6 +1,9 @@
-import { Link } from "features/common";
+import { VStack } from "@chakra-ui/react";
+import { useGetOrgsQuery } from "features/api/orgsApi";
+import { EntityButton, Link } from "features/common";
 import { Layout } from "features/layout";
 import { useSession } from "hooks/useSession";
+import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { PageProps } from "./_app";
@@ -8,20 +11,18 @@ import { PageProps } from "./_app";
 const IndexPage = (props: PageProps) => {
   const { data: session } = useSession();
   const { t } = useTranslation("common");
+  const orgsQuery = useGetOrgsQuery({ orgType: EOrgType.NETWORK });
 
   return (
     <Layout pageTitle="Home" {...props}>
       {session ? (
         <>
-          <h1>{t("test")}</h1>
-          <ul>
-            <li>
-              <a href={`${session.user.userName}/1`}>1</a>
-            </li>
-            <li>
-              <a href={`${session.user.userName}/2`}>2</a>
-            </li>
-          </ul>
+          <h1>{t("home-list")}</h1>
+          <VStack alignItems="start">
+            {orgsQuery.data?.map((org) => {
+              return <EntityButton key={org._id} org={org} />;
+            })}
+          </VStack>
         </>
       ) : (
         <>
