@@ -103,7 +103,11 @@ export const Layout = ({
             >
               <HStack>
                 <button onClick={() => onToggleLanguageClick(changeTo)}>
-                  {t("change-locale", { changeTo })}
+                  {router.locale === "fr" ? (
+                    <img src="/icons/en.png" />
+                  ) : (
+                    <img src="/icons/fr.png" />
+                  )}
                 </button>
                 {/* <button onClick={() => clientSideLanguageChange(changeTo)}>
                   {t("change-locale", { changeTo })}

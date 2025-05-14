@@ -16,6 +16,7 @@
     "build:size": "ANALYZE=true next build",
     "compile": "tsc --build",
     "compile:w": "tsc --build --watch",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "vapid": "web-push generate-vapid-keys",
     "browserslist": "ynpx update-browserslist-db@latest"
   },
@@ -126,10 +127,14 @@
     "@types/react-redux": "7.1.16",
     "@types/react-toggle": "4.0.2",
     "@types/web-push": "3.3.2",
+    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/parser": "6.21.0",
     "@welldone-software/why-did-you-render": "7.0.1",
     "cross-fetch": "4.0.0",
     "dotenv-cli": "7.3.0",
-    "eslint": "8.49.0",
-    "eslint-config-next": "13.5.2"
+    "eslint": "8.57.1",
+    "eslint-config-next": "13.5.2",
+    "eslint-plugin-react-hooks": "4.6.2",
+    "eslint-plugin-react-refresh": "0.4.20"
   }
 }
