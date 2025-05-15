@@ -14,10 +14,10 @@ import {
   useColorMode,
   useDisclosure
 } from "@chakra-ui/react";
+import theme from "features/layout/theme";
 import React from "react";
 import { useSelector } from "react-redux";
 import { selectIsMobile } from "store/uiSlice";
-import theme from "features/layout/theme";
 
 export const DeleteIconButton = ({
   body,

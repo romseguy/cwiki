@@ -1,9 +1,9 @@
-import { Box, useColorMode, FlexProps } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { Box, FlexProps, useColorMode } from "@chakra-ui/react";
 import { useEditTopicMutation } from "features/api/topicsApi";
 import { useSession } from "hooks/useSession";
 import { IEntity } from "models/Entity";
-import { isEdit, ITopic } from "models/Topic";
+import { ITopic, isEdit } from "models/Topic";
+import React, { useState } from "react";
 import { AppQuery } from "utils/types";
 import { TopicMessagesListItem } from "./TopicMessagesListItem";
 import { TopicMessagesListItemEdit } from "./TopicMessagesListItemEdit";

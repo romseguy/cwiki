@@ -1,12 +1,12 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
+  Box,
   BoxProps,
+  Flex,
   HStack,
   Icon,
   Spinner,
-  useColorMode,
-  Flex,
-  Box
+  useColorMode
 } from "@chakra-ui/react";
 import { css } from "@emotion/react";
 import { DarkModeSwitch, Link } from "features/common";
@@ -237,7 +237,7 @@ export const Layout = ({
     </Flex>
   );
 
-  const page = (c: ReactNode) => main(c);
+  const page = (c: ReactNode) => <main>{main(c)}</main>;
 
   const Fallback = ({
     error,

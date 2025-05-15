@@ -10,21 +10,21 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 
-import React from "react";
-import { FaGithub, FaTree } from "react-icons/fa";
-import { IoIosPeople, IoIosPerson } from "react-icons/io";
 import { css } from "@emotion/react";
+import { getRefId } from "models/Entity";
 import {
-  IOrg,
   EOrgType,
   EOrgVisibility,
+  IOrg,
   OrgTypes,
   orgTypeFull5
 } from "models/Org";
-import { IUser } from "models/User";
 import { ITopic } from "models/Topic";
+import { IUser } from "models/User";
 import { useRouter } from "next/router";
-import { getRefId } from "models/Entity";
+import React from "react";
+import { FaGithub, FaTree } from "react-icons/fa";
+import { IoIosPeople, IoIosPerson } from "react-icons/io";
 import { Link } from "../Link";
 
 export const EntityButton = ({
@@ -53,17 +53,19 @@ export const EntityButton = ({
   const entityName = topic
     ? topic.topicName
     : org
-    ? `${
-        org.orgType === EOrgType.TREETOOLS ? OrgTypes[org.orgType] + " : " : ""
-      }${org.orgName}`
-    : user
-    ? user.userName
-    : "";
+      ? `${
+          org.orgType === EOrgType.TREETOOLS
+            ? OrgTypes[org.orgType] + " : "
+            : ""
+        }${org.orgName}`
+      : user
+        ? user.userName
+        : "";
   let entityUrl = org
     ? org.orgUrl
     : typeof user === "object"
-    ? user.userName
-    : "";
+      ? user.userName
+      : "";
   if (topic) {
     entityUrl = `${
       entityUrl || getRefId(topic.org) || getRefId(topic.event)
@@ -74,14 +76,14 @@ export const EntityButton = ({
     ? topic
       ? "Aller à la discussion"
       : org
-      ? org.orgUrl === "forum"
-        ? "Aller au forum"
-        : org.orgType
-        ? `Visiter ${orgTypeFull5(org.orgType)}`
-        : ""
-      : user
-      ? "Visiter la page de l'utilisateur"
-      : ""
+        ? org.orgUrl === "forum"
+          ? "Aller au forum"
+          : org.orgType
+            ? `Visiter ${orgTypeFull5(org.orgType)}`
+            : ""
+        : user
+          ? "Visiter la page de l'utilisateur"
+          : ""
     : "";
 
   if (!entityUrl && !onClick) return null;
@@ -93,21 +95,21 @@ export const EntityButton = ({
           topic
             ? ChatIcon
             : user
-            ? IoIosPerson
-            : org
-            ? org.orgType === EOrgType.NETWORK
-              ? FaTree
-              : FaGithub
-            : ChatIcon
+              ? IoIosPerson
+              : org
+                ? org.orgType === EOrgType.NETWORK
+                  ? FaTree
+                  : FaGithub
+                : ChatIcon
         }
         color={
           topic
             ? "blue.500"
             : org
-            ? org.orgType === EOrgType.NETWORK
-              ? "white"
+              ? org.orgType === EOrgType.NETWORK
+                ? "white"
+                : "blue.500"
               : "blue.500"
-            : "blue.500"
         }
       />
       <Link

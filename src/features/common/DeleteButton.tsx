@@ -14,8 +14,8 @@ import {
   useColorMode,
   useDisclosure
 } from "@chakra-ui/react";
-import React from "react";
 import theme from "features/layout/theme";
+import React from "react";
 
 export const DeleteButton = ({
   "aria-label": ariaLabel = "Supprimer",

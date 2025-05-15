@@ -3,8 +3,8 @@ import {
   Alert,
   AlertIcon,
   Box,
-  Flex,
   BoxProps,
+  Flex,
   HStack,
   IconButton,
   Select,
@@ -12,9 +12,7 @@ import {
   Text,
   useColorMode
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import React, { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { EditOrgPayload, useEditOrgMutation } from "features/api/orgsApi";
 //import { useAddTopicNotifMutation } from "features/api/topicsApi";
 import { Button } from "features/common";
 // import {
@@ -27,21 +25,23 @@ import {
 } from "features/modals/TopicFormModal";
 import { useSession } from "hooks/useSession";
 import {
+  IEntity,
   //getCategoryLabel,
   getRefId,
-  IEntity,
   //isEvent,
   isOrg
 } from "models/Entity";
 import { ISubscription } from "models/Subscription";
 import { ETopicsListOrder, ITopic } from "models/Topic";
+import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
+import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectIsMobile } from "store/uiSlice";
 import { hasItems } from "utils/array";
 import { normalize } from "utils/string";
 import { AppQuery, AppQueryWithData } from "utils/types";
 import { TopicsListItem } from "./TopicsListItem";
-import { selectIsMobile } from "store/uiSlice";
-import { EditOrgPayload, useEditOrgMutation } from "features/api/orgsApi";
-import { useTranslation } from "next-i18next";
 //import { useEditEventMutation } from "features/api/eventsApi";
 
 export type TopicModalState = {

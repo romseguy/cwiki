@@ -61,9 +61,9 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
             /*background: url(/images/bg.jpg);
             background-repeat: repeat-y;
             background-size: cover;
-             background-color: ${isDark
-              ? theme.colors.black
-              : theme.colors.green["100"]};
+             background-color: ${
+               isDark ? theme.colors.black : theme.colors.green["100"]
+             };
             background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed; */
@@ -87,9 +87,9 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
             padding-left: 0;
 
             &:hover {
-              border-color: ${isDark
-                ? theme.colors.gray[400]
-                : theme.colors.gray[300]};
+              border-color: ${
+                isDark ? theme.colors.gray[400] : theme.colors.gray[300]
+              };
             }
 
             .react-select__clear-indicator {
@@ -101,9 +101,9 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
             }
 
             .react-select__indicator-separator {
-              background-color: ${isDark
-                ? theme.colors.whiteAlpha[300]
-                : theme.colors.gray[200]};
+              background-color: ${
+                isDark ? theme.colors.whiteAlpha[300] : theme.colors.gray[200]
+              };
             }
 
             .react-select__placeholder {
@@ -112,9 +112,9 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
 
             .react-select__value-container {
               .react-select__placeholder {
-                color: ${isDark
-                  ? theme.colors.gray[400]
-                  : theme.colors.gray[400]};
+                color: ${
+                  isDark ? theme.colors.gray[400] : theme.colors.gray[400]
+                };
                 padding-left: 12px;
               }
 
@@ -125,17 +125,19 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
 
               .react-select__input-container {
                 color: ${isDark ? "white" : theme.colors.black};
-                background-color: ${isDark
-                  ? theme.colors.whiteAlpha[300]
-                  : theme.colors.blackAlpha[100]};
+                background-color: ${
+                  isDark
+                    ? theme.colors.whiteAlpha[300]
+                    : theme.colors.blackAlpha[100]
+                };
                 border-radius: 12px;
                 padding: 4px 8px;
               }
 
               .react-select__multi-value {
-                background-color: ${isDark
-                  ? theme.colors.gray[600]
-                  : theme.colors.orange[400]};
+                background-color: ${
+                  isDark ? theme.colors.gray[600] : theme.colors.orange[400]
+                };
                 border-radius: 12px;
                 .react-select__multi-value__label {
                   color: ${isDark ? "white" : theme.colors.black};
@@ -377,12 +379,14 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
         //#endregion
 
         //#region tinymce
-        ${isMobile
-          ? `
+        ${
+          isMobile
+            ? `
             body:not(.tox-force-desktop) .tox-dialog { max-height: calc(100vh - 64px * 1.25) !important; }
             .tox-tinymce { border: 0 !important; }
           `
-          : ""}
+            : ""
+        }
 
         /*
           button[aria-label="Tailles de police"] {

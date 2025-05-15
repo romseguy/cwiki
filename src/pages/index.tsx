@@ -2,12 +2,12 @@ import { VStack } from "@chakra-ui/react";
 import { useGetOrgsQuery } from "features/api/orgsApi";
 import { EntityButton, Link } from "features/common";
 import { Layout } from "features/layout";
+import theme from "features/layout/theme";
 import { useSession } from "hooks/useSession";
 import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { PageProps } from "./_app";
-import theme from "features/layout/theme";
 
 const IndexPage = (props: PageProps) => {
   const { data: session } = useSession();

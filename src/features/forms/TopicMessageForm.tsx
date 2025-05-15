@@ -15,8 +15,8 @@ import { ErrorMessageText, RTEditor } from "features/common";
 import useFormPersist from "hooks/useFormPersist";
 import { useLeaveConfirm } from "hooks/useLeaveConfirm";
 import { useSession } from "hooks/useSession";
-import { IEntity, isEvent, isOrg } from "models/Entity";
-import { IEvent } from "models/Event";
+import { IEntity, isOrg } from "models/Entity";
+//import { IEvent } from "models/Event";
 import { IOrg } from "models/Org";
 import { ITopic } from "models/Topic";
 import { ITopicMessage } from "models/TopicMessage";
@@ -51,7 +51,7 @@ export const TopicMessageForm = ({
   const entity = query.data;
   //const isE = isEvent(entity);
   const isO = isOrg(entity);
-  const event = isE ? (query.data as IEvent) : undefined;
+  //const event = isE ? (query.data as IEvent) : undefined;
   const org = isO ? (query.data as IOrg) : undefined;
 
   const [addTopic, addTopicMutation] = useAddTopicMutation();
@@ -209,8 +209,8 @@ export const TopicMessageForm = ({
             {isDisabled
               ? "Réponses désactivées"
               : props.topicMessage
-                ? "Modifier"
-                : "Ajouter"}
+              ? "Modifier"
+              : "Ajouter"}
           </Button>
         )}
       </Flex>

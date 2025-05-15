@@ -25,6 +25,7 @@ import {
   ErrorMessageText,
   PasswordControl
 } from "features/common";
+import theme from "features/layout/theme";
 import { useRouterLoading } from "hooks/useRouterLoading";
 import { useSession } from "hooks/useSession";
 import { useRouter } from "next/router";
@@ -36,7 +37,6 @@ import { useAppDispatch } from "store";
 import api from "utils/api";
 import { TOKEN_NAME, magic } from "utils/auth";
 import { handleError } from "utils/form";
-import theme from "features/layout/theme";
 
 const onLoginWithSocial = async (provider: OAuthProvider) => {
   await magic.oauth.loginWithRedirect({

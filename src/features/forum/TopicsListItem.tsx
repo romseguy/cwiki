@@ -7,37 +7,32 @@ import {
 } from "@chakra-ui/icons";
 import {
   Badge,
+  Box,
   BoxProps,
   Button,
+  Flex,
+  HStack,
   Icon,
   IconButton,
   Link,
+  Spinner,
   Table,
   Tbody,
-  Tr,
   Td,
-  Tooltip,
-  Box,
-  Flex,
-  Spinner,
   Text,
-  useToast,
-  HStack
+  Tooltip,
+  Tr,
+  useToast
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import {
-  FaBellSlash,
-  FaBell,
-  FaChevronDown,
-  FaCircle,
-  FaSlash,
-  FaFolder,
-  FaFolderOpen,
-  FaThumbtack,
-  FaRetweet
-} from "react-icons/fa";
 import { css } from "@emotion/react";
+import {
+  useAddSubscriptionMutation,
+  useDeleteSubscriptionMutation
+} from "features/api/subscriptionsApi";
+import {
+  useDeleteTopicMutation,
+  useEditTopicMutation
+} from "features/api/topicsApi";
 import {
   DeleteButton,
   DeleteIconButton,
@@ -49,28 +44,33 @@ import {
 import { TopicMessageForm } from "features/forms/TopicMessageForm";
 import { NotifModalState } from "features/modals/EntityNotifModal";
 import { useScroll } from "hooks/useScroll";
-import { getCategoryLabel, IEntity, isOrg } from "models/Entity";
+import { IEntity, getCategoryLabel, isOrg } from "models/Entity";
+import { ISubscription } from "models/Subscription";
 import { ITopic, isEdit } from "models/Topic";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import {
+  FaBell,
+  FaBellSlash,
+  FaChevronDown,
+  FaCircle,
+  FaFolder,
+  FaFolderOpen,
+  FaRetweet,
+  FaSlash,
+  FaThumbtack
+} from "react-icons/fa";
 import { Session } from "utils/auth";
 import * as dateUtils from "utils/date";
 import { ServerError } from "utils/errors";
+import { removeProps } from "utils/object";
 import { normalize } from "utils/string";
 import { AppQuery, AppQueryWithData } from "utils/types";
 import { TopicMessagesList } from "./TopicMessagesList";
+import { TopicModalState } from "./TopicsList";
 import { TopicsListItemShare } from "./TopicsListItemShare";
 import { TopicsListItemSubscribers } from "./TopicsListItemSubscribers";
 import { TopicsListItemVisibility } from "./TopicsListItemVisibility";
-import {
-  useAddSubscriptionMutation,
-  useDeleteSubscriptionMutation
-} from "features/api/subscriptionsApi";
-import {
-  useEditTopicMutation,
-  useDeleteTopicMutation
-} from "features/api/topicsApi";
-import { ISubscription } from "models/Subscription";
-import { TopicModalState } from "./TopicsList";
-import { removeProps } from "utils/object";
 
 interface TopicsListItemProps {
   baseUrl?: string;
@@ -320,10 +320,10 @@ export const TopicsListItem = ({
           topicIndex % 2 === 0
             ? isDark
               ? "gray.600"
-              : "orange.200"
+              : "rgba(0,0,0,0.2)"
             : isDark
             ? "gray.500"
-            : "orange.100"
+            : "rgba(0,0,0,0.3)"
         }
         cursor="pointer"
         py={1}
@@ -431,7 +431,9 @@ export const TopicsListItem = ({
                 </Td> */}
 
                 <Td>
-                  <Text fontWeight="bold">{topic.topicName}</Text>
+                  <Text fontFamily="Roboto" fontWeight="bold">
+                    {topic.topicName}
+                  </Text>
                 </Td>
               </Tr>
             </Tbody>
@@ -724,7 +726,7 @@ export const TopicsListItem = ({
       </Flex>
 
       {isCurrent && (
-        <Box bg={isDark ? "#314356" : "orange.50"}>
+        <Box bg={isDark ? "#314356" : "rgba(0,0,0,0.1)"}>
           {/*
           <GridItem px={3} py={2} data-cy="topic-subscribers">
             <TopicsListItemSubscribers

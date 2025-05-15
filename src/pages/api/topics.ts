@@ -1,17 +1,17 @@
+import { AddTopicPayload } from "features/api/topicsApi";
+import { getRefId } from "models/Entity";
+import { IOrg } from "models/Org";
+import { getEmail } from "models/Subscription";
+import { ITopic } from "models/Topic";
 import { Document } from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
-import database, { models } from "server/database";
-import { AddTopicPayload } from "features/api/topicsApi";
 import { getSession } from "server/auth";
-import { getRefId } from "models/Entity";
-import { IOrg } from "models/Org";
-import { ITopic } from "models/Topic";
+import database, { models } from "server/database";
+import { ServerEventTypes, logEvent } from "server/logging";
 import { hasItems } from "utils/array";
 import { createEndpointError } from "utils/errors";
 import { equals, logJson, normalize } from "utils/string";
-import { logEvent, ServerEventTypes } from "server/logging";
-import { getEmail } from "models/Subscription";
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 

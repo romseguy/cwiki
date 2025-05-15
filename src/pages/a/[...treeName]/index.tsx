@@ -1,6 +1,6 @@
 import {
-  ChevronUpIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   SmallAddIcon
 } from "@chakra-ui/icons";
 import {
@@ -21,20 +21,20 @@ import { EntityButton, RTEditor } from "features/common";
 import { EditIconButton } from "features/common/EditIconButton";
 import {
   TabContainer,
-  TabContainerHeader,
-  TabContainerContent
+  TabContainerContent,
+  TabContainerHeader
 } from "features/common/TabContainer";
 import { TopicsList } from "features/forum/TopicsList";
 import { Layout } from "features/layout";
 import { useToast } from "hooks/useToast";
 import { sanitize } from "isomorphic-dompurify";
 import { EOrgType, orgTypeFull, orgTypeFull2 } from "models/Org";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
-import { useTranslation } from "next-i18next";
 import { FaNewspaper } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { selectUserEmail } from "store/userSlice";

@@ -1,4 +1,4 @@
-import { styled } from "twin.macro";
+import { styled } from "@emotion/react";
 
 export const MapStyles = styled("div")((props: any) => {
   return `

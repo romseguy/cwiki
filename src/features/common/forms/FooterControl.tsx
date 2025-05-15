@@ -1,9 +1,9 @@
-import { Alert, AlertIcon, Flex, Button } from "@chakra-ui/react";
+import { Alert, AlertIcon, Button, Flex } from "@chakra-ui/react";
 import { ErrorMessage } from "@hookform/error-message";
 import { ErrorMessageText } from "features/common";
-import { DeepMap, FieldError } from "react-hook-form";
 import theme from "features/layout/theme";
 import { useTranslation } from "next-i18next";
+import { DeepMap, FieldError } from "react-hook-form";
 
 export const FooterControl = ({
   errors,

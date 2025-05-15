@@ -2,25 +2,25 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
+  Button,
   Flex,
-  Tooltip,
-  Text,
-  IconButton,
   HStack,
-  Button
+  IconButton,
+  Text,
+  Tooltip
 } from "@chakra-ui/react";
+import { DeleteIconButton, EditIconButton } from "features/common";
+import { IEntity, isUser } from "models/Entity";
+import { ITopic, isEdit } from "models/Topic";
+import { ITopicMessage } from "models/TopicMessage";
 import { useRouter } from "next/router";
 import React from "react";
 import { useSelector } from "react-redux";
-import { DeleteIconButton, EditIconButton } from "features/common";
-import { isEdit, ITopic } from "models/Topic";
-import { ITopicMessage } from "models/TopicMessage";
+import { selectIsMobile } from "store/uiSlice";
 import { Session } from "utils/auth";
 import * as dateUtils from "utils/date";
 import { sanitize } from "utils/string";
 import { AppQuery } from "utils/types";
-import { IEntity, isUser } from "models/Entity";
-import { selectIsMobile } from "store/uiSlice";
 
 export const TopicMessagesListItem = ({
   refs,

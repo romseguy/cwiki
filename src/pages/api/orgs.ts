@@ -1,10 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from "next-connect";
-import database, { models } from "server/database";
 import { AddOrgPayload, GetOrgsParams } from "features/api/orgsApi";
 import { EOrgType, EOrgVisibility, IOrg } from "models/Org";
-import { getCurrentId } from "store/utils";
+import { NextApiRequest, NextApiResponse } from "next";
+import nextConnect from "next-connect";
 import { getSession } from "server/auth";
+import database, { models } from "server/database";
+import { getCurrentId } from "store/utils";
 import { createEndpointError } from "utils/errors";
 import { equals, logJson, normalize } from "utils/string";
 import { unauthorizedEntityUrls } from "utils/url";

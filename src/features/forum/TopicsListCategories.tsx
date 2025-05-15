@@ -12,11 +12,10 @@ import {
   useColorMode,
   useDisclosure
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { DeleteButton } from "features/common";
 import { useEditEventMutation } from "features/api/eventsApi";
-import { CategoriesModal } from "features/modals/CategoriesModal";
 import { useEditOrgMutation } from "features/api/orgsApi";
+import { DeleteButton } from "features/common";
+import { CategoriesModal } from "features/modals/CategoriesModal";
 import {
   EEntityCategoryKey,
   IEntity,
@@ -26,6 +25,7 @@ import {
 } from "models/Entity";
 import { IEvent, IEventTopicCategory } from "models/Event";
 import { IOrg, IOrgTopicCategory } from "models/Org";
+import React, { useEffect, useState } from "react";
 import { AppQueryWithData } from "utils/types";
 
 const TopicsListCategoriesSettings = ({
@@ -142,8 +142,8 @@ export const TopicsListCategories = ({
                   ? "pink.200"
                   : "pink.500"
                 : isDark
-                ? "#81E6D9"
-                : "#319795"
+                  ? "#81E6D9"
+                  : "#319795"
             }
             color={isDark ? "black" : "white"}
             cursor="pointer"
@@ -156,8 +156,8 @@ export const TopicsListCategories = ({
                   ? "pink.300"
                   : "pink.600"
                 : isDark
-                ? "#4FD1C5"
-                : "#2C7A7B"
+                  ? "#4FD1C5"
+                  : "#2C7A7B"
             }}
             onClick={() => {
               selectedCategories?.find(

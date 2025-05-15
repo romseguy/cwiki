@@ -1,5 +1,5 @@
 {
-  "name": "arboretum",
+  "name": "cwiki",
   "private": "true",
   "engines": {
     "node": ">=16.x"
@@ -9,10 +9,10 @@
     "dev": "bun dev:server",
     "dev:server": "next",
     "test": "playwright test",
-    "prebuild": "kill-port --port 8000",
+    "prebuild": "kill-port --port 4000",
     "build": "next build",
-    "postbuild": "kill-port --port 8000",
-    "start": "NODE_OPTIONS='http-server-default-timeout=0' forever ./node_modules/.bin/next start -p 8000",
+    "postbuild": "kill-port --port 4000",
+    "start": "NODE_OPTIONS='http-server-default-timeout=0' forever ./node_modules/.bin/next start -p 4000",
     "build:size": "ANALYZE=true next build",
     "compile": "tsc --build",
     "compile:w": "tsc --build --watch",
@@ -34,7 +34,7 @@
     "@hapi/iron": "5.1.4",
     "@hookform/error-message": "2.0.0",
     "@magic-ext/oauth": "2.1.1",
-    "@magic-sdk/admin": "1.4.1",
+    "@magic-sdk/admin": "1.10.1",
     "@nastyox/rando.js": "2.0.5",
     "@react-icons/all-files": "4.1.0",
     "@reduxjs/toolkit": "1.9.7",

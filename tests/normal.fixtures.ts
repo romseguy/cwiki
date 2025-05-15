@@ -4,7 +4,7 @@ export const test = base.extend({
   page: async ({ baseURL, page, browser }, use) => {
     const apiRequestContext = await request.newContext();
 
-    await page.route("http://localhost:3000/api/login", async (route) => {
+    await page.route("http://localhost:4000/api/login", async (route) => {
       const response = await apiRequestContext.fetch(route.request(), {
         method: "post",
         data: {

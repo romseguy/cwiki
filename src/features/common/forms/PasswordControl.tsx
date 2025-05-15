@@ -10,10 +10,10 @@ import {
   InputRightElement
 } from "@chakra-ui/react";
 import { ErrorMessage } from "@hookform/error-message";
-import React, { useState } from "react";
-import { useTranslation } from "next-i18next";
-import { FaKey } from "react-icons/fa";
 import theme from "features/layout/theme";
+import { useTranslation } from "next-i18next";
+import React, { useState } from "react";
+import { FaKey } from "react-icons/fa";
 
 export const PasswordControl = ({
   label = "Mot de passe",

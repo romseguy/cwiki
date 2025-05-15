@@ -1,25 +1,3 @@
-import { Layout } from "features/layout";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
-import { AppHeading, PasswordControl } from "features/common";
-import { css } from "@emotion/react";
-import api from "utils/api";
-import { EditUserPayload, useEditUserMutation } from "features/api/usersApi";
-import { PasswordConfirmControl } from "features/common/forms/PasswordConfirmControl";
-import useFormPersist from "hooks/useFormPersist";
-//import { useLeaveConfirm } from "hooks/useLeaveConfirm";
-import router from "next/router";
-import React, { useMemo, useEffect, useRef, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { setSession } from "store/sessionSlice";
-import { resetUserEmail } from "store/userSlice";
-import { magic } from "utils/auth";
-import { handleError } from "utils/form";
-import { useSession } from "hooks/useSession";
-import { PageProps } from "./_app";
-import { useToast } from "hooks/useToast";
-import { useAppDispatch } from "store";
-import { FooterControl } from "features/common/forms/FooterControl";
 import {
   Box,
   Flex,
@@ -32,9 +10,31 @@ import {
   Spinner,
   useColorMode
 } from "@chakra-ui/react";
+import { css } from "@emotion/react";
 import { ErrorMessage } from "@hookform/error-message";
-import { FaLongArrowAltDown, FaLongArrowAltRight } from "react-icons/fa";
+import { EditUserPayload, useEditUserMutation } from "features/api/usersApi";
+import { AppHeading, PasswordControl } from "features/common";
+import { FooterControl } from "features/common/forms/FooterControl";
+import { PasswordConfirmControl } from "features/common/forms/PasswordConfirmControl";
+import { Layout } from "features/layout";
 import theme from "features/layout/theme";
+import useFormPersist from "hooks/useFormPersist";
+import { useSession } from "hooks/useSession";
+import { useToast } from "hooks/useToast";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+//import { useLeaveConfirm } from "hooks/useLeaveConfirm";
+import router from "next/router";
+import React, { useMemo, useEffect, useRef, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { FaLongArrowAltDown, FaLongArrowAltRight } from "react-icons/fa";
+import { useAppDispatch } from "store";
+import { setSession } from "store/sessionSlice";
+import { resetUserEmail } from "store/userSlice";
+import api from "utils/api";
+import { magic } from "utils/auth";
+import { handleError } from "utils/form";
+import { PageProps } from "./_app";
 
 type FormValues = {
   userName: string;
@@ -168,7 +168,7 @@ const Settings = ({ ...props }: PageProps & {}) => {
             <FormLabel>{t("userNameLabel")}</FormLabel>
             <Input
               name="userName"
-              defaultValue={session.user?.userName}
+              //defaultValue={session.user?.userName}
               ref={register({ required: t("required") })}
             />
             <FormErrorMessage>

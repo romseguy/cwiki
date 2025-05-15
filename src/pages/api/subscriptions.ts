@@ -1,14 +1,14 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from "next-connect";
-import database, { models } from "server/database";
 import { AddSubscriptionPayload } from "features/api/subscriptionsApi";
-import { getSession } from "server/auth";
+import { getRefId } from "models/Entity";
 import { addOrReplaceList } from "models/Org";
 import { ISubscription } from "models/Subscription";
 import { IUser } from "models/User";
+import { NextApiRequest, NextApiResponse } from "next";
+import nextConnect from "next-connect";
+import { getSession } from "server/auth";
+import database, { models } from "server/database";
 import { createEndpointError } from "utils/errors";
 import { equals } from "utils/string";
-import { getRefId } from "models/Entity";
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 

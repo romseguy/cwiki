@@ -4,7 +4,7 @@ import { fr } from "date-fns/locale";
 import React, { forwardRef, Ref } from "react";
 import ReactDatePicker, { ReactDatePickerProps } from "react-datepicker";
 import { isBrowser } from "react-device-detect";
-import { styled } from "twin.macro";
+import { styled } from "@emotion/react";
 import "react-datepicker/dist/react-datepicker.min.css";
 import { format, parseISO } from "date-fns";
 

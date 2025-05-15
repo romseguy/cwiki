@@ -9,12 +9,12 @@ import {
   SpaceProps,
   useColorMode
 } from "@chakra-ui/react";
+import theme from "features/layout/theme";
 import React, { KeyboardEvent, useEffect, useState } from "react";
 import useOnclickOutside from "react-cool-onclickoutside";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import usePlacesAutocomplete, { Suggestion } from "use-places-autocomplete";
 import { hasItems } from "utils/array";
-import theme from "features/layout/theme";
 
 let cachedVal = "";
 const acceptedKeys = ["ArrowUp", "ArrowDown", "Escape", "Enter"];

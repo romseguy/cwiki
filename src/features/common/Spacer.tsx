@@ -7,8 +7,8 @@ import {
   Text,
   useColorModeValue
 } from "@chakra-ui/react";
-import React from "react";
 import theme from "features/layout/theme";
+import React from "react";
 
 export const Spacer = ({
   light = { borderColor: theme.colors.black },

@@ -1,5 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from "next-connect";
 import {
   DeleteOrgParams,
   EditOrgPayload,
@@ -14,17 +12,19 @@ import {
   orgTypeFull4
 } from "models/Org";
 import { ISubscription, getEntitySubscription } from "models/Subscription";
+import { NextApiRequest, NextApiResponse } from "next";
+import nextConnect from "next-connect";
 import { getSession } from "server/auth";
 import database, { models } from "server/database";
-import { logEvent, ServerEventTypes } from "server/logging";
 import { getClientIp } from "server/ip";
+import { ServerEventTypes, logEvent } from "server/logging";
+import { hasItems } from "utils/array";
 import {
   createEndpointError,
   databaseErrorCodes,
   duplicateError
 } from "utils/errors";
 import { equals, logJson, normalize } from "utils/string";
-import { hasItems } from "utils/array";
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 

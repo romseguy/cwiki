@@ -1,6 +1,6 @@
-import { TopicMessageSchema } from "./TopicMessageSchema";
 import { Schema } from "mongoose";
 import { ITopic } from "./ITopic";
+import { TopicMessageSchema } from "./TopicMessageSchema";
 
 export const TopicSchema = new Schema<ITopic>(
   {

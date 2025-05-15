@@ -1,17 +1,17 @@
+import { getRefId } from "models/Entity";
 import type {
   IEventSubscription,
   IOrgSubscription,
   ISubscription
 } from "models/Subscription";
+import { IUser } from "models/User";
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
+import { getSession } from "server/auth";
 import database, { models } from "server/database";
 import { createEndpointError } from "utils/errors";
-import { getSession } from "server/auth";
-import { equals, logJson } from "utils/string";
 import { emailR } from "utils/regex";
-import { IUser } from "models/User";
-import { getRefId } from "models/Entity";
+import { equals, logJson } from "utils/string";
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 

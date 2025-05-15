@@ -6,12 +6,12 @@ import {
   IconProps,
   Tooltip
 } from "@chakra-ui/react";
-import React from "react";
-import { IconType } from "react-icons";
-import { FaGlobeEurope } from "react-icons/fa";
 import { IEntity, isEvent, isOrg } from "models/Entity";
 import { orgTypeFull } from "models/Org";
 import { ITopic } from "models/Topic";
+import React from "react";
+import { IconType } from "react-icons";
+import { FaGlobeEurope } from "react-icons/fa";
 import { hasItems } from "utils/array";
 import { AppIcon, AppQueryWithData } from "utils/types";
 
