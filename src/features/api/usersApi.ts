@@ -4,7 +4,7 @@ import { api } from "./";
 
 export type AddUserPayload = Pick<IUser, "email" | "phone" | "userName">;
 export type EditUserPayload = Partial<
-  Pick<IUser, "phone" | "userImage" | "userName">
+  Pick<IUser, "password" | "passwordSalt" | "userName">
 >;
 
 export type GetUserParams = {

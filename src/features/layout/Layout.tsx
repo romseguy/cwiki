@@ -1,23 +1,23 @@
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import { AddIcon } from "@chakra-ui/icons";
 import {
-  Box,
   BoxProps,
   HStack,
+  Icon,
   Spinner,
-  VStack,
   useColorMode,
-  Flex
+  Flex,
+  Box
 } from "@chakra-ui/react";
 import { css } from "@emotion/react";
-import { Link } from "features/common";
+import { DarkModeSwitch, Link } from "features/common";
 import { useSession } from "hooks/useSession";
 import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
 import { ReactNode } from "react";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import { FaLongArrowAltRight, FaPlus, FaTree } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "store";
 import {
@@ -25,26 +25,36 @@ import {
   setIsSessionLoading,
   setSession
 } from "store/sessionSlice";
-import { selectScreenHeight } from "store/uiSlice";
 import { resetUserEmail } from "store/userSlice";
 import api from "utils/api";
 import { magic } from "utils/auth";
+import { getEnv } from "utils/env";
 import { ServerError } from "utils/errors";
 import { capitalize } from "utils/string";
-import { breakpoints, rainbowBorder } from "./theme";
+import theme, { breakpoints, rainbowBorder } from "./theme";
 
 export interface LayoutProps extends PageProps, BoxProps {
-  mainContainer?: boolean;
   pageTitle?: string;
 }
 
 export const Layout = ({
   children,
   isMobile,
-  mainContainer = true,
   pageTitle,
   ...props
 }: React.PropsWithChildren<LayoutProps>) => {
+  //#region styling
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const borderLeft = `border-left: 8px solid ${
+    isDark ? "white" : theme.colors.black
+  };`;
+  const borderRight = `border-right: 8px solid ${
+    isDark ? "white" : theme.colors.black
+  };`;
+  //#endregion
+
+  //#region routing
   const router = useRouter();
   let [entityUrl] =
     "treeName" in router.query && Array.isArray(router.query.treeName)
@@ -61,52 +71,41 @@ export const Layout = ({
       locale: newLocale
     });
   };
+  //#endregion
 
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === "dark";
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
   const isSessionLoading = useSelector(selectIsSessionLoading);
-  const screenHeight = useSelector(selectScreenHeight);
-  const title = `${
-    pageTitle ? capitalize(pageTitle) : "Merci de patienter..."
-  } – ${process.env.NEXT_PUBLIC_SHORT_URL}`;
-  //const main = (c: ReactNode) => (mainContainer ? <Box as="main">{c}</Box> : c);
+  const title = `${pageTitle ? capitalize(pageTitle) : "Loading..."} – ${
+    process.env.NEXT_PUBLIC_SHORT_URL
+  }`;
 
-  const main = (c: ReactNode) =>
-    mainContainer ? (
+  const main = (c: ReactNode) => (
+    <Flex
+      css={css`
+        height: 100%;
+        max-width: 1050px;
+        margin: 0 auto;
+        flex-direction: column;
+        background-color: ${isDark ? "#2D3748" : "#FAFAFA"};
+        svg {
+          margin: 0 !important;
+        }
+      `}
+      //{...props}
+    >
       <Flex
         css={css`
-          flex-direction: column;
-          background-color: ${isDark ? "#2D3748" : "#FAFAFA"};
-
-          @media (min-width: ${breakpoints["2xl"]}) {
-            margin: 0 auto;
-            width: 1180px;
-            height: 100%;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            ${rainbowBorder(isDark)}
-          }
+          align-items: center;
+          justify-content: space-between;
+          background-color: ${isDark ? theme.colors.black : "white"};
+          border-bottom: 8px solid ${isDark ? "white" : theme.colors.black};
         `}
       >
-        <Flex
-          css={css`
-            align-items: center;
-            justify-content: space-between;
-            background-color: white;
-            border-left: 12px solid black;
-            border-bottom: 12px solid black;
-            a {
-              border-right: 12px solid black;
-              padding: 0 12px 0 6px;
-            }
-            button {
-              margin-left: 6px;
-            }
-          `}
-        >
-          <HStack>
+        <HStack>
+          <HStack css={css(borderRight)} pl={1} pr={2}>
+            <DarkModeSwitch size="xs" bg="transparent" />
+
             <button onClick={() => onToggleLanguageClick(changeTo)}>
               {router.locale === "fr" ? (
                 <img src="/icons/en.png" />
@@ -114,20 +113,38 @@ export const Layout = ({
                 <img src="/icons/fr.png" />
               )}
             </button>
+          </HStack>
 
-            {router.asPath === "/" && <ChevronRightIcon />}
-            <Link href="/" shallow>
+          <HStack
+            css={css`
+              ${borderRight}
+            `}
+            pr={2}
+          >
+            {router.asPath === "/" && <FaLongArrowAltRight pr={0} />}
+            <Link onClick={() => router.push("/", "/", { shallow: true })}>
               {t("home")}
             </Link>
+          </HStack>
 
-            {router.asPath.includes("/a/") ? (
-              <>
-                <ChevronRightIcon />
+          {router.asPath.includes("/a/") ? (
+            <>
+              <HStack
+                css={css`
+                  ${borderRight}
+                `}
+                pr={2}
+              >
+                <FaLongArrowAltRight />
+                <FaTree />
                 <Link href={"/a/" + entityUrl} shallow>
                   {entityUrl}
                 </Link>
+              </HStack>
 
-                {router.asPath.includes("add") && <ChevronRightIcon />}
+              <HStack>
+                {router.asPath.includes("add") && <FaLongArrowAltRight />}
+                <AddIcon boxSize={3} />
                 <Link
                   href={
                     router.asPath.includes("/b/add")
@@ -136,70 +153,89 @@ export const Layout = ({
                   }
                   shallow
                 >
-                  {t("add-branch")}
+                  {t("add-b")}
                 </Link>
-              </>
-            ) : (
-              <>
-                {router.asPath.includes("add") && <ChevronRightIcon />}
-                <Link href="/add" shallow>
-                  {t("add")}
-                </Link>
-              </>
-            )}
-          </HStack>
+              </HStack>
+            </>
+          ) : (
+            <HStack pr={2}>
+              <AddIcon boxSize={3} />
+              <FaTree />
+              {router.asPath.includes("add") && <FaLongArrowAltRight />}
+              <Link href="/add" shallow>
+                {t("add-a")}
+              </Link>
+            </HStack>
+          )}
+        </HStack>
 
-          <HStack>
-            {session ? (
-              <Link
-                onClick={async () => {
-                  dispatch(setIsSessionLoading(true));
-                  dispatch(resetUserEmail());
-                  const magicIsLoggedIn = await magic.user.isLoggedIn();
-                  console.log(
-                    "checkLoginStatus: magicIsLoggedIn",
-                    magicIsLoggedIn
-                  );
-
-                  if (magicIsLoggedIn) {
-                    await magic.user.logout();
-                  }
-                  await api.get("logout");
-                  dispatch(setSession(null));
-                  dispatch(setIsSessionLoading(false));
-                }}
+        <HStack pl={1}>
+          {session ? (
+            <>
+              <HStack
+                css={css`
+                  ${borderRight}
+                `}
+                pr={2}
               >
-                {!isSessionLoading ? t("logout") : <Spinner size="sm" />}
-              </Link>
-            ) : (
-              <Link href="/login">
-                {!isSessionLoading ? "Login" : <Spinner size="sm" />}
-              </Link>
-            )}
-          </HStack>
-        </Flex>
+                <Link href="/settings" shallow>
+                  {t("settings")}
+                </Link>
+              </HStack>
 
-        <div
-          css={css`
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(
-              to bottom,
-              #cffffe 0%,
-              #cffffe 25%,
-              #fafafa 50%,
-              #fafafa 75%,
-              #fafafa 100%
-            );
-            padding: 12px 0 0 12px;
-          `}
-        >
-          {c}
-        </div>
+              <HStack>
+                <Link
+                  onClick={async () => {
+                    dispatch(setIsSessionLoading(true));
+                    dispatch(resetUserEmail());
+                    const magicIsLoggedIn = await magic.user.isLoggedIn();
+                    console.log(
+                      "checkLoginStatus: magicIsLoggedIn",
+                      magicIsLoggedIn
+                    );
+
+                    if (magicIsLoggedIn) {
+                      await magic.user.logout();
+                    }
+                    await api.get("logout");
+                    dispatch(setSession(null));
+                    dispatch(setIsSessionLoading(false));
+                  }}
+                >
+                  {!isSessionLoading ? t("logout") : <Spinner size="sm" />}
+                </Link>
+              </HStack>
+            </>
+          ) : (
+            <Link href="/login">
+              {!isSessionLoading ? "Login" : <Spinner size="sm" />}
+            </Link>
+          )}
+        </HStack>
       </Flex>
-    ) : (
-      <main>c</main>
-    );
+
+      <div
+        css={css`
+          height: 100%;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          background: ${isDark
+            ? "linear-gradient( to bottom, #14161c 0%, #14161c 25%, #344155 50%, #2c323b 75%, #1a202c 100%)"
+            : "linear-gradient( to bottom, #cffffe 0%, #cffffe 25%, #fafafa 50%, #fafafa 75%, #fafafa 100%)"};
+          padding: 12px 12px 12px 12px;
+
+          @media (min-width: ${breakpoints["xl"]}) {
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            ${rainbowBorder(isDark)}
+          }
+        `}
+      >
+        {c}
+      </div>
+    </Flex>
+  );
 
   const page = (c: ReactNode) => main(c);
 
@@ -222,7 +258,13 @@ export const Layout = ({
         <title>{title}</title>
       </Head>
 
-      <ErrorBoundary fallbackRender={Fallback}>{page(children)}</ErrorBoundary>
+      {getEnv() === "production" ? (
+        <ErrorBoundary fallbackRender={Fallback}>
+          {page(children)}
+        </ErrorBoundary>
+      ) : (
+        page(children)
+      )}
     </>
   );
 };

@@ -14,6 +14,7 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import usePlacesAutocomplete, { Suggestion } from "use-places-autocomplete";
 import { hasItems } from "utils/array";
+import theme from "features/layout/theme";
 
 let cachedVal = "";
 const acceptedKeys = ["ArrowUp", "ArrowDown", "Escape", "Enter"];
@@ -93,14 +94,14 @@ export const AutoCompletePlacesControl = ({
       const isCurrent = idx === currIndex;
 
       let bg = isDark ? "gray.600" : "white";
-      let color = isDark ? "white" : "black";
+      let color = isDark ? "white" : theme.colors.black;
 
       if (isCurrent) {
         if (isDark) {
           bg = "white";
-          color = "black";
+          color = theme.colors.black;
         } else {
-          bg = "black";
+          bg = theme.colors.black;
           color = "white";
         }
       }

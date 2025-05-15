@@ -196,8 +196,8 @@ export const orgTypeFull = (orgType: EOrgType = EOrgType.GENERIC): string => {
     [EOrgType.GENERIC].includes(orgType)
       ? "de l'"
       : [EOrgType.TREETOOLS].includes(orgType)
-        ? "du "
-        : "de l'"
+      ? "du "
+      : "de l'"
   }${OrgTypes[orgType].toLowerCase()}`;
 };
 
@@ -206,8 +206,8 @@ export const orgTypeFull2 = (orgType: EOrgType = EOrgType.GENERIC): string =>
     [EOrgType.GENERIC].includes(orgType)
       ? "à l'"
       : [EOrgType.TREETOOLS].includes(orgType)
-        ? "au "
-        : "à l'"
+      ? "au "
+      : "à l'"
   }${OrgTypes[orgType].toLowerCase()}`;
 
 export const orgTypeFull3 = (orgType: EOrgType = EOrgType.GENERIC): string => {
@@ -221,8 +221,8 @@ export const orgTypeFull4 = (orgType: EOrgType = EOrgType.GENERIC): string =>
     [EOrgType.GENERIC].includes(orgType)
       ? "cet "
       : [EOrgType.TREETOOLS].includes(orgType)
-        ? "ce "
-        : "cette "
+      ? "ce "
+      : "cette "
   }${OrgTypes[orgType].toLowerCase()}`;
 
 export const orgTypeFull5 = (
@@ -233,8 +233,8 @@ export const orgTypeFull5 = (
     [EOrgType.NETWORK].includes(orgType)
       ? "l'"
       : [EOrgType.TREETOOLS].includes(orgType)
-        ? "le "
-        : "l'"
+      ? "le "
+      : "l'"
   }${OrgTypes[orgType].toLowerCase()}`;
 
   if (isCapitalized) return capitalize(str);
@@ -243,9 +243,8 @@ export const orgTypeFull5 = (
 };
 
 export const OrgTypes: Record<EOrgType, string> = {
-  [EOrgType.GENERIC]: "Arbre",
-  [EOrgType.NETWORK]: "Atelier",
-  [EOrgType.TREETOOLS]: "Noisettier"
+  [EOrgType.GENERIC]: "Branche",
+  [EOrgType.NETWORK]: "Arbre"
 };
 
 export const OrgVisibilities: Record<EOrgVisibility, string> = {

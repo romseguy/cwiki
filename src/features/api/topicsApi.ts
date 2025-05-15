@@ -1,20 +1,18 @@
-import { IDocument } from "models/Document";
 import { getRefId } from "models/Entity";
-import { IEvent } from "models/Event";
 import { IOrg } from "models/Org";
 import { ITopic } from "models/Topic";
-import { ITopicMessage } from "models/TopicMessage";
+import { ITopicMessage } from "models/Topic/ITopicMessage";
 import { globalEmail } from "pages/_app";
 import { objectToQueryString } from "utils/query";
 import { TagTypes, api } from "./";
 
 export interface AddTopicPayload {
-  topic: Omit<Partial<ITopic>, "document"> & { document?: string | IDocument };
+  topic: Partial<ITopic>;
 }
 
 export interface AddTopicNotifPayload {
   email?: string;
-  event?: IEvent<string | Date>;
+  //event?: IEvent<string | Date>;
   org?: IOrg;
   orgListsNames?: string[];
 }
@@ -57,11 +55,11 @@ export const topicApi = api.injectEndpoints({
             id: getRefId(params.payload.topic.org, "_id")
           });
 
-        if (params.payload.topic.event)
-          tags.push({
-            type: TagTypes.EVENTS,
-            id: getRefId(params.payload.topic.event, "_id")
-          });
+        // if (params.payload.topic.event)
+        //   tags.push({
+        //     type: TagTypes.EVENTS,
+        //     id: getRefId(params.payload.topic.event, "_id")
+        //   });
 
         return tags;
       }

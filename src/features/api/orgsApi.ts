@@ -54,9 +54,12 @@ export const orgApi = api.injectEndpoints({
       },
       invalidatesTags: [{ type: TagTypes.ORGS, id: "LIST" }]
     }),
-    editOrg: build.mutation<IOrg, { payload: EditOrgPayload; orgId?: string }>({
-      query: ({ payload, orgId }) => {
-        const id = orgId ? orgId : "_id" in payload ? payload._id : undefined;
+    editOrg: build.mutation<
+      IOrg,
+      { payload: EditOrgPayload; org?: IOrg; orgId?: string }
+    >({
+      query: ({ payload, org, orgId }) => {
+        const id = org ? org._id : "_id" in payload ? payload._id : orgId;
 
         //console.groupCollapsed("editOrg");
         //console.log("orgId", id);

@@ -11,14 +11,17 @@ import {
 } from "@chakra-ui/react";
 import { ErrorMessage } from "@hookform/error-message";
 import React, { useState } from "react";
+import { useTranslation } from "next-i18next";
 import { FaKey } from "react-icons/fa";
+import theme from "features/layout/theme";
 
 export const PasswordControl = ({
-  label = "Password",
+  label = "Mot de passe",
   errors,
   register,
-  isRequired = true,
+  isRequired = false,
   noLabel,
+  placeholder = "Saisir un mot de passe...",
   ...props
 }: FormControlProps & {
   errors: any;
@@ -26,7 +29,9 @@ export const PasswordControl = ({
   register: any;
   isRequired?: boolean;
   noLabel?: boolean;
+  placeholder?: string;
 }) => {
+  const { t } = useTranslation();
   const name = props.name || "password";
   const [passwordFieldType, setPasswordFieldType] = useState("password");
 
@@ -40,12 +45,12 @@ export const PasswordControl = ({
           ref={register(
             isRequired
               ? {
-                  required: "Please input a password"
+                  required: t("required")
                 }
               : undefined
           )}
           type={passwordFieldType}
-          placeholder="Input your password..."
+          placeholder={placeholder}
           data-cy="password-input"
         />
         <InputRightElement

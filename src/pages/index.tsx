@@ -7,6 +7,7 @@ import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { PageProps } from "./_app";
+import theme from "features/layout/theme";
 
 const IndexPage = (props: PageProps) => {
   const { data: session } = useSession();
@@ -15,23 +16,23 @@ const IndexPage = (props: PageProps) => {
 
   return (
     <Layout pageTitle="Home" {...props}>
-      {session ? (
-        <>
-          <h1>{t("home-list")}</h1>
-          <VStack alignItems="start">
-            {orgsQuery.data?.map((org) => {
-              return <EntityButton key={org._id} org={org} />;
-            })}
-          </VStack>
-        </>
-      ) : (
-        <>
-          <Link href="/login" variant="underline">
-            Log in
-          </Link>{" "}
-          to see your trees.
-        </>
-      )}
+      {/* {session ? ( */}
+      <>
+        <h1>{t("home-list")}</h1>
+        <VStack alignItems="start">
+          {orgsQuery.data?.map((org) => {
+            return <EntityButton key={org._id} org={org} />;
+          })}
+        </VStack>
+      </>
+      {/*  ) : (
+         <>
+           <Link href="/login" variant="underline">
+             Log in
+           </Link>{" "}
+           to see your trees.
+         </>
+       )} */}
     </Layout>
   );
 };

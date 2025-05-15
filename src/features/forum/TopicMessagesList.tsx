@@ -1,32 +1,24 @@
-import { Box, FlexProps, Spinner, useColorMode } from "@chakra-ui/react";
-import { useToast } from "hooks/useToast";
-
+import { Box, useColorMode, FlexProps } from "@chakra-ui/react";
+import React, { useState } from "react";
 import { useEditTopicMutation } from "features/api/topicsApi";
 import { useSession } from "hooks/useSession";
 import { IEntity } from "models/Entity";
-import { ITopic, isEdit } from "models/Topic";
-import React, { useState } from "react";
+import { isEdit, ITopic } from "models/Topic";
 import { AppQuery } from "utils/types";
 import { TopicMessagesListItem } from "./TopicMessagesListItem";
 import { TopicMessagesListItemEdit } from "./TopicMessagesListItemEdit";
 
 export const TopicMessagesList = ({
-  query,
-  topic,
   isEdit,
   setIsEdit,
-  isTopicLoading,
-  setIsTopicLoading,
+  topic,
+  query,
   ...props
 }: FlexProps & {
-  query: AppQuery<IEntity>;
-  topic: ITopic;
   isEdit: isEdit;
   setIsEdit: React.Dispatch<React.SetStateAction<isEdit>>;
-  isTopicLoading: boolean;
-  setIsTopicLoading: React.Dispatch<
-    React.SetStateAction<Record<string, boolean>>
-  >;
+  topic: ITopic;
+  query: AppQuery<IEntity>;
 }) => {
   const { data: session } = useSession();
   const { colorMode } = useColorMode();
@@ -37,56 +29,57 @@ export const TopicMessagesList = ({
 
   const [isLoading, setIsLoading] = useState<Record<string, boolean>>({});
 
+  const refs = topic.topicMessages.reduce(
+    (acc: React.RefObject<any>[], cur) => {
+      return acc.concat([React.createRef()]);
+    },
+    []
+  );
+
   if (!topic) return null;
 
   return (
     <Box {...props}>
-      {isTopicLoading || query.isLoading || query.isFetching ? (
-        <Spinner />
-      ) : (
-        topic.topicMessages.map((topicMessage, index) => {
-          const { _id } = topicMessage;
-          const isEditing =
-            typeof _id === "string" &&
-            Object.keys(isEdit).length > 0 &&
-            isEdit[_id] &&
-            isEdit[_id].isOpen;
+      {topic.topicMessages.map((topicMessage, index) => {
+        const { _id } = topicMessage;
+        // const isEditing =
+        //   typeof _id === "string" &&
+        //   Object.keys(isEdit).length > 0 &&
+        //   isEdit[_id] &&
+        //   isEdit[_id].isOpen;
 
-          if (isEditing)
-            return (
-              <TopicMessagesListItemEdit
-                key={`topic-messages-list-item-edit-${index}`}
-                isEdit={isEdit}
-                isLoading={isLoading}
-                mutation={mutation}
-                setIsEdit={setIsEdit}
-                setIsLoading={setIsLoading}
-                topic={topic}
-                topicMessage={topicMessage}
-              />
-            );
+        // if (isEditing)
+        //   return (
+        //     <TopicMessagesListItemEdit
+        //       key={`topic-messages-list-item-edit-${index}`}
+        //       isEdit={isEdit}
+        //       isLoading={isLoading}
+        //       mutation={mutation}
+        //       setIsEdit={setIsEdit}
+        //       setIsLoading={setIsLoading}
+        //       topic={topic}
+        //       topicMessage={topicMessage}
+        //     />
+        //   );
 
-          return (
-            <TopicMessagesListItem
-              key={`topic-messages-list-item-${index}`}
-              index={index}
-              isDark={isDark}
-              isEdit={isEdit}
-              isLoading={isLoading}
-              isTopicLoading={isTopicLoading}
-              mutation={mutation}
-              query={query}
-              session={session}
-              setIsEdit={setIsEdit}
-              setIsLoading={setIsLoading}
-              setIsTopicLoading={setIsTopicLoading}
-              topic={topic}
-              topicMessage={topicMessage}
-              mb={3}
-            />
-          );
-        })
-      )}
+        return (
+          <TopicMessagesListItem
+            key={`topic-messages-list-item-${index}`}
+            index={index}
+            refs={refs}
+            isDark={isDark}
+            isEdit={isEdit}
+            isLoading={isLoading}
+            mutation={mutation}
+            query={query}
+            session={session}
+            setIsEdit={setIsEdit}
+            setIsLoading={setIsLoading}
+            topic={topic}
+            topicMessage={topicMessage}
+          />
+        );
+      })}
     </Box>
   );
 };

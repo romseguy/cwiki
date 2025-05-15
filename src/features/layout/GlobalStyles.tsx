@@ -50,6 +50,9 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
         h1 {
           font-size: 1.5rem;
         }
+        h3 {
+          font-size: 1.3rem;
+        }
         //#endregion
 
         //#region large screens
@@ -91,10 +94,10 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
 
             .react-select__clear-indicator {
               cursor: pointer;
-              color: ${isDark ? "white" : "black"};
+              color: ${isDark ? "white" : theme.colors.black};
             }
             .react-select__dropdown-indicator {
-              color: ${isDark ? "white" : "black"};
+              color: ${isDark ? "white" : theme.colors.black};
             }
 
             .react-select__indicator-separator {
@@ -116,12 +119,12 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
               }
 
               .react-select__single-value {
-                color: ${isDark ? "white" : "black"};
+                color: ${isDark ? "white" : theme.colors.black};
                 padding: 4px 8px;
               }
 
               .react-select__input-container {
-                color: ${isDark ? "white" : "black"};
+                color: ${isDark ? "white" : theme.colors.black};
                 background-color: ${isDark
                   ? theme.colors.whiteAlpha[300]
                   : theme.colors.blackAlpha[100]};
@@ -135,7 +138,7 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
                   : theme.colors.orange[400]};
                 border-radius: 12px;
                 .react-select__multi-value__label {
-                  color: ${isDark ? "white" : "black"};
+                  color: ${isDark ? "white" : theme.colors.black};
                 }
                 .react-select__multi-value__remove {
                   :hover {
@@ -160,7 +163,7 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
               border-radius: md;
               border-color: #2684ff;
               background-color: ${isDark ? "transparent" : "white"};
-              color: ${isDark ? "white" : "black"};
+              color: ${isDark ? "white" : theme.colors.black};
 
               .react-select__option {
                 background-color: ${isDark ? theme.colors.gray[700] : "white"};

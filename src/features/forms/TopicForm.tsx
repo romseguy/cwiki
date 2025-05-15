@@ -6,10 +6,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  HStack,
-  Input,
-  Switch,
-  Text
+  Input
 } from "@chakra-ui/react";
 import { ErrorMessage } from "@hookform/error-message";
 //import { useEditEventMutation } from "features/api/eventsApi";
@@ -20,18 +17,17 @@ import {
   useAddTopicMutation,
   useEditTopicMutation
 } from "features/api/topicsApi";
-import { ErrorMessageText, MultiSelect, RTEditor } from "features/common";
+import { ErrorMessageText, RTEditor } from "features/common";
+import { FooterControl } from "features/common/forms/FooterControl";
 import useFormPersist from "hooks/useFormPersist";
 import { useLeaveConfirm } from "hooks/useLeaveConfirm";
 import { useSession } from "hooks/useSession";
 import { useToast } from "hooks/useToast";
-import { IEntity, isEvent, isOrg } from "models/Entity";
-//import { EEventVisibility, IEvent } from "models/Event";
-import { EOrgVisibility, IOrg, orgTypeFull } from "models/Org";
+import { IEntity, isOrg } from "models/Entity";
+import { EOrgVisibility, IOrg } from "models/Org";
 import { ITopic } from "models/Topic";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import Creatable from "react-select/creatable";
 import { handleError } from "utils/form";
 import { AppQueryWithData } from "utils/types";
 
@@ -63,12 +59,10 @@ export const TopicForm = ({
   const org = isO ? (query.data as IOrg) : undefined;
   const isEntityPrivate = org?.orgVisibility === EOrgVisibility.PRIVATE;
   // || event?.eventVisibility === EEventVisibility.PRIVATE;
-  const edit = isE ? editEvent : editOrg;
-  const topicCategories = isE
+  const edit = /*isE ? editEvent :*/ editOrg;
+  const topicCategories = /*isE
     ? entity.eventTopicCategories
-    : isO
-      ? entity.orgTopicCategories
-      : [];
+    :*/ isO ? entity.orgTopicCategories : [];
   const topicCategory =
     props.topic &&
     props.topic.topicCategory &&
@@ -121,7 +115,7 @@ export const TopicForm = ({
     setIsLoading(true);
 
     let topic: Partial<ITopic> = {
-      event,
+      //event,
       org,
       topicCategory: form.topicCategory ? form.topicCategory.value : null,
       topicName: form.topicName,
@@ -226,235 +220,11 @@ export const TopicForm = ({
         </FormControl>
       )}
 
-      {isO && (
-        <FormControl isInvalid={!!errors["topicCategory"]} mb={3}>
-          <FormLabel>Catégorie (optionnel)</FormLabel>
-          <Controller
-            name="topicCategory"
-            control={control}
-            render={(renderProps) => {
-              let value = renderProps.value;
-
-              return (
-                <Creatable
-                  value={value}
-                  onChange={renderProps.onChange}
-                  options={
-                    topicCategories.map(({ catId: value, label }) => {
-                      return {
-                        label,
-                        value
-                      };
-                    }) || []
-                  }
-                  allowCreateWhileLoading
-                  formatCreateLabel={(inputValue: string) =>
-                    `Ajouter la catégorie "${inputValue}"`
-                  }
-                  onCreateOption={async (inputValue: string) => {
-                    if (!props.isCreator) {
-                      toast({
-                        status: "error",
-                        title: `Vous n'avez pas la permission ${
-                          isE
-                            ? "de l'événement"
-                            : isO
-                              ? orgTypeFull(entity.orgType)
-                              : ""
-                        } pour ajouter une catégorie`
-                      });
-                      return;
-                    }
-
-                    // if (
-                    //   entity.orgTopicCategories.find(
-                    //     (orgTopicsCategory) =>
-                    //       orgTopicsCategory === normalize(inputValue, false)
-                    //   )
-                    // ) {
-                    //   toast({
-                    //     status: "error",
-                    //     title: `Ce nom de catégorie n'est pas disponible`,
-                    //                         //   });
-                    //   return;
-                    // }
-
-                    try {
-                      //if (isE) {
-                      //todo
-                      //} else {
-                      const catId = "" + topicCategories.length;
-                      await edit({
-                        [isE ? "eventId" : "orgId"]: entity._id,
-                        payload: {
-                          [isE ? "eventTopicCategories" : "orgTopicCategories"]:
-                            [
-                              ...topicCategories,
-                              {
-                                catId,
-                                label: inputValue
-                              }
-                            ]
-                        }
-                      }).unwrap();
-                      //}
-
-                      setValue("topicCategory", {
-                        label: inputValue,
-                        value: catId
-                      });
-                      toast({
-                        status: "success",
-                        title: "La catégorie a été ajoutée !"
-                      });
-                    } catch (error) {
-                      console.error(error);
-                      toast({
-                        status: "error",
-                        title: "La catégorie n'a pas pu être ajoutée"
-                      });
-                    }
-                  }}
-                  isClearable
-                  placeholder="Rechercher ou ajouter une catégorie"
-                  noOptionsMessage={() => "Aucun résultat"}
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                  styles={{
-                    control: (defaultStyles: any) => {
-                      return {
-                        ...defaultStyles,
-                        borderColor: "#e2e8f0"
-                      };
-                    },
-                    placeholder: () => {
-                      return {
-                        color: "#A0AEC0"
-                      };
-                    }
-                  }}
-                />
-              );
-            }}
-          />
-          <FormErrorMessage>
-            <ErrorMessage errors={errors} name="topicCategory" />
-          </FormErrorMessage>
-        </FormControl>
-      )}
-
-      {org && !isEntityPrivate && (
-        <>
-          <FormLabel>Paramètres de la discussion</FormLabel>
-          <FormControl mb={3}>
-            <HStack>
-              <FormLabel fontWeight="normal" m={0}>
-                Rendre la discussion visible aux participants seulement
-              </FormLabel>
-              <Switch
-                isChecked={isChecked}
-                onChange={() => setIsChecked(!isChecked)}
-              />
-            </HStack>
-          </FormControl>
-        </>
-      )}
-
-      {/*hasItems(topicVisibility) && (
-        <Alert status="warning" mb={3}>
-          <AlertIcon />
-          La discussion ne sera visible que par les participants des listes
-          sélectionnées.
-        </Alert>
-      )*/}
-
-      <ErrorMessage
+      <FooterControl
         errors={errors}
-        name="formErrorMessage"
-        render={({ message }) => (
-          <Alert status="error" mb={3}>
-            <AlertIcon />
-            <ErrorMessageText>{message}</ErrorMessageText>
-          </Alert>
-        )}
+        isLoading={isLoading}
+        onCancel={props.onCancel}
       />
-
-      <Flex justifyContent="space-between">
-        {props.onCancel && (
-          <Button colorScheme="red" onClick={props.onCancel}>
-            Annuler
-          </Button>
-        )}
-
-        <Button
-          colorScheme="green"
-          type="submit"
-          isLoading={
-            isLoading ||
-            addTopicMutation.isLoading ||
-            editTopicMutation.isLoading
-          }
-          isDisabled={Object.keys(errors).length > 0}
-          data-cy="addTopic"
-        >
-          {props.topic ? "Modifier" : "Ajouter"}
-        </Button>
-      </Flex>
     </form>
   );
 };
-
-{
-  /* {org && org.orgUrl !== "forum" && (
-      )} */
-}
-
-{
-  /*
-          <Controller
-            name="topicVisibility"
-            control={control}
-            defaultValue={
-              props.topic?.topicVisibility.map((listName) => ({
-                label: listName,
-                value: listName
-              })) || []
-            }
-            render={(renderProps) => {
-              return (
-                <MultiSelect
-                  value={renderProps.value}
-                  onChange={renderProps.onChange}
-                  options={
-                    org.orgLists.map(({ listName }) => ({
-                      label: listName,
-                      value: listName
-                    })) || []
-                  }
-                  allOptionLabel="Toutes les listes"
-                  //closeMenuOnSelect={false}
-                  placeholder="Sélectionner une ou plusieurs listes"
-                  noOptionsMessage={() => "Aucun résultat"}
-                  isClearable
-                  isSearchable
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                  styles={{
-                    control: (defaultStyles: any) => {
-                      return {
-                        ...defaultStyles,
-                        borderColor: "#e2e8f0"
-                      };
-                    },
-                    placeholder: () => {
-                      return {
-                        color: "#A0AEC0"
-                      };
-                    }
-                  }}
-                />
-              );
-            }}
-          />
-  */
-}

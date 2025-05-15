@@ -6,11 +6,9 @@ import {
   Tooltip,
   useColorMode
 } from "@chakra-ui/react";
-import { useToast } from "hooks/useToast";
-
+import React from "react";
 import { IOrg, IOrgList } from "models/Org";
 import { ISubscription } from "models/Subscription";
-import React from "react";
 import { Session } from "utils/auth";
 import { AppQuery } from "utils/types";
 
@@ -54,6 +52,7 @@ export const TopicsListOrgLists = ({
             key={"orgList-" + index}
             label={`Afficher les discussions de la liste "${orgList.listName}"`}
             hasArrow
+            placement="left"
           >
             <Button
               bg={
@@ -62,8 +61,8 @@ export const TopicsListOrgLists = ({
                     ? "pink.200"
                     : "pink.500"
                   : isDark
-                    ? "#81E6D9"
-                    : "#319795"
+                  ? "#81E6D9"
+                  : "#319795"
               }
               _hover={{
                 bg: isSelected
@@ -71,8 +70,8 @@ export const TopicsListOrgLists = ({
                     ? "pink.300"
                     : "pink.600"
                   : isDark
-                    ? "#4FD1C5"
-                    : "#2C7A7B"
+                  ? "#4FD1C5"
+                  : "#2C7A7B"
               }}
               color={isDark ? "black" : "white"}
               fontSize="small"

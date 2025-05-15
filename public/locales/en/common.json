@@ -1,8 +1,21 @@
 {
+  "about": "About",
   "home": "All trees",
-  "home-list": "Pick a tree",
+  "home-list": "Which tree do you want to browse?",
+  "settings": "Settings",
   "logout": "Logout",
-  "add": "Add a tree",
-  "add-branch": "Add a branch",
-  "change-locale": "s"
+  "add-a": "Add a tree",
+  "add-b": "Add a branch",
+  "add-t": "Add a thread",
+  "desc-a": "Description of this tree",
+  "change-locale": "s",
+  "nothing": "Oops, there is nothing here!",
+  "required": "This field is required",
+  "submit": "Submit",
+  "userName": "Change your username",
+  "userNameLabel": "Enter your new username",
+  "password": "Change your password",
+  "passwordLabel": "Enter your new password",
+  "passwordConfirmLabel": "Confirm your new password",
+  "passwordConfirmMismach": "Passwords do not match"
 }

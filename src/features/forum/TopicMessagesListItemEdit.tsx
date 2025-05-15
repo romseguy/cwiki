@@ -1,12 +1,10 @@
 import { Button, Flex } from "@chakra-ui/react";
-import { useToast } from "hooks/useToast";
-
-import { RTEditor } from "features/common";
-import { useScroll } from "hooks/useScroll";
-import { isUser } from "models/Entity";
-import { ITopic, isEdit } from "models/Topic";
-import { ITopicMessage } from "models/TopicMessage";
 import React, { useEffect, useState } from "react";
+import { RTEditor } from "features/common";
+import { isEdit, ITopic } from "models/Topic";
+import { ITopicMessage } from "models/TopicMessage";
+import { isUser } from "models/Entity";
+import { useScroll } from "hooks/useScroll";
 import { getStoredValue } from "utils/string/getStoredValue";
 
 export const TopicMessagesListItemEdit = ({
@@ -89,6 +87,7 @@ export const TopicMessagesListItemEdit = ({
                 topicMessage: {
                   _id,
                   message: newMessage
+                  //messageHtml: newMessage
                 }
               }
             }).unwrap();

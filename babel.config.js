@@ -16,7 +16,7 @@ module.exports = function (api) {
 
   const env = {
     production: {
-      plugins: ["transform-remove-console"]
+      plugins: []
     },
     development: {
       compact: false

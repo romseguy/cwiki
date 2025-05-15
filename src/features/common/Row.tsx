@@ -1,5 +1,6 @@
 import { Flex, FlexProps, useColorMode } from "@chakra-ui/react";
 import React from "react";
+import theme from "features/layout/theme";
 
 export const Row = ({ children, ...props }: FlexProps) => {
   const { colorMode } = useColorMode();
@@ -7,8 +8,8 @@ export const Row = ({ children, ...props }: FlexProps) => {
   return (
     <Flex
       alignItems="center"
-      bg={isDark ? "black" : "white"}
-      borderColor={isDark ? "white" : "black"}
+      bg={isDark ? theme.colors.black : "white"}
+      borderColor={isDark ? "white" : theme.colors.black}
       borderRadius="lg"
       borderStyle="solid"
       borderWidth={1}

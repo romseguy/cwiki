@@ -35,8 +35,10 @@ const theme = extendTheme({
     },
     FormLabel: {
       baseStyle: {
-        ...getStyleObjectFromString(rainbowTextCss(false)),
-        ".chakra-ui-dark &": getStyleObjectFromString(rainbowTextCss(true))
+        fontFamily: `'Roboto', sans-serif`,
+        fontWeight: "bold"
+        //...getStyleObjectFromString(rainbowTextCss(false)),
+        //".chakra-ui-dark &": getStyleObjectFromString(rainbowTextCss(true))
       }
     },
     Input: {

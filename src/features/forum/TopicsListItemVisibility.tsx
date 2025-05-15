@@ -6,15 +6,12 @@ import {
   IconProps,
   Tooltip
 } from "@chakra-ui/react";
-import { useToast } from "hooks/useToast";
-
-import { IEntity, isEvent, isOrg } from "models/Entity";
-import { orgTypeFull } from "models/Org";
-import { ITopic } from "models/Topic";
 import React from "react";
 import { IconType } from "react-icons";
 import { FaGlobeEurope } from "react-icons/fa";
-import { GrWorkshop } from "react-icons/gr";
+import { IEntity, isEvent, isOrg } from "models/Entity";
+import { orgTypeFull } from "models/Org";
+import { ITopic } from "models/Topic";
 import { hasItems } from "utils/array";
 import { AppIcon, AppQueryWithData } from "utils/types";
 
@@ -27,7 +24,7 @@ export const TopicsListItemVisibility = ({
   topic: ITopic;
 }) => {
   const entity = query.data;
-  //const isE = isEvent(entity);
+  const isE = isEvent(entity);
   const isO = isOrg(entity);
 
   let icons: {
@@ -48,7 +45,7 @@ export const TopicsListItemVisibility = ({
   if (Array.isArray(customLists) && customLists.length > 0) {
     icons = [
       {
-        label: `Discussion réservée aux participants ${
+        label: `Discussion réservée aux membres ${
           customLists.length === 1
             ? `de la liste "${customLists[0]}"`
             : `des listes ${customLists.map(

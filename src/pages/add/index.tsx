@@ -42,7 +42,7 @@ const AddPage = ({
 
 export const getStaticProps = async ({ locale }) => ({
   props: {
-    ...(await serverSideTranslations(locale ?? "en", ["add"]))
+    ...(await serverSideTranslations(locale ?? "en", ["common", "add"]))
   }
 });
 

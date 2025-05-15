@@ -15,6 +15,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import React from "react";
+import theme from "features/layout/theme";
 
 export const DeleteButton = ({
   "aria-label": ariaLabel = "Supprimer",
@@ -52,7 +53,7 @@ export const DeleteButton = ({
     CSSObject = {
       ...CSSObject,
       bg: "transparent",
-      color: isDark ? "white" : "black",
+      color: isDark ? "white" : theme.colors.black,
       _hover: { bg: "transparent", color: "red" },
       height: "auto",
       minWidth: 0

@@ -36,6 +36,7 @@ import { useAppDispatch } from "store";
 import api from "utils/api";
 import { TOKEN_NAME, magic } from "utils/auth";
 import { handleError } from "utils/form";
+import theme from "features/layout/theme";
 
 const onLoginWithSocial = async (provider: OAuthProvider) => {
   await magic.oauth.loginWithRedirect({
@@ -147,7 +148,7 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
         <FormControl display="flex" flexDir="row" mb={0}>
           <FormLabel mt={3}>Password</FormLabel>
           <Checkbox
-            borderColor={isDark ? "white" : "black"}
+            borderColor={isDark ? "white" : theme.colors.black}
             onChange={() => setIsPassword(!isPassword)}
           />
         </FormControl>

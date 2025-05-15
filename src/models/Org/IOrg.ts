@@ -33,7 +33,7 @@ export interface IOrg extends IEntity {
   orgUrl: string;
   redirectUrl?: string;
   orgType: EOrgType;
-  orgDescription?: string;
+  orgDescription?: { en: string; fr: string };
   orgAddress: IEntityAddress[];
   orgCity?: string;
   orgLat?: number;

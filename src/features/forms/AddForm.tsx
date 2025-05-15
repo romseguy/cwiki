@@ -21,6 +21,8 @@ import { useTranslation } from "next-i18next";
 import { Session } from "utils/auth";
 import { handleError } from "utils/form";
 import { EOrgType } from "models/Org";
+import theme from "features/layout/theme";
+import { FooterControl } from "features/common/forms/FooterControl";
 
 type FormValues = { treeName: string; formErrorMessage?: string };
 
@@ -32,7 +34,7 @@ export const AddForm = ({
   onCancel?: () => void;
 }) => {
   const router = useRouter();
-  const { t } = useTranslation("add");
+  const { t } = useTranslation("add-a");
   const toast = useToast({ position: "top" });
   const [isLoading, setIsLoading] = useState(false);
   const [addOrg] = useAddOrgMutation();
@@ -123,7 +125,11 @@ export const AddForm = ({
       onChange={onChange}
       onSubmit={handleSubmit(onSubmit)}
     >
-      <FormControl ref={refs.treeName}>
+      <FormControl
+        ref={refs.treeName}
+        isRequired
+        isInvalid={!!errors["treeName"]}
+      >
         <FormLabel>{t("orgNameLabel")}</FormLabel>
         <Input
           name="treeName"
@@ -149,22 +155,7 @@ export const AddForm = ({
         )}
       />
 
-      <HStack justifyContent="space-between">
-        {props.onCancel && (
-          <Button colorScheme="red" onClick={props.onCancel}>
-            Annuler
-          </Button>
-        )}
-
-        <Button
-          colorScheme="green"
-          type="submit"
-          isDisabled={Object.keys(errors).length > 0}
-          isLoading={isLoading}
-        >
-          {t("submitButton")}
-        </Button>
-      </HStack>
+      <FooterControl errors={errors} isLoading={isLoading} />
     </form>
   );
 };

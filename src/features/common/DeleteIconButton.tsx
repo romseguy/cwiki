@@ -17,6 +17,7 @@ import {
 import React from "react";
 import { useSelector } from "react-redux";
 import { selectIsMobile } from "store/uiSlice";
+import theme from "features/layout/theme";
 
 export const DeleteIconButton = ({
   body,
@@ -47,7 +48,7 @@ export const DeleteIconButton = ({
         <IconButton
           aria-label={props["aria-label"] || "Supprimer"}
           icon={<DeleteIcon />}
-          //color={isDark ? "white" : "black"}
+          //color={isDark ? "white" : theme.colors.black}
           {...(isMobile
             ? {
                 colorScheme: "red",
