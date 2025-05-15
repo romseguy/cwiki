@@ -4,9 +4,10 @@ import { EOrgType, EOrgVisibility, IOrg } from "./IOrg";
 export const OrgSchema = new Schema<IOrg>(
   {
     orgName: {
-      type: String,
-      required: true,
-      trim: true
+      type: {
+        en: { type: String },
+        fr: { type: String }
+      }
     },
     orgUrl: {
       type: String,

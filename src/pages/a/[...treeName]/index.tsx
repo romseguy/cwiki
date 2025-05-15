@@ -1,3 +1,4 @@
+import { marked, MarkedOptions } from "marked";
 import {
   ChevronRightIcon,
   ChevronUpIcon,
@@ -8,6 +9,7 @@ import {
   Heading,
   Icon,
   IconButton,
+  Spinner,
   Tooltip,
   VStack
 } from "@chakra-ui/react";
@@ -39,25 +41,30 @@ import { FaNewspaper } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { selectUserEmail } from "store/userSlice";
 import { transformRTEditorOutput } from "utils/string";
+import { localize } from "utils/localize";
 
 const TreePage = ({ ...props }: PageProps) => {
   const { t } = useTranslation();
   const toast = useToast({ position: "top" });
   const router = useRouter();
+  console.log("🚀 ~ TreePage ~ router:", router.query.treeName);
   let [
     entityUrl,
     currentTabLabel, // = Object.keys(defaultTabs)[0],
     entityTabItem
-  ] =
-    "treeName" in router.query && Array.isArray(router.query.treeName)
-      ? router.query.treeName
-      : [];
+  ] = router.query.treeName;
+  const [isBranch, setIsBranch] = useState(
+    currentTabLabel === "b" && !!entityTabItem
+  );
+  console.log("🚀 ~ TreePage ~ isBranch:", isBranch);
+
   const query = useGetOrgQuery({
     orgUrl: entityUrl,
-    populate: "orgTopics"
+    populate: "orgs orgTopics"
   });
   const [editOrg] = useEditOrgMutation();
   const org = query.data;
+  const suborg = org.orgs.find(({ orgUrl }) => orgUrl === entityTabItem);
   let orgDescription = org?.orgDescription || { en: "", fr: "" };
   //const orgDescription = org?.orgDescription;
   const email = useSelector(selectUserEmail);
@@ -66,10 +73,9 @@ const TreePage = ({ ...props }: PageProps) => {
   const [description, setDescription] = useState<string | undefined>(
     org?.orgDescription
   );
-  const [html, setHtml] = useState("");
   useEffect(() => {
     if (org) {
-      if (!orgDescription) return setDescription(undefined);
+      //if (!orgDescription) return setDescription(undefined);
       const newDoc = isMobile
         ? transformRTEditorOutput(orgDescription[router.locale])
         : new DOMParser().parseFromString(
@@ -80,150 +86,206 @@ const TreePage = ({ ...props }: PageProps) => {
       if (description !== newDescription) setDescription(newDescription);
     }
   }, [org, router.locale]);
+
   const [isAddingDescription, setIsAddingDescription] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(
     currentTabLabel !== "t"
   );
+  const [isBranchesOpen, setIsBranchesOpen] = useState(true);
   const [isThreadsOpen, setIsThreadsOpen] = useState(true);
+
   const [currentTopicName, setCurrentTopicName] = useState(entityTabItem);
   useEffect(() => {
-    setCurrentTopicName(entityTabItem);
+    console.log("🚀 ~ TreePage ~ entityTabItem:", entityTabItem);
+    setIsBranch(router.asPath.includes("/b/"));
+
+    if (currentTabLabel === "t") setCurrentTopicName(entityTabItem);
+    else if (currentTabLabel === "b") {
+      console.log("🚀 ~ useEffect ~ currentTabLabel:", entityTabItem);
+    }
   }, [entityTabItem]);
+
   return (
-    <Layout pageTitle={org ? `Tree : ${org.orgName}` : undefined} {...props}>
-      <VStack mb={3}>
-        <EntityButton org={org} />
-      </VStack>
+    <Layout
+      pageTitle={
+        org ? `Tree : ${localize(org.orgName, router.locale)}` : undefined
+      }
+      {...props}
+    >
+      {query.isLoading && <Spinner />}
+      {!query.isLoading && (
+        <>
+          <VStack mb={3}>
+            <EntityButton org={org} suborg={suborg} />
+          </VStack>
 
-      <TabContainer borderBottomRadius={isDescriptionOpen ? undefined : "lg"}>
-        <TabContainerHeader
-          borderBottomRadius={isDescriptionOpen ? undefined : "lg"}
-          onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
-        >
-          <Icon
-            as={isDescriptionOpen ? ChevronUpIcon : ChevronRightIcon}
-            boxSize={6}
-            ml={3}
-            mr={1}
-          />
-
-          <Heading size="sm">{t("desc-a")}</Heading>
-
-          {org?.orgDescription && (
-            <Tooltip
-              hasArrow
-              label="Modifier la description"
-              placement="bottom"
-            >
-              <span>
-                <EditIconButton
-                  aria-label="Modifier"
-                  ml={3}
-                  {...(isMobile ? {} : {})}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsAddingDescription(true);
-                  }}
-                />
-              </span>
-            </Tooltip>
-          )}
-        </TabContainerHeader>
-
-        {isDescriptionOpen && (
-          <TabContainerContent
-            //bg={isDark ? "gray.600" : "#F7FAFC"}
-            p={3}
+          <TabContainer
+            borderBottomRadius={isDescriptionOpen ? undefined : "lg"}
           >
-            {isAddingDescription ? (
-              <>
-                <RTEditor
-                  defaultValue={orgDescription[router.locale]}
-                  onBlur={(html) => {
-                    setHtml(html);
-                  }}
-                />
-                <Button
-                  onClick={async () => {
-                    setIsAddingDescription(false);
-                    const payload: EditOrgPayload = {
-                      orgDescription: {
-                        fr: router.locale === "fr" ? html : orgDescription.fr,
-                        en: router.locale === "en" ? html : orgDescription.en
-                      }
-                    };
-                    await editOrg({ payload, org }).unwrap();
-                    toast({ title: "Success" });
-                  }}
+            <TabContainerHeader
+              borderBottomRadius={isDescriptionOpen ? undefined : "lg"}
+              onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+            >
+              <Icon
+                as={isDescriptionOpen ? ChevronUpIcon : ChevronRightIcon}
+                boxSize={6}
+                ml={3}
+                mr={1}
+              />
+              <Heading size="sm">{t("desc-a")}</Heading>
+
+              {org?.orgDescription && (
+                <Tooltip
+                  hasArrow
+                  label="Modifier la description"
+                  placement="bottom"
                 >
-                  Modifier
-                </Button>
-              </>
-            ) : description && description.length > 0 ? (
-              <div
-                className="rteditor"
-                dangerouslySetInnerHTML={{
-                  __html: sanitize(description)
-                }}
-              />
-            ) : true ? (
-              <Tooltip
-                placement="right"
-                label={`Ajouter une présentation ${orgTypeFull2(org?.orgType)}`}
+                  <span>
+                    <EditIconButton
+                      aria-label="Modifier"
+                      ml={3}
+                      {...(isMobile ? {} : {})}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsAddingDescription(true);
+                      }}
+                    />
+                  </span>
+                </Tooltip>
+              )}
+            </TabContainerHeader>
+
+            {isDescriptionOpen && (
+              <TabContainerContent
+                //bg={isDark ? "gray.600" : "#F7FAFC"}
+                p={3}
               >
-                <IconButton
-                  aria-label={`Ajouter une présentation ${orgTypeFull2(
-                    org?.orgType
-                  )}`}
-                  alignSelf="flex-start"
-                  colorScheme="teal"
-                  icon={
-                    <>
-                      <SmallAddIcon />
-                      <FaNewspaper />
-                    </>
-                  }
-                  pr={1}
-                  onClick={() => setIsAddingDescription(true)}
+                {isAddingDescription ? (
+                  <>
+                    <RTEditor
+                      defaultValue={orgDescription[router.locale]}
+                      onChange={({ html }) => {
+                        setDescription(html);
+                      }}
+                    />
+                    <Button
+                      onClick={async () => {
+                        setIsAddingDescription(false);
+                        const payload: EditOrgPayload = {
+                          orgDescription: {
+                            fr:
+                              router.locale === "fr"
+                                ? description
+                                : orgDescription.fr,
+                            en:
+                              router.locale === "en"
+                                ? description
+                                : orgDescription.en
+                          }
+                        };
+                        await editOrg({ payload, org }).unwrap();
+                        toast({ title: "Success" });
+                      }}
+                    >
+                      Modifier
+                    </Button>
+                  </>
+                ) : description && description.length > 0 ? (
+                  <div
+                    className="rteditor"
+                    dangerouslySetInnerHTML={{
+                      __html: sanitize(description)
+                    }}
+                  />
+                ) : true ? (
+                  <Tooltip
+                    placement="right"
+                    label={`Ajouter une présentation ${orgTypeFull2(
+                      org?.orgType
+                    )}`}
+                  >
+                    <IconButton
+                      aria-label={`Ajouter une présentation ${orgTypeFull2(
+                        org?.orgType
+                      )}`}
+                      alignSelf="flex-start"
+                      colorScheme="teal"
+                      icon={
+                        <>
+                          <SmallAddIcon />
+                          <FaNewspaper />
+                        </>
+                      }
+                      pr={1}
+                      onClick={() => setIsAddingDescription(true)}
+                    />
+                  </Tooltip>
+                ) : (
+                  <Text fontStyle="italic">Aucune description.</Text>
+                )}
+              </TabContainerContent>
+            )}
+          </TabContainer>
+
+          {!isBranch && (
+            <TabContainer
+              borderBottomRadius={isBranchesOpen ? undefined : "lg"}
+            >
+              <TabContainerHeader
+                borderBottomRadius={isBranchesOpen ? undefined : "lg"}
+                onClick={() => setIsBranchesOpen(!isBranchesOpen)}
+              >
+                <Icon
+                  as={isBranchesOpen ? ChevronUpIcon : ChevronRightIcon}
+                  boxSize={6}
+                  ml={3}
+                  mr={1}
                 />
-              </Tooltip>
-            ) : (
-              <Text fontStyle="italic">Aucune description.</Text>
-            )}
-          </TabContainerContent>
-        )}
-      </TabContainer>
+                <Heading size="sm">{t("branches")}</Heading>
+              </TabContainerHeader>
+              {isBranchesOpen && (
+                <TabContainerContent p={3}>
+                  <VStack>
+                    {org.orgs.map((suborg) => {
+                      return <EntityButton org={org} suborg={suborg} />;
+                    })}
+                  </VStack>
+                </TabContainerContent>
+              )}
+            </TabContainer>
+          )}
 
-      <TabContainer borderBottomRadius={isThreadsOpen ? undefined : "lg"}>
-        <TabContainerHeader
-          borderBottomRadius={isThreadsOpen ? undefined : "lg"}
-          onClick={() => setIsThreadsOpen(!isThreadsOpen)}
-        >
-          <Icon
-            as={isThreadsOpen ? ChevronUpIcon : ChevronRightIcon}
-            boxSize={6}
-            ml={3}
-            mr={1}
-          />
-
-          <Heading size="sm">Threads</Heading>
-        </TabContainerHeader>
-
-        {isThreadsOpen && (
-          <TabContainerContent p={3}>
-            {query.data && (
-              <TopicsList
-                addButtonLabel={t("add-t")}
-                currentTopicName={currentTopicName}
-                isCreator
-                isFollowed
-                query={query}
-                subQuery={subQuery}
+          <TabContainer borderBottomRadius={isThreadsOpen ? undefined : "lg"}>
+            <TabContainerHeader
+              borderBottomRadius={isThreadsOpen ? undefined : "lg"}
+              onClick={() => setIsThreadsOpen(!isThreadsOpen)}
+            >
+              <Icon
+                as={isThreadsOpen ? ChevronUpIcon : ChevronRightIcon}
+                boxSize={6}
+                ml={3}
+                mr={1}
               />
+              <Heading size="sm">{t("threads")}</Heading>
+            </TabContainerHeader>
+
+            {isThreadsOpen && (
+              <TabContainerContent p={3}>
+                {query.data && (
+                  <TopicsList
+                    addButtonLabel={t("add-t")}
+                    currentTopicName={currentTopicName}
+                    isCreator
+                    isFollowed
+                    query={query}
+                    subQuery={subQuery}
+                  />
+                )}
+              </TabContainerContent>
             )}
-          </TabContainerContent>
-        )}
-      </TabContainer>
+          </TabContainer>
+        </>
+      )}
     </Layout>
   );
 };

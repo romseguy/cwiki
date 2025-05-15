@@ -18,6 +18,7 @@ import { PageProps } from "pages/_app";
 import { ReactNode } from "react";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { FaLongArrowAltRight, FaPlus, FaTree } from "react-icons/fa";
+import { IoIosGitBranch } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "store";
 import {
@@ -46,17 +47,14 @@ export const Layout = ({
   //#region styling
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
-  const borderLeft = `border-left: 8px solid ${
-    isDark ? "white" : theme.colors.black
-  };`;
-  const borderRight = `border-right: 8px solid ${
+  const borderRight = `border-right: 1px solid ${
     isDark ? "white" : theme.colors.black
   };`;
   //#endregion
 
   //#region routing
   const router = useRouter();
-  let [entityUrl] =
+  let [entityUrl, _, b] =
     "treeName" in router.query && Array.isArray(router.query.treeName)
       ? router.query.treeName
       : [];
@@ -118,6 +116,9 @@ export const Layout = ({
           <HStack
             css={css`
               ${borderRight}
+              a {
+                padding-top: 2px;
+              }
             `}
             pr={2}
           >
@@ -132,6 +133,9 @@ export const Layout = ({
               <HStack
                 css={css`
                   ${borderRight}
+                  a {
+                    padding-top: 2px;
+                  }
                 `}
                 pr={2}
               >
@@ -142,23 +146,55 @@ export const Layout = ({
                 </Link>
               </HStack>
 
-              <HStack>
-                {router.asPath.includes("add") && <FaLongArrowAltRight />}
-                <AddIcon boxSize={3} />
-                <Link
-                  href={
-                    router.asPath.includes("/b/add")
-                      ? "#"
-                      : `/b/add${router.asPath}`
-                  }
-                  shallow
+              {/* Add Branch */}
+              {!router.asPath.includes("/b/") && (
+                <HStack
+                  css={css`
+                    a {
+                      padding-top: 2px;
+                    }
+                  `}
                 >
-                  {t("add-b")}
-                </Link>
-              </HStack>
+                  {router.asPath.includes("add") && <FaLongArrowAltRight />}
+                  <AddIcon boxSize={3} />
+                  <Link
+                    href={
+                      router.asPath.includes("/b/add")
+                        ? "#"
+                        : `/b/add${router.asPath}`
+                    }
+                    shallow
+                  >
+                    {t("add-b")}
+                  </Link>
+                </HStack>
+              )}
+
+              {router.asPath.includes("/b/") && (
+                <HStack
+                  css={css`
+                    a {
+                      padding-top: 2px;
+                    }
+                  `}
+                >
+                  <FaLongArrowAltRight />
+                  <IoIosGitBranch />
+                  <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
+                    {b}
+                  </Link>
+                </HStack>
+              )}
             </>
           ) : (
-            <HStack pr={2}>
+            <HStack
+              css={css`
+                a {
+                  padding-top: 2px;
+                }
+              `}
+              pr={2}
+            >
               <AddIcon boxSize={3} />
               <FaTree />
               {router.asPath.includes("add") && <FaLongArrowAltRight />}

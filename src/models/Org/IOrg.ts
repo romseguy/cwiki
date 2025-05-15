@@ -29,7 +29,7 @@ export enum EOrgVisibility {
 }
 
 export interface IOrg extends IEntity {
-  orgName: string;
+  orgName: { en: string; fr?: string };
   orgUrl: string;
   redirectUrl?: string;
   orgType: EOrgType;

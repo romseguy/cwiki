@@ -3,8 +3,10 @@ import {
   Button,
   ButtonProps,
   Flex,
+  Heading,
   HStack,
   Icon,
+  Text,
   Tooltip,
   TooltipProps,
   useColorMode
@@ -23,13 +25,15 @@ import { ITopic } from "models/Topic";
 import { IUser } from "models/User";
 import { useRouter } from "next/router";
 import React from "react";
-import { FaGithub, FaTree } from "react-icons/fa";
-import { IoIosPeople, IoIosPerson } from "react-icons/io";
+import { FaGithub, FaNetworkWired, FaTree } from "react-icons/fa";
+import { IoIosGitNetwork, IoIosPeople, IoIosPerson } from "react-icons/io";
+import { localize } from "utils/localize";
 import { Link } from "../Link";
 
 export const EntityButton = ({
   children,
   org,
+  suborg,
   topic,
   user,
   hasTooltip = false,
@@ -38,6 +42,7 @@ export const EntityButton = ({
   ...props
 }: Omit<ButtonProps, "onClick"> & {
   org?: Partial<IOrg>;
+  suborg?: Partial<IOrg>;
   topic?: ITopic;
   user?: Partial<IUser>;
   hasTooltip?: boolean;
@@ -53,19 +58,19 @@ export const EntityButton = ({
   const entityName = topic
     ? topic.topicName
     : org
-      ? `${
-          org.orgType === EOrgType.TREETOOLS
-            ? OrgTypes[org.orgType] + " : "
-            : ""
-        }${org.orgName}`
-      : user
-        ? user.userName
-        : "";
+    ? localize(org.orgName, router.locale)
+    : user
+    ? user.userName
+    : "";
+
   let entityUrl = org
     ? org.orgUrl
     : typeof user === "object"
-      ? user.userName
-      : "";
+    ? user.userName
+    : "";
+  const href = `/a/${entityUrl}${
+    suborg ? "/b/" + localize(suborg.orgName, router.locale) : ""
+  }`;
   if (topic) {
     entityUrl = `${
       entityUrl || getRefId(topic.org) || getRefId(topic.event)
@@ -76,55 +81,74 @@ export const EntityButton = ({
     ? topic
       ? "Aller à la discussion"
       : org
-        ? org.orgUrl === "forum"
-          ? "Aller au forum"
-          : org.orgType
-            ? `Visiter ${orgTypeFull5(org.orgType)}`
-            : ""
-        : user
-          ? "Visiter la page de l'utilisateur"
-          : ""
+      ? org.orgType
+        ? `Visiter ${orgTypeFull5(org.orgType)}`
+        : ""
+      : user
+      ? "Visiter la page de l'utilisateur"
+      : ""
     : "";
 
   if (!entityUrl && !onClick) return null;
 
-  const button = (
-    <HStack bgColor="teal" borderRadius={12} color="white" p={3}>
+  const button = children || (
+    <Heading
+      display="flex"
+      alignItems="center"
+      bgColor="teal"
+      borderRadius={12}
+      color="white"
+      p={3}
+      size="sm"
+    >
       <Icon
+        cursor="pointer"
         as={
           topic
             ? ChatIcon
             : user
-              ? IoIosPerson
-              : org
-                ? org.orgType === EOrgType.NETWORK
-                  ? FaTree
-                  : FaGithub
-                : ChatIcon
+            ? IoIosPerson
+            : org
+            ? suborg
+              ? IoIosGitNetwork
+              : FaTree
+            : ChatIcon
         }
         color={
           topic
             ? "blue.500"
             : org
-              ? org.orgType === EOrgType.NETWORK
-                ? "white"
-                : "blue.500"
-              : "blue.500"
+            ? org.orgType === EOrgType.NETWORK
+              ? "white"
+              : "white"
+            : "blue.500"
         }
+        boxSize={8}
+        pr={2}
+        onClick={(e) => {
+          if (onClick) onClick(e);
+          else if (onClick !== null)
+            router.push(href, href, {
+              shallow: true
+            });
+        }}
       />
-      <Link
-        href={"/a/" + entityUrl!}
-        shallow
-        // onClick={(e) => {
-        //   if (onClick) onClick(e);
-        //   else if (onClick !== null)
-        //     router.push("/a/" + entityUrl!, "/a/" + entityUrl, {
-        //       shallow: true
-        //     });
-        // }}
-      >
-        {children || entityName}
-        {/* <Button
+      <Link href={href} shallow>
+        {suborg ? localize(suborg.orgName, router.locale) : entityName}
+      </Link>
+    </Heading>
+  );
+  if (!hasTooltip) return button;
+
+  return (
+    <Tooltip label={label} hasArrow {...tooltipProps}>
+      {button}
+    </Tooltip>
+  );
+};
+
+{
+  /* <Button
             aria-label={label}
             colorScheme="teal"
             leftIcon=
@@ -145,16 +169,5 @@ export const EntityButton = ({
             ) : org && org.orgVisibility === EOrgVisibility.PRIVATE ? (
               <Icon as={LockIcon} ml={2} />
             ) : null}
-          </Button> */}
-      </Link>
-    </HStack>
-  );
-
-  if (!hasTooltip) return button;
-
-  return (
-    <Tooltip label={label} hasArrow {...tooltipProps}>
-      {button}
-    </Tooltip>
-  );
-};
+          </Button> */
+}

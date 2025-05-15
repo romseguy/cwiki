@@ -1,13 +1,7 @@
 import { Flex, FlexProps, Heading, useColorMode } from "@chakra-ui/react";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 
-export const TabContainer = ({
-  children,
-  mb = 5,
-  ...props
-}: FlexProps & {
-  children: React.ReactNode | React.ReactNodeArray;
-}) => {
+export const TabContainer = ({ children, mb = 5, ...props }: FlexProps) => {
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
 
@@ -29,7 +23,6 @@ export const TabContainerHeader = ({
   heading,
   ...props
 }: FlexProps & {
-  children?: React.ReactNode | React.ReactNodeArray;
   heading?: string | React.ReactNode;
 }) => {
   const { colorMode } = useColorMode();
@@ -61,12 +54,7 @@ export const TabContainerHeader = ({
   );
 };
 
-export const TabContainerContent = ({
-  children,
-  ...props
-}: FlexProps & {
-  children: React.ReactNode | React.ReactNodeArray;
-}) => {
+export const TabContainerContent = ({ children, ...props }: FlexProps & {}) => {
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
 

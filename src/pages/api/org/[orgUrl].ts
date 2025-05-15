@@ -57,7 +57,7 @@ handler.get<
         .status(404)
         .json(
           createEndpointError(
-            new Error(`L'atelier ${orgUrl} n'a pas pu être trouvé`)
+            new Error(`L'arbre ${orgUrl} n'a pas pu être trouvé`)
           )
         );
 
@@ -362,7 +362,7 @@ handler.get<
         .status(404)
         .json(
           createEndpointError(
-            new Error(`L'atelier ${orgUrl} n'a pas pu être trouvé`)
+            new Error(`L'arbre ${orgUrl} n'a pas pu être trouvé`)
           )
         );
     res.status(500).json(createEndpointError(error));
@@ -378,7 +378,7 @@ handler.put<
 >(async function editOrg(req, res) {
   const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ PUT /org/[orgUrl] `;
   console.log(prefix + "query", req.query);
-  //logJson(prefix + "body", req.body);
+  logJson(prefix + "body", req.body);
   const session = await getSession({ req });
 
   if (!session) {
@@ -396,7 +396,7 @@ handler.put<
         .status(404)
         .json(
           createEndpointError(
-            new Error(`L'atelier ${_id} n'a pas pu être trouvé`)
+            new Error(`L'arbre ${_id} n'a pas pu être trouvé`)
           )
         );
     }
@@ -501,20 +501,26 @@ handler.put<
         }
       }
     } else {
+      console.log("🚀 ~ editOrg ~ else:", body);
       if (body.orgName) {
         body = {
           ...body,
-          orgName: body.orgName.trim(),
-          orgUrl: normalize(body.orgName.trim())
+          orgName: { en: body.orgName.en.trim() },
+          orgUrl: normalize(body.orgName.en.trim())
         };
 
         if (
-          body.orgName !== org.orgName &&
-          (await models.Org.findOne({ orgName: body.orgName }))
+          body.orgName.en !== org.orgName.en &&
+          (await models.Org.findOne({ orgName: body.orgName.en }))
         )
           throw duplicateError();
       }
 
+      // if (body.orgs) {
+      //   body = { $push: { orgs: body.orgs[0] } };
+      // }
+
+      logJson("j", body);
       if (Array.isArray(body.orgLists) && body.orgLists.length > 0) {
         if (!isCreator) {
           return res
@@ -563,7 +569,7 @@ handler.put<
         .status(400)
         .json(
           createEndpointError(
-            new Error(`L'atelier ${_id} n'a pas pu être modifié`)
+            new Error(`L'arbre ${_id} n'a pas pu être modifié`)
           )
         );
     }
@@ -605,7 +611,7 @@ handler.delete<
         .status(404)
         .json(
           createEndpointError(
-            new Error(`L'atelier ${_id} n'a pas pu être trouvé`)
+            new Error(`L'arbre ${_id} n'a pas pu être trouvé`)
           )
         );
     }
@@ -616,7 +622,7 @@ handler.delete<
         .json(
           createEndpointError(
             new Error(
-              "Vous ne pouvez pas supprimer un atelier que vous n'avez pas créé"
+              "Vous ne pouvez pas supprimer un arbre que vous n'avez pas créé"
             )
           )
         );
@@ -629,7 +635,7 @@ handler.delete<
         .status(400)
         .json(
           createEndpointError(
-            new Error(`L'atelier ${_id} n'a pas pu être supprimé`)
+            new Error(`L'arbre ${_id} n'a pas pu être supprimé`)
           )
         );
     }

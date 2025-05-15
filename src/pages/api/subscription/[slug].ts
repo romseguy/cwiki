@@ -225,7 +225,7 @@ handler.delete<
           .status(400)
           .json(
             createEndpointError(
-              new Error(`L'atelier ${orgId} n'a pas pu être trouvé`)
+              new Error(`L'arbre ${orgId} n'a pas pu être trouvé`)
             )
           );
 
@@ -257,7 +257,7 @@ handler.delete<
           .status(400)
           .json(
             createEndpointError(
-              new Error(`L'atelier ${body.orgId} n'a pas pu être trouvé`)
+              new Error(`L'arbre ${body.orgId} n'a pas pu être trouvé`)
             )
           );
 

@@ -5,7 +5,7 @@ import nextConnect from "next-connect";
 import { getSession } from "server/auth";
 import database, { models } from "server/database";
 import { getCurrentId } from "store/utils";
-import { createEndpointError } from "utils/errors";
+import { createEndpointError, databaseErrorCodes } from "utils/errors";
 import { equals, logJson, normalize } from "utils/string";
 import { unauthorizedEntityUrls } from "utils/url";
 
@@ -94,6 +94,9 @@ handler.get<
 
 handler.post<NextApiRequest & { body: AddOrgPayload }, NextApiResponse>(
   async function addOrg(req, res) {
+    const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ POST /orgs `;
+    console.log(prefix, req.body);
+
     const session = await getSession({ req });
 
     if (!session) {
@@ -104,8 +107,8 @@ handler.post<NextApiRequest & { body: AddOrgPayload }, NextApiResponse>(
 
     try {
       const { body }: { body: AddOrgPayload } = req;
-      const orgName = body.orgName.trim();
-      const orgUrl = normalize(orgName);
+      const orgName = body.orgName;
+      const orgUrl = normalize(orgName.en);
 
       if (unauthorizedEntityUrls.includes(orgUrl)) {
         return res
@@ -125,23 +128,29 @@ handler.post<NextApiRequest & { body: AddOrgPayload }, NextApiResponse>(
         isApproved: session.user.isAdmin
       };
 
-      const org = await models.Org.findOne({ orgUrl });
-      const user = await models.User.findOne({ userName: orgUrl });
-      if (org || user) {
-        const uid = (await getCurrentId()) + 1;
-        newOrg = {
-          ...newOrg,
-          orgName: orgName + "-" + uid,
-          orgUrl: orgUrl + "-" + uid
-        };
-      }
+      // const org = await models.Org.findOne({ orgUrl });
+      // const user = await models.User.findOne({ userName: orgUrl });
+      // if (org || user) {
+      //   const uid = (await getCurrentId()) + 1;
+      //   newOrg = {
+      //     ...newOrg,
+      //     orgName: orgName + "-" + uid,
+      //     orgUrl: orgUrl + "-" + uid
+      //   };
+      // }
 
       logJson(`POST /orgs: create`, newOrg);
       const doc = await models.Org.create(newOrg);
 
       res.status(200).json(doc);
     } catch (error: any) {
-      res.status(500).json(createEndpointError(error));
+      if (error.code && error.code === databaseErrorCodes.DUPLICATE_KEY) {
+        res.status(400).json({
+          userName: "Ce nom d'utilisateur n'est pas disponible"
+        });
+      } else {
+        res.status(500).json(createEndpointError(error));
+      }
     }
   }
 );

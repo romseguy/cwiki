@@ -1,12 +1,14 @@
 import { VStack } from "@chakra-ui/react";
 import { useGetOrgsQuery } from "features/api/orgsApi";
-import { EntityButton, Link } from "features/common";
+import { AppHeading, EntityButton, Link } from "features/common";
+import { EntityAddButton } from "features/common/entities/EntityAddButton";
 import { Layout } from "features/layout";
 import theme from "features/layout/theme";
 import { useSession } from "hooks/useSession";
 import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { hasItems } from "utils/array";
 import { PageProps } from "./_app";
 
 const IndexPage = (props: PageProps) => {
@@ -15,14 +17,19 @@ const IndexPage = (props: PageProps) => {
   const orgsQuery = useGetOrgsQuery({ orgType: EOrgType.NETWORK });
 
   return (
-    <Layout pageTitle="Home" {...props}>
+    <Layout pageTitle={t("home")} {...props}>
       {/* {session ? ( */}
       <>
-        <h1>{t("home-list")}</h1>
+        <AppHeading>Welcome to CassWiki</AppHeading>
+        <AppHeading smaller>{t("home-list")}</AppHeading>
         <VStack alignItems="start">
-          {orgsQuery.data?.map((org) => {
-            return <EntityButton key={org._id} org={org} />;
-          })}
+          {!hasItems(orgsQuery.data) && (
+            <EntityAddButton orgType={EOrgType.NETWORK} />
+          )}
+          {hasItems(orgsQuery.data) &&
+            orgsQuery.data?.map((org) => {
+              return <EntityButton key={org._id} org={org} />;
+            })}
         </VStack>
       </>
       {/*  ) : (

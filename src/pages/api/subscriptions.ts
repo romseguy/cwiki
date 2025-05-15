@@ -120,7 +120,7 @@ handler.post<
             .json(
               createEndpointError(
                 new Error(
-                  "Vous ne pouvez pas vous abonner à un atelier inexistant"
+                  "Vous ne pouvez pas vous abonner à un arbre inexistant"
                 )
               )
             );

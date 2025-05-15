@@ -2,7 +2,7 @@ import { EOrgType, EOrgVisibility, IOrg } from "models/Org";
 import { objectToQueryString } from "utils/query";
 import { TagTypes, api } from "./";
 
-export type AddOrgPayload = Pick<Partial<IOrg>, "orgName", "orgType">;
+export type AddOrgPayload = Pick<Partial<IOrg>, "orgName" | "orgType">;
 
 export type EditOrgPayload = Partial<IOrg> | string[];
 
@@ -61,10 +61,10 @@ export const orgApi = api.injectEndpoints({
       query: ({ payload, org, orgId }) => {
         const id = org ? org._id : "_id" in payload ? payload._id : orgId;
 
-        //console.groupCollapsed("editOrg");
-        //console.log("orgId", id);
-        //console.log("payload", payload);
-        //console.groupEnd();
+        console.groupCollapsed("editOrg");
+        console.log("orgId", id);
+        console.log("payload", payload);
+        console.groupEnd();
 
         return {
           url: `org/${id}`,

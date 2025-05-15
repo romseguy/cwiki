@@ -1,4 +1,4 @@
-// export * from "./entities/EntityAddButton";
+export * from "./entities/EntityAddButton";
 // export * from "./entities/EntityAddPage";
 export * from "./entities/EntityButton";
 // export * from "./entities/EntityCategoriesList";
@@ -59,8 +59,8 @@ export * from "./Link";
 export * from "./Modal";
 // export * from "./OfflineIcon";
 // export * from "./PushPinIcon";
-// export * from "./NotFound";
-// export * from "./Row";
+export * from "./NotFound";
+export * from "./Row";
 // export * from "./SearchInput";
 // export * from "./Spacer";
 // export * from "./SubscribeSwitch";

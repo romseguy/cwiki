@@ -67,6 +67,8 @@ export default async function database(
       useNewUrlParser: true
     };
 
+    console.log("🚀 ~ process.env.DATABASE_URL:", process.env.DATABASE_URL);
+
     cached.promise = mongoose.createConnection(
       process.env.DATABASE_URL,
       options

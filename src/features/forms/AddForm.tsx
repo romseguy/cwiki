@@ -34,7 +34,7 @@ export const AddForm = ({
   onCancel?: () => void;
 }) => {
   const router = useRouter();
-  const { t } = useTranslation("add-a");
+  const { t } = useTranslation();
   const toast = useToast({ position: "top" });
   const [isLoading, setIsLoading] = useState(false);
   const [addOrg] = useAddOrgMutation();
@@ -90,7 +90,9 @@ export const AddForm = ({
 
     try {
       let payload: AddOrgPayload = {
-        orgName: form.treeName,
+        orgName: {
+          en: form.treeName
+        },
         orgType: EOrgType.NETWORK
       };
 
@@ -130,7 +132,7 @@ export const AddForm = ({
         isRequired
         isInvalid={!!errors["treeName"]}
       >
-        <FormLabel>{t("orgNameLabel")}</FormLabel>
+        <FormLabel>{t("name-label-a")}</FormLabel>
         <Input
           name="treeName"
           ref={register({
@@ -143,17 +145,6 @@ export const AddForm = ({
           })}
         />
       </FormControl>
-
-      <ErrorMessage
-        errors={errors}
-        name="formErrorMessage"
-        render={({ message }) => (
-          <Alert status="error" mb={3}>
-            <AlertIcon />
-            <ErrorMessageText>{message}</ErrorMessageText>
-          </Alert>
-        )}
-      />
 
       <FooterControl errors={errors} isLoading={isLoading} />
     </form>

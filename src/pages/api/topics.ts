@@ -131,7 +131,7 @@ handler.post<NextApiRequest & { body: AddTopicPayload }, NextApiResponse>(
           .json(
             createEndpointError(
               new Error(
-                "La discussion doit être associée à un atelier ou à un événément"
+                "La discussion doit être associée à un arbre ou à un événément"
               )
             )
           );
@@ -306,7 +306,7 @@ handler.post<NextApiRequest & { body: AddTopicPayload }, NextApiResponse>(
         //   type: ServerEventTypes.API_LOG,
         //   metadata: {
         //     text: `Une nouvelle discussion a été ajoutée à ${
-        //       event ? "l'événement " + event.eventName : "l'atelier"
+        //       event ? "l'événement " + event.eventName : "l'arbre"
         //     }`
         //   }
         // });
