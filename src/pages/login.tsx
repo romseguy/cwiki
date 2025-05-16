@@ -25,6 +25,8 @@ import { useAppDispatch, wrapper } from "store";
 import { resetUserEmail } from "store/userSlice";
 import api from "utils/api";
 import { magic } from "utils/auth";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 const BackButton = ({ ...props }: ButtonProps & {}) => {
   const router = useRouter();
@@ -41,6 +43,7 @@ const BackButton = ({ ...props }: ButtonProps & {}) => {
 };
 
 const LoginPage = ({ isMobile, ...props }: PageProps) => {
+  const { t } = useTranslation();
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const dispatch = useAppDispatch();
@@ -69,24 +72,22 @@ const LoginPage = ({ isMobile, ...props }: PageProps) => {
             margin: 0 auto;
             /*height: ${window.innerHeight}px;*/
             width: 1180px;
-            ${
-              isDark
-                ? `
+            ${isDark
+              ? `
             border-left: 12px solid transparent;
             border-right: 12px solid transparent;
             border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%, #fec837 75%, #fd1892 100%);
             border-image-slice: 1;
             `
-                : `
+              : `
             border-left: 12px solid transparent;
             border-right: 12px solid transparent;
             border-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E %3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23cffffe' /%3E%3Cstop offset='25%25' stop-color='%23f9f7d9' /%3E%3Cstop offset='50%25' stop-color='%23fce2ce' /%3E%3Cstop offset='100%25' stop-color='%23ffc1f3' /%3E%3C/linearGradient%3E %3Cpath d='M1.5 1.5 l97 0l0 97l-97 0 l0 -97' stroke-linecap='square' stroke='url(%23g)' stroke-width='3'/%3E %3C/svg%3E") 1;
-            `
-            };
+            `};
           }
         `}
       >
-        <AppHeading>Login</AppHeading>
+        <AppHeading>{t("login")}</AppHeading>
 
         {isSessionLoading && <Spinner mb={3} />}
 
@@ -133,10 +134,10 @@ const LoginPage = ({ isMobile, ...props }: PageProps) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  (store) => async (ctx) => {
-    return { props: {} };
+export const getStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? "en", ["common"]))
   }
-);
+});
 
 export default LoginPage;

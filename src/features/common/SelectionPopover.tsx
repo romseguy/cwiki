@@ -1,9 +1,27 @@
-import { Button } from "@chakra-ui/react";
-import { marked } from "marked";
 import { Component, PropsWithChildren, useState } from "react";
 import onClickOutside from "react-onclickoutside";
 
-class SelectionPopover extends Component<
+function selectionExists() {
+  const selection = window.getSelection();
+  return (
+    selection &&
+    selection.rangeCount > 0 &&
+    selection.getRangeAt(0) &&
+    !selection.getRangeAt(0).collapsed &&
+    selection.getRangeAt(0).getBoundingClientRect().width > 0 &&
+    selection.getRangeAt(0).getBoundingClientRect().height > 0
+  );
+}
+
+function clearSelection() {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+}
+
+class SP extends Component<
   PropsWithChildren<{
     showPopover: boolean;
     style?: {};
@@ -64,12 +82,12 @@ class SelectionPopover extends Component<
 
   componentDidMount() {
     const target = document.querySelector("[data-selectable]");
-    target.addEventListener("mouseup", this._handleMouseUp);
+    target && target.addEventListener("mouseup", this._handleMouseUp);
   }
 
   componentWillUnmount() {
     const target = document.querySelector("[data-selectable]");
-    target.removeEventListener("mouseup", this._handleMouseUp);
+    target && target.removeEventListener("mouseup", this._handleMouseUp);
   }
 
   render() {
@@ -95,9 +113,9 @@ class SelectionPopover extends Component<
           visibility,
           display,
           position: "fixed",
-          top: 10,
+          top: window.innerHeight / 2,
           //left,
-          right: window.innerWidth / 2 - 50,
+          right: window.innerWidth / 2 - 140,
           ...style
         }}
         // {...otherProps}
@@ -108,57 +126,4 @@ class SelectionPopover extends Component<
   }
 }
 
-const md = `
-  ---
-order-number: 1
-
----
-
-> [!info] The main article in the series [[Books]]
-
-There are many **books** related to the topics covered on this wiki, and more generally, related to the topics discussed on the [Cassiopaea Forum](https://cassiopaea.org/forum/index.php). This article series is about such books.
-
-Currently, the main way of navigating to articles on books is the [[Recommended books|recommended books]] list.
-
-See also
---------
-
-*   [[Recommended books]]
-
-External links
---------------
-
-*   [Cassiopaea Forum board: Books](https://cassiopaea.org/forum/index.php/board,31.0.html) (Discussion board for books. Some book discussions also take place elsewhere on the Cassiopaea Forum, though.)
-
-All ‘Books’ topics
-------------------
-
-*   [[All and Everything]] (Ten books in three series by G. I. Gurdjieff)
-*   [[Recommended books]] (The current list of books recommended by the FOTCM, with links to further information and overviews of the topics concerned.)
-*   [[The Wave Series]] (A book in 8 volumes that covers concepts and material integral to Cassiopaea Forum.)
-
-`;
-const SandboxPage = () => {
-  const [showPopover, setShowPopover] = useState(false);
-  const SP = onClickOutside(SelectionPopover);
-  return (
-    <div>
-      <div data-selectable>
-        <p>This is the first selectable paragraph. Looking pretty good.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
-      </div>
-      <SP
-        showPopover={showPopover}
-        onSelect={() => {
-          setShowPopover(true);
-        }}
-        onDeselect={() => {
-          setShowPopover(false);
-        }}
-      >
-        <Button>Add a note with this selection</Button>
-      </SP>
-    </div>
-  );
-};
-export default SandboxPage;
+export const SelectionPopover = onClickOutside(SP);

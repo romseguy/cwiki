@@ -33,6 +33,7 @@ export * from "./forms/RTEditor";
 // export * from "./forms/Textarea";
 // export * from "./forms/UrlControl";
 
+export * from "./SelectionPopover";
 export * from "./AppHeading";
 export * from "./Button";
 // export * from "./CollapsibleLink";

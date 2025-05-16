@@ -37,6 +37,7 @@ import { useAppDispatch } from "store";
 import api from "utils/api";
 import { TOKEN_NAME, magic } from "utils/auth";
 import { handleError } from "utils/form";
+import { useTranslation } from "next-i18next";
 
 const onLoginWithSocial = async (provider: OAuthProvider) => {
   await magic.oauth.loginWithRedirect({
@@ -46,6 +47,7 @@ const onLoginWithSocial = async (provider: OAuthProvider) => {
 };
 
 export const LoginForm = ({ isMobile, ...props }: PageProps) => {
+  const { t } = useTranslation();
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const dispatch = useAppDispatch();
@@ -139,22 +141,43 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
           control={control}
           errors={errors}
           register={register}
+          //label={t("email")}
+          placeholder={t("email-placeholder")}
           isDisabled={isLoggingIn}
           isMultiple={false}
           isRequired
           mb={0}
         />
 
-        <FormControl display="flex" flexDir="row" mb={0}>
-          <FormLabel mt={3}>Password</FormLabel>
+        <FormControl
+          display="flex"
+          flexDir="column"
+          justifyContent="center"
+          my={3}
+        >
+          <FormLabel mt={3}>{t("login-question")}</FormLabel>
+          {/* <FormLabel mt={3}>{t("pwd")}</FormLabel>
           <Checkbox
             borderColor={isDark ? "white" : theme.colors.black}
             onChange={() => setIsPassword(!isPassword)}
-          />
+          /> */}
+          <Button
+            colorScheme="teal"
+            fontSize="sm"
+            onClick={() => setIsPassword(!isPassword)}
+          >
+            {t("login-pwd")}
+          </Button>
         </FormControl>
 
         {isPassword && (
-          <PasswordControl errors={errors} register={register} noLabel mb={3} />
+          <PasswordControl
+            errors={errors}
+            register={register}
+            placeholder={t("pwd-placeholder")}
+            noLabel
+            mb={3}
+          />
         )}
 
         <ErrorMessage
@@ -175,7 +198,7 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
           isDisabled={isLoading || Object.keys(errors).length > 0}
           fontSize="sm"
         >
-          {isPassword ? "Se connecter" : "Envoyer un e-mail de connexion"}
+          {isPassword ? t("login-submit") : t("login-email")}
         </Button>
       </Column>
 

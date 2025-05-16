@@ -37,6 +37,7 @@ import api from "utils/api";
 import { magic } from "utils/auth";
 import { getEnv } from "utils/env";
 import { ServerError } from "utils/errors";
+import { localize } from "utils/localize";
 import { capitalize } from "utils/string";
 import theme, { breakpoints, rainbowBorder } from "./theme";
 
@@ -48,6 +49,7 @@ export const Layout = ({
   children,
   isMobile,
   pageTitle,
+  org,
   ...props
 }: React.PropsWithChildren<LayoutProps>) => {
   //#region styling
@@ -141,11 +143,10 @@ export const Layout = ({
             </Link>
           </HStack>
 
-          {router.asPath.includes("/a/") ? (
+          {org ? (
             <>
               <HStack
                 css={css`
-                  ${borderRight}
                   a {
                     padding-top: 2px;
                   }
@@ -154,32 +155,35 @@ export const Layout = ({
               >
                 <FaLongArrowAltRight />
                 <FaTree />
-                <Link href={"/a/" + entityUrl} shallow>
-                  {entityUrl}
+                <Link href={"/a/" + org.orgUrl} shallow>
+                  {localize(org.orgName, router.locale)}
                 </Link>
               </HStack>
 
               {/* Add Branch */}
               {!router.asPath.includes("/b/") && (
-                <HStack
-                  css={css`
-                    a {
-                      padding-top: 2px;
-                    }
-                  `}
-                >
+                <HStack>
                   {router.asPath.includes("add") && <FaLongArrowAltRight />}
                   <AddIcon boxSize={3} />
-                  <Link
-                    href={
-                      router.asPath.includes("/b/add")
-                        ? "#"
-                        : `/b/add${router.asPath}`
-                    }
-                    shallow
-                  >
-                    {t("add-b")}
-                  </Link>
+                  <Box ml={1} pt={0.5}>
+                    <Link
+                      href={
+                        router.asPath.includes("/b/add")
+                          ? "#"
+                          : `/b/add${router.asPath}`
+                      }
+                      shallow
+                    >
+                      {t("add-b")}
+                    </Link>
+                    {/* {router.locale === "en" ? (
+                        <>to the tree {org.orgName.en}</>
+                      ) : (
+                        <>
+                          à <FaTree /> {localize(org.orgName, router.locale)}
+                        </>
+                      )} */}
+                  </Box>
                 </HStack>
               )}
 
@@ -279,7 +283,6 @@ export const Layout = ({
           background: ${isDark
             ? "linear-gradient( to bottom, #14161c 0%, #14161c 25%, #344155 50%, #2c323b 75%, #1a202c 100%)"
             : "linear-gradient( to bottom, #cffffe 0%, #cffffe 25%, #fafafa 50%, #fafafa 75%, #fafafa 100%)"};
-          padding: 12px 12px 12px 12px;
 
           @media (min-width: ${breakpoints["xl"]}) {
             border-left: 8px solid transparent;

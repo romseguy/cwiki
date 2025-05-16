@@ -1,4 +1,4 @@
-import { VStack } from "@chakra-ui/react";
+import { HStack, VStack } from "@chakra-ui/react";
 import { useGetOrgsQuery } from "features/api/orgsApi";
 import { AppHeading, EntityButton, Link } from "features/common";
 import { EntityAddButton } from "features/common/entities/EntityAddButton";
@@ -8,29 +8,68 @@ import { useSession } from "hooks/useSession";
 import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "utils/api";
 import { hasItems } from "utils/array";
 import { PageProps } from "./_app";
 
 const IndexPage = (props: PageProps) => {
   const { data: session } = useSession();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   const orgsQuery = useGetOrgsQuery({ orgType: EOrgType.NETWORK });
+  const orgs = orgsQuery.data || [];
+  // ?.concat([
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0],
+  //   orgsQuery.data[0]
+  // ]);
+  let rows = [];
+  for (let i = 0; i <= orgs.length; ++i) {
+    if (i % 3 === 0) rows.push([orgs[i], orgs[i + 1], orgs[i + 2]]);
+    ++i;
+  }
+  console.log("🚀 ~ IndexPage ~ components:", rows);
 
   return (
     <Layout pageTitle={t("home")} {...props}>
       {/* {session ? ( */}
       <VStack>
-        <AppHeading>Welcome to CassWiki</AppHeading>
+        <AppHeading>{t("welcome")}</AppHeading>
         <AppHeading smaller>{t("home-list")}</AppHeading>
         <VStack alignItems="start">
-          {!hasItems(orgsQuery.data) && (
-            <EntityAddButton orgType={EOrgType.NETWORK} />
-          )}
-          {hasItems(orgsQuery.data) &&
-            orgsQuery.data?.map((org) => {
-              return <EntityButton key={org._id} org={org} />;
+          {!hasItems(orgs) && <EntityAddButton orgType={EOrgType.NETWORK} />}
+          {hasItems(orgs) &&
+            rows.map((row) => {
+              return (
+                <HStack>
+                  {row.map((org) => (
+                    <EntityButton org={org} />
+                  ))}
+                </HStack>
+              );
             })}
         </VStack>
       </VStack>

@@ -27,6 +27,15 @@ export const OrgSchema = new Schema<IOrg>(
       en: String,
       fr: String
     },
+    orgNotes: {
+      type: [
+        {
+          quote: { type: String, required: true, trim: true },
+          message: { type: String, required: true, trim: true }
+        }
+      ],
+      default: []
+    },
     orgAddress: {
       type: [{ address: { type: String, trim: true } }],
       default: []

@@ -61,7 +61,8 @@ export const TabContainerContent = ({ children, ...props }: FlexProps & {}) => {
   return (
     <Flex
       flexDirection="column"
-      bgColor={isDark ? "gray.700" : "whiteAlpha.700"}
+      bg={`rgba(${isDark ? "255,255,255,0.1" : "0,0,0,0.1"})`}
+      borderBottomRadius="lg"
       {...props}
     >
       {children}

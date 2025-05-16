@@ -5,21 +5,45 @@ import {
   SmallAddIcon
 } from "@chakra-ui/icons";
 import {
+  Alert,
+  AlertIcon,
+  Box,
   Button,
+  Flex,
   Heading,
+  HStack,
   Icon,
   IconButton,
   Spinner,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
   Tooltip,
+  Tr,
+  useColorMode,
   VStack
 } from "@chakra-ui/react";
 import {
+  DeleteOrgParams,
   EditOrgPayload,
+  getOrg,
+  useDeleteOrgMutation,
   useEditOrgMutation,
   useGetOrgQuery
 } from "features/api/orgsApi";
 import { useGetSubscriptionQuery } from "features/api/subscriptionsApi";
-import { EntityAddButton, EntityButton, Link, RTEditor } from "features/common";
+import {
+  DeleteButton,
+  DeleteIconButton,
+  EntityAddButton,
+  EntityButton,
+  Link,
+  RTEditor,
+  SelectionPopover
+} from "features/common";
 import { EditIconButton } from "features/common/EditIconButton";
 import {
   TabContainer,
@@ -43,54 +67,125 @@ import { selectUserEmail } from "store/userSlice";
 import {
   capitalize,
   MD_URL,
+  normalize,
   transformRTEditorOutput,
   WIKI_URL
 } from "utils/string";
 import { localize } from "utils/localize";
 import { hasItems } from "utils/array";
+import { css } from "@emotion/react";
+import { useSession } from "hooks/useSession";
+import { getRefId } from "models/Entity";
+import { wrapper } from "store";
+import { getRunningQueriesThunk } from "features/api";
+
+const initialOrgQueryParams = (entityUrl: string) => ({
+  orgUrl: entityUrl,
+  populate: "orgs orgTopics"
+});
+
+const Description = ({ description, onClick }) => {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { t } = useTranslation();
+  const [showPopover, setShowPopover] = useState(false);
+
+  return (
+    <>
+      <Alert status="info" w="30%" m="0 auto">
+        <AlertIcon />
+        <Flex>{t("select")}</Flex>
+      </Alert>
+      {/* <div data-selectable>yadyayda</div> */}
+      <Box
+        data-selectable
+        className="rteditor"
+        dangerouslySetInnerHTML={{
+          __html: sanitize(description)
+        }}
+        bg={`rgba(${isDark ? "255,255,255,0.1" : "0,0,0,0.1"})`}
+        borderRadius={12}
+        mt={3}
+        p={5}
+      />
+      <SelectionPopover
+        showPopover={showPopover}
+        onSelect={() => {
+          setShowPopover(true);
+        }}
+        onDeselect={() => {
+          setShowPopover(false);
+        }}
+      >
+        <Button
+          colorScheme="orange"
+          onClick={() => {
+            const selection = window.getSelection().toString();
+            onClick(selection);
+            setShowPopover(false);
+          }}
+        >
+          {t("select-submit")}
+        </Button>
+      </SelectionPopover>
+    </>
+  );
+};
+
+const keys = [
+  { key: "actions", label: "" },
+  { key: "quote", label: "quote" },
+  { key: "message", label: "message" }
+];
 
 const TreePage = ({ ...props }: PageProps) => {
+  const { data: session } = useSession();
   const { t } = useTranslation();
   const toast = useToast({ position: "top" });
+  const [deleteOrg] = useDeleteOrgMutation();
+  const [editOrg] = useEditOrgMutation();
+  const email = useSelector(selectUserEmail);
+  const subQuery = useGetSubscriptionQuery({ email });
+
   const router = useRouter();
-  console.log("🚀 ~ TreePage ~ router:", router.query.treeName);
   let [
     entityUrl,
     currentTabLabel, // = Object.keys(defaultTabs)[0],
     entityTabItem
   ] = router.query.treeName;
+  const query = useGetOrgQuery(initialOrgQueryParams(entityUrl));
+  const org = query.data;
+  const orgName = localize(org?.orgName);
+  const orgDescription = localize(
+    org?.orgDescription || { en: "", fr: "" },
+    router.locale
+  );
+  const suborg = org?.orgs?.find(({ orgUrl }) => orgUrl === entityTabItem);
+
   const [isBranch, setIsBranch] = useState(
     currentTabLabel === "b" && !!entityTabItem
   );
-  console.log("🚀 ~ TreePage ~ isBranch:", isBranch);
 
-  const query = useGetOrgQuery({
-    orgUrl: entityUrl,
-    populate: "orgs orgTopics"
-  });
-  const [editOrg] = useEditOrgMutation();
-  const org = query.data;
-  const suborg = org?.orgs.find(({ orgUrl }) => orgUrl === entityTabItem);
-  let orgDescription = org?.orgDescription || { en: "", fr: "" };
-  //const orgDescription = org?.orgDescription;
-  const email = useSelector(selectUserEmail);
-  const subQuery = useGetSubscriptionQuery({ email });
-
-  const [description, setDescription] = useState<string | undefined>(
-    org?.orgDescription
-  );
+  const [description, setDescription] = useState<string | undefined>();
   useEffect(() => {
     if (org) {
-      //if (!orgDescription) return setDescription(undefined);
+      let orgDesc = localize(org?.orgDescription, router.locale);
       const newDoc = isMobile
-        ? transformRTEditorOutput(orgDescription[router.locale])
-        : new DOMParser().parseFromString(
-            orgDescription[router.locale],
-            "text/html"
-          );
-      const newDescription = newDoc.body.innerHTML;
-      if (description !== newDescription) setDescription(newDescription);
+        ? transformRTEditorOutput(orgDesc)
+        : new DOMParser().parseFromString(orgDesc, "text/html");
+      setDescription(newDoc.body.innerHTML);
     }
+    // if (org) {
+    //   //if (!orgDescription) return setDescription(undefined);
+    //   const newDoc = isMobile
+    //     ? transformRTEditorOutput(orgDescription[router.locale])
+    //     : new DOMParser().parseFromString(
+    //         orgDescription[router.locale],
+    //         "text/html"
+    //       );
+    //   const newDescription = newDoc.body.innerHTML;
+    //   if (description !== newDescription) setDescription(newDescription);
+    // }
   }, [org, router.locale]);
 
   const [isAddingDescription, setIsAddingDescription] = useState(false);
@@ -98,16 +193,16 @@ const TreePage = ({ ...props }: PageProps) => {
     currentTabLabel !== "t"
   );
   const [isBranchesOpen, setIsBranchesOpen] = useState(true);
-  const [isThreadsOpen, setIsThreadsOpen] = useState(true);
+  const [isNotesOpen, setIsNotesOpen] = useState(true);
 
-  const [currentTopicName, setCurrentTopicName] = useState(entityTabItem);
+  // const [isThreadsOpen, setIsThreadsOpen] = useState(true);
+  // const [currentTopicName, setCurrentTopicName] = useState(entityTabItem);
+
   useEffect(() => {
-    console.log("🚀 ~ TreePage ~ entityTabItem:", entityTabItem);
     setIsBranch(router.asPath.includes("/b/"));
 
     if (currentTabLabel === "t") setCurrentTopicName(entityTabItem);
     else if (currentTabLabel === "b") {
-      console.log("🚀 ~ useEffect ~ currentTabLabel:", entityTabItem);
     }
   }, [entityTabItem]);
 
@@ -116,37 +211,23 @@ const TreePage = ({ ...props }: PageProps) => {
       pageTitle={
         org ? `Tree : ${localize(org.orgName, router.locale)}` : undefined
       }
+      org={org}
       {...props}
     >
       {query.isLoading && <Spinner />}
       {!query.isLoading && (
-        <>
+        <Box m={3}>
           <VStack mb={3}>
             <EntityButton org={org} suborg={suborg} />
             <Link
-              href={
-                suborg
-                  ? "/"
-                  : WIKI_URL +
-                    "/" +
-                    capitalize(org.orgName.en) +
-                    "/" +
-                    capitalize(org.orgName.en)
-              }
+              href={suborg ? "/" : WIKI_URL + "/" + orgName + "/" + orgName}
               target="_blank"
             >
               {t("wiki")}
             </Link>
             <Link
               href={
-                suborg
-                  ? "/"
-                  : MD_URL +
-                    "/" +
-                    capitalize(org.orgName.en) +
-                    "/" +
-                    capitalize(org.orgName.en) +
-                    ".md"
+                suborg ? "/" : MD_URL + "/" + orgName + "/" + orgName + ".md"
               }
               target="_blank"
             >
@@ -191,56 +272,70 @@ const TreePage = ({ ...props }: PageProps) => {
             </TabContainerHeader>
 
             {isDescriptionOpen && (
-              <TabContainerContent
-                //bg={isDark ? "gray.600" : "#F7FAFC"}
-                p={3}
-              >
+              <TabContainerContent p={3}>
                 {isAddingDescription ? (
                   <>
                     <RTEditor
-                      defaultValue={orgDescription[router.locale]}
+                      defaultValue={orgDescription}
                       onChange={({ html }) => {
                         setDescription(html);
                       }}
                     />
-                    <Button
-                      onClick={async () => {
-                        setIsAddingDescription(false);
-                        const payload: EditOrgPayload = {
-                          orgDescription: {
-                            fr:
-                              !org.orgDescription || !org.orgDescription.fr
-                                ? description
-                                : orgDescription.fr,
-                            en:
-                              !org.orgDescription || !org.orgDescription.en
-                                ? description
-                                : orgDescription.en
-                          }
-                        };
-                        await editOrg({ payload, org }).unwrap();
-                        toast({ title: "Success" });
-                      }}
-                    >
-                      {t("submit")}
-                    </Button>
+                    <HStack justifyContent="space-between" mt={3}>
+                      <Button
+                        colorScheme="red"
+                        onClick={() => setIsAddingDescription(false)}
+                      >
+                        {t("cancel")}
+                      </Button>
+                      <Button
+                        colorScheme="green"
+                        onClick={async () => {
+                          setIsAddingDescription(false);
+                          const payload: EditOrgPayload = {
+                            orgDescription: {
+                              fr:
+                                router.locale === "fr"
+                                  ? description
+                                  : org.orgDescription.fr,
+                              en:
+                                router.locale === "en"
+                                  ? description
+                                  : org.orgDescription.en
+                            }
+                          };
+                          await editOrg({ payload, org }).unwrap();
+                          toast({ title: t("success") });
+                        }}
+                      >
+                        {t("submit")}
+                      </Button>
+                    </HStack>
                   </>
                 ) : description && description.length > 0 ? (
-                  <div
-                    className="rteditor"
-                    dangerouslySetInnerHTML={{
-                      __html: sanitize(description)
+                  <Description
+                    description={description}
+                    onClick={async (selection) => {
+                      await editOrg({
+                        payload: {
+                          orgNotes: (org.orgNotes || []).concat([
+                            { quote: selection }
+                          ])
+                        },
+                        org
+                      }).unwrap();
+                      toast({ status: "success", title: t("success") });
                     }}
                   />
                 ) : true ? (
                   <Tooltip
                     placement="right"
-                    label={`Ajouter une présentation ${orgTypeFull2(
+                    label={`Ajouter une description ${orgTypeFull2(
                       org?.orgType
                     )}`}
                   >
                     <IconButton
-                      aria-label={`Ajouter une présentation ${orgTypeFull2(
+                      aria-label={`Ajouter une description ${orgTypeFull2(
                         org?.orgType
                       )}`}
                       alignSelf="flex-start"
@@ -281,11 +376,12 @@ const TreePage = ({ ...props }: PageProps) => {
               {isBranchesOpen && (
                 <TabContainerContent p={3}>
                   <VStack>
-                    {hasItems(org.orgs) && org.orgs.map((suborg) => {
-                      return <EntityButton org={org} suborg={suborg} />;
-                    })}
-                    {!hasItems(org.orgs)} && (
-                    <EntityAddButton org={org} orgType={EOrgType.GENERIC}/>
+                    {hasItems(org?.orgs) &&
+                      org.orgs.map((suborg) => {
+                        return <EntityButton org={org} suborg={suborg} />;
+                      })}
+                    {!hasItems(org?.orgs) && (
+                      <EntityAddButton org={org} orgType={EOrgType.GENERIC} />
                     )}
                   </VStack>
                 </TabContainerContent>
@@ -293,7 +389,163 @@ const TreePage = ({ ...props }: PageProps) => {
             </TabContainer>
           )}
 
-          <TabContainer borderBottomRadius={isThreadsOpen ? undefined : "lg"}>
+          <TabContainer>
+            <TabContainerHeader
+              borderBottomRadius={isNotesOpen ? undefined : "lg"}
+              onClick={() => setIsNotesOpen(!isNotesOpen)}
+            >
+              <Icon
+                as={isNotesOpen ? ChevronUpIcon : ChevronRightIcon}
+                boxSize={6}
+                ml={3}
+                mr={1}
+              />
+              <Heading size="sm">Notes</Heading>
+            </TabContainerHeader>
+
+            {isNotesOpen && (
+              <TabContainerContent p={3}>
+                {query.data && (
+                  <VStack>
+                    <Table
+                      colorScheme="white"
+                      css={css`
+                        width: 60%;
+                        th {
+                          font-size: ${isMobile ? "11px" : "inherit"};
+                          padding: ${isMobile ? 0 : "4px"};
+                        }
+                        td {
+                          padding: ${isMobile ? "8px 0" : "8px"};
+                          padding-right: ${isMobile ? "4px" : "8px"};
+                          button {
+                            font-size: ${isMobile ? "13px" : "inherit"};
+                          }
+                        }
+                      `}
+                    >
+                      <Thead>
+                        <Tr>
+                          {keys.map(({ key, label }) => {
+                            return (
+                              <Th
+                                key={key}
+                                //color={isDark ? "white" : "black"}
+                                cursor="pointer"
+                                //onClick={() => setSelectedOrder(key)}
+                                {...(!label ? { w: "25px" } : {})}
+                              >
+                                {label}
+
+                                {/* {selectedOrder ? (
+                                  selectedOrder.key === key ? (
+                                    selectedOrder.order === "desc" ? (
+                                      <ChevronUpIcon {...iconProps} />
+                                    ) : (
+                                      <ChevronDownIcon {...iconProps} />
+                                    )
+                                  ) : (
+                                    ""
+                                  )
+                                ) : key === "message" ? (
+                                  <ChevronDownIcon {...iconProps} />
+                                ) : (
+                                  ""
+                                )} */}
+                              </Th>
+                            );
+                          })}
+                        </Tr>
+                      </Thead>
+
+                      <Tbody>
+                        {org.orgNotes.map(({ _id, quote, message }) => {
+                          return (
+                            <Tr key={`note-${_id}`}>
+                              <Td p={isMobile ? 0 : undefined}>
+                                <DeleteIconButton
+                                  size="xs"
+                                  onClick={async () => {
+                                    await editOrg({
+                                      payload: {
+                                        orgNotes: org.orgNotes.filter(
+                                          (orgNote) => orgNote._id !== _id
+                                        )
+                                      },
+                                      org
+                                    }).unwrap();
+                                  }}
+                                />
+                              </Td>
+                              <Td p={isMobile ? 0 : undefined}>
+                                <Text>{quote}</Text>
+                              </Td>
+                              <Td p={isMobile ? 0 : undefined}>
+                                <EditIconButton />
+                                <Text>{message}</Text>
+                              </Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
+                  </VStack>
+                )}
+              </TabContainerContent>
+            )}
+          </TabContainer>
+
+          {session?.user.userId === getRefId(org) && (
+            <HStack justifyContent="center" mb={3}>
+              <DeleteButton
+                label={t("delete")}
+                onClick={async () => {
+                  const params: DeleteOrgParams = { orgId: org._id };
+                  await deleteOrg(params).unwrap();
+                }}
+              />
+            </HStack>
+          )}
+        </Box>
+      )}
+    </Layout>
+  );
+};
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  (store) => async (ctx) => {
+    if (
+      Array.isArray(ctx.query.name) &&
+      typeof ctx.query.name[0] === "string"
+    ) {
+      const entityUrl = ctx.query.name[0];
+      const normalizedEntityUrl = normalize(entityUrl);
+      if (entityUrl !== normalizedEntityUrl)
+        return {
+          redirect: { permanent: false, destination: "/" + normalizedEntityUrl }
+        };
+
+      store.dispatch(getOrg.initiate(initialOrgQueryParams(entityUrl)));
+
+      const [orgQuery] = await Promise.all(
+        store.dispatch(getRunningQueriesThunk())
+      );
+    }
+
+    const { locale } = ctx;
+
+    return {
+      props: {
+        ...(await serverSideTranslations(locale ?? "en", ["common"]))
+      }
+    };
+  }
+);
+
+export default TreePage;
+
+{
+  /* <TabContainer >
             <TabContainerHeader
               borderBottomRadius={isThreadsOpen ? undefined : "lg"}
               onClick={() => setIsThreadsOpen(!isThreadsOpen)}
@@ -321,17 +573,5 @@ const TreePage = ({ ...props }: PageProps) => {
                 )}
               </TabContainerContent>
             )}
-          </TabContainer>
-        </>
-      )}
-    </Layout>
-  );
-};
-
-export const getServerSideProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? "en", ["common"]))
-  }
-});
-
-export default TreePage;
+          </TabContainer> */
+}

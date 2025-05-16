@@ -34,6 +34,7 @@ export interface IOrg extends IEntity {
   redirectUrl?: string;
   orgType: EOrgType;
   orgDescription?: { en: string; fr: string };
+  orgNotes?: { _id: string; quote: string; message?: string }[];
   orgAddress: IEntityAddress[];
   orgCity?: string;
   orgLat?: number;

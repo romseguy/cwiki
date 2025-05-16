@@ -18,7 +18,7 @@ export type GetOrgsParams = {
   populate?: string;
 };
 
-export type DeleteOrgParams = { orgId: string; isDeleteOrgEvents: boolean };
+export type DeleteOrgParams = { orgId: string; isDeleteOrgEvents?: boolean };
 
 export const orgApi = api.injectEndpoints({
   endpoints: (build) => ({
