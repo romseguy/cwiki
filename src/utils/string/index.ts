@@ -7,6 +7,9 @@ export * from "./getStyleObjectFromString";
 export * from "./normalize";
 export * from "./toast";
 
+export const WIKI_URL = "https://casswiki-quartz.pages.dev";
+export const MD_URL =
+  "https://github.com/rao10/casswiki_quartz/blob/v4/content";
 export const MB = 1000000;
 
 export const phoneR = /^[0-9]{10,}$/i;

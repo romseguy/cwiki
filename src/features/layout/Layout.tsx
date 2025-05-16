@@ -6,6 +6,7 @@ import {
   HStack,
   Icon,
   Spinner,
+  Tooltip,
   useColorMode
 } from "@chakra-ui/react";
 import { css } from "@emotion/react";
@@ -15,9 +16,14 @@ import { useTranslation } from "next-i18next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import { FaLongArrowAltRight, FaPlus, FaTree } from "react-icons/fa";
+import {
+  FaExclamationCircle,
+  FaLongArrowAltRight,
+  FaPlus,
+  FaTree
+} from "react-icons/fa";
 import { IoIosGitBranch } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "store";
@@ -69,6 +75,13 @@ export const Layout = ({
       locale: newLocale
     });
   };
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const { status } = await api.get("check");
+      if (status !== 200) setOffline(true);
+    })();
+  }, []);
   //#endregion
 
   const dispatch = useAppDispatch();
@@ -214,6 +227,13 @@ export const Layout = ({
                 `}
                 pr={2}
               >
+                {offline && (
+                  <Tooltip label={t("offline")}>
+                    <span>
+                      <FaExclamationCircle />
+                    </span>
+                  </Tooltip>
+                )}
                 <Link href="/settings" shallow>
                   {t("settings")}
                 </Link>

@@ -103,11 +103,11 @@ export const orgApi = api.injectEndpoints({
     getOrgs: build.query<IOrg[], GetOrgsParams | void>({
       query: ({ ...query } = {}) => {
         const hasQueryParams = Object.keys(query).length > 0;
-        if (hasQueryParams) {
-          //console.groupCollapsed("getOrgs");
-          //console.log("query", query);
-          //console.groupEnd();
-        }
+        //if (hasQueryParams) {
+        console.groupCollapsed("getOrgs");
+        console.log("query", query);
+        console.groupEnd();
+        //}
         return {
           url: `orgs${hasQueryParams ? `?${objectToQueryString(query)}` : ""}`
         };

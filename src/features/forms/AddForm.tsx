@@ -100,7 +100,8 @@ export const AddForm = ({
       const orgUrl = org.orgUrl;
 
       toast({
-        title: `Vous allez être redirigé vers l'arbre : ${form.treeName}...`,
+        //title: `Vous allez être redirigé vers l'arbre : ${form.treeName}...`,
+        title: t("success"),
         status: "success"
       });
 

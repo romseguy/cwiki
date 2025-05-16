@@ -19,7 +19,7 @@ import {
   useGetOrgQuery
 } from "features/api/orgsApi";
 import { useGetSubscriptionQuery } from "features/api/subscriptionsApi";
-import { EntityButton, RTEditor } from "features/common";
+import { EntityAddButton, EntityButton, Link, RTEditor } from "features/common";
 import { EditIconButton } from "features/common/EditIconButton";
 import {
   TabContainer,
@@ -40,8 +40,14 @@ import { isMobile } from "react-device-detect";
 import { FaNewspaper } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { selectUserEmail } from "store/userSlice";
-import { transformRTEditorOutput } from "utils/string";
+import {
+  capitalize,
+  MD_URL,
+  transformRTEditorOutput,
+  WIKI_URL
+} from "utils/string";
 import { localize } from "utils/localize";
+import { hasItems } from "utils/array";
 
 const TreePage = ({ ...props }: PageProps) => {
   const { t } = useTranslation();
@@ -64,7 +70,7 @@ const TreePage = ({ ...props }: PageProps) => {
   });
   const [editOrg] = useEditOrgMutation();
   const org = query.data;
-  const suborg = org.orgs.find(({ orgUrl }) => orgUrl === entityTabItem);
+  const suborg = org?.orgs.find(({ orgUrl }) => orgUrl === entityTabItem);
   let orgDescription = org?.orgDescription || { en: "", fr: "" };
   //const orgDescription = org?.orgDescription;
   const email = useSelector(selectUserEmail);
@@ -117,6 +123,35 @@ const TreePage = ({ ...props }: PageProps) => {
         <>
           <VStack mb={3}>
             <EntityButton org={org} suborg={suborg} />
+            <Link
+              href={
+                suborg
+                  ? "/"
+                  : WIKI_URL +
+                    "/" +
+                    capitalize(org.orgName.en) +
+                    "/" +
+                    capitalize(org.orgName.en)
+              }
+              target="_blank"
+            >
+              {t("wiki")}
+            </Link>
+            <Link
+              href={
+                suborg
+                  ? "/"
+                  : MD_URL +
+                    "/" +
+                    capitalize(org.orgName.en) +
+                    "/" +
+                    capitalize(org.orgName.en) +
+                    ".md"
+              }
+              target="_blank"
+            >
+              {t("md")}
+            </Link>
           </VStack>
 
           <TabContainer
@@ -174,11 +209,11 @@ const TreePage = ({ ...props }: PageProps) => {
                         const payload: EditOrgPayload = {
                           orgDescription: {
                             fr:
-                              router.locale === "fr"
+                              !org.orgDescription || !org.orgDescription.fr
                                 ? description
                                 : orgDescription.fr,
                             en:
-                              router.locale === "en"
+                              !org.orgDescription || !org.orgDescription.en
                                 ? description
                                 : orgDescription.en
                           }
@@ -187,7 +222,7 @@ const TreePage = ({ ...props }: PageProps) => {
                         toast({ title: "Success" });
                       }}
                     >
-                      Modifier
+                      {t("submit")}
                     </Button>
                   </>
                 ) : description && description.length > 0 ? (
@@ -246,9 +281,12 @@ const TreePage = ({ ...props }: PageProps) => {
               {isBranchesOpen && (
                 <TabContainerContent p={3}>
                   <VStack>
-                    {org.orgs.map((suborg) => {
+                    {hasItems(org.orgs) && org.orgs.map((suborg) => {
                       return <EntityButton org={org} suborg={suborg} />;
                     })}
+                    {!hasItems(org.orgs)} && (
+                    <EntityAddButton org={org} orgType={EOrgType.GENERIC}/>
+                    )}
                   </VStack>
                 </TabContainerContent>
               )}

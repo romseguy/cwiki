@@ -3,22 +3,23 @@ import { Button, ButtonProps, Icon, useColorMode } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { FaGlobeEurope, FaTree } from "react-icons/fa";
-import { EOrgType } from "models/Org";
+import { EOrgType, IOrg } from "models/Org";
+import { IoIosGitNetwork } from "react-icons/io";
+import { useTranslation } from "next-i18next";
 
 export const EntityAddButton = ({
   label,
-  eventName,
-  orgName,
+  org,
   orgType,
   onClick,
   ...props
 }: ButtonProps & {
   label?: string;
-  eventName?: string;
-  orgName?: string;
+  org?: Partial<IOrg>;
   orgType?: EOrgType;
   onClick?: () => void;
 }) => {
+  const { t } = useTranslation();
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const router = useRouter();
@@ -46,6 +47,35 @@ export const EntityAddButton = ({
         {...props}
       >
         {label || "Ajouter un arbre"}
+      </Button>
+    );
+  }
+
+  if (org && orgType === EOrgType.GENERIC) {
+    return (
+      <Button
+        colorScheme="teal"
+        leftIcon={
+          <>
+            <AddIcon mr={0.5} />
+            <Icon
+              as={IoIosGitNetwork}
+              color={isDark ? "green" : "lightgreen"}
+            />
+          </>
+        }
+        size="sm"
+        onClick={(e) => {
+          onClick && onClick();
+          e.stopPropagation();
+          const href = `/a/${org.orgUrl}/b/add`;
+          router.push(href, href, {
+            shallow: true
+          });
+        }}
+        {...props}
+      >
+        {label || t("add-b")}
       </Button>
     );
   }

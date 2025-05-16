@@ -8,6 +8,8 @@ import { useSession } from "hooks/useSession";
 import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useEffect, useState } from "react";
+import api from "utils/api";
 import { hasItems } from "utils/array";
 import { PageProps } from "./_app";
 
@@ -19,7 +21,7 @@ const IndexPage = (props: PageProps) => {
   return (
     <Layout pageTitle={t("home")} {...props}>
       {/* {session ? ( */}
-      <>
+      <VStack>
         <AppHeading>Welcome to CassWiki</AppHeading>
         <AppHeading smaller>{t("home-list")}</AppHeading>
         <VStack alignItems="start">
@@ -31,7 +33,7 @@ const IndexPage = (props: PageProps) => {
               return <EntityButton key={org._id} org={org} />;
             })}
         </VStack>
-      </>
+      </VStack>
       {/*  ) : (
          <>
            <Link href="/login" variant="underline">
