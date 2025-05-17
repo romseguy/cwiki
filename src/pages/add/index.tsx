@@ -1,3 +1,4 @@
+import { Box } from "@chakra-ui/react";
 import { AddForm } from "features/forms/AddForm";
 import { Layout } from "features/layout";
 import { useSession } from "hooks/useSession";
@@ -35,7 +36,9 @@ const AddPage = ({
 
   return (
     <Layout pageTitle="Add a tree" {...props}>
-      <AddForm session={session as Session} {...props} />
+      <Box p={3}>
+        <AddForm session={session as Session} {...props} />
+      </Box>
     </Layout>
   );
 };

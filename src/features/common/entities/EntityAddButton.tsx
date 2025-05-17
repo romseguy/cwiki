@@ -6,6 +6,7 @@ import { FaGlobeEurope, FaTree } from "react-icons/fa";
 import { EOrgType, IOrg } from "models/Org";
 import { IoIosGitNetwork } from "react-icons/io";
 import { useTranslation } from "next-i18next";
+import { localize } from "utils/localize";
 
 export const EntityAddButton = ({
   label,
@@ -23,6 +24,7 @@ export const EntityAddButton = ({
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const router = useRouter();
+  const orgName = localize(org?.orgName, router.locale);
 
   if (orgType === EOrgType.NETWORK) {
     return (

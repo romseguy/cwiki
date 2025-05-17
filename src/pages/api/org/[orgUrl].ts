@@ -36,6 +36,9 @@ handler.get<
   },
   NextApiResponse
 >(async function getOrg(req, res) {
+  const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ GET /org/[orgUrl] `;
+  console.log(prefix + "query", req.query);
+
   let {
     query: { orgUrl, hash, populate = "" }
   } = req;
@@ -72,9 +75,7 @@ handler.get<
 
     const session = await getSession({ req });
     const isCreator =
-      orgUrl === "nom_de_votre_forum" ||
-      equals(getRefId(org), session?.user.userId) ||
-      session?.user.isAdmin;
+      equals(getRefId(org), session?.user.userId) || session?.user.isAdmin;
 
     if (!isCreator) {
       if (org.orgPassword) {
@@ -146,6 +147,15 @@ handler.get<
       ) {
         //console.log(prefix + `populating ${modelKey} with custom behavior`);
         populate = populate.replace(modelKey, "");
+      }
+
+      if (modelKey === "orgNotes") {
+        org = await org
+          .populate({
+            path: "orgNotes",
+            populate: [{ path: "createdBy", select: "_id userName" }]
+          })
+          .execPopulate();
       }
 
       if (modelKey === "orgs") {
@@ -354,9 +364,20 @@ handler.get<
     org = await org.populate("createdBy", "_id userName").execPopulate();
 
     // console.log(prefix + `unhandled keys: ${populate}`);
-    // logJson(prefix, org);
+
+    // let i = 0;
+    // for (const orgNote of org.orgNotes) {
+    //   console.log("🚀 ~ getOrg ~ orgNote:", orgNote);
+    //   const user = await models.User.findOne({ _id: orgNote.createdBy });
+    //   console.log("🚀 ~ getOrg ~ user:", user);
+    //   org.orgNotes[i]["createdBy"] = user ? user.userName : "anonymous";
+    //   ++i;
+    // }
+
+    logJson(prefix, org);
     res.status(200).json(org);
   } catch (error: any) {
+    console.log(prefix + "ERROR", error);
     if (error.kind === "ObjectId")
       return res
         .status(404)
@@ -501,7 +522,6 @@ handler.put<
         }
       }
     } else {
-      console.log("🚀 ~ editOrg ~ else:", body);
       if (body.orgName) {
         body = {
           ...body,
@@ -520,7 +540,6 @@ handler.put<
       //   body = { $push: { orgs: body.orgs[0] } };
       // }
 
-      logJson("j", body);
       if (Array.isArray(body.orgLists) && body.orgLists.length > 0) {
         if (!isCreator) {
           return res
@@ -562,18 +581,10 @@ handler.put<
       }
     }
 
-    org = await models.Org.findOneAndUpdate({ _id }, update || body);
+    logJson(prefix + "update", update);
+    logJson(prefix + "body", body);
 
-    if (!org) {
-      return res
-        .status(400)
-        .json(
-          createEndpointError(
-            new Error(`L'arbre ${_id} n'a pas pu être modifié`)
-          )
-        );
-    }
-
+    await models.Org.findOneAndUpdate({ _id }, update || body);
     res.status(200).json(org);
   } catch (error: any) {
     if (error.code && error.code === databaseErrorCodes.DUPLICATE_KEY)

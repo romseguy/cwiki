@@ -5,6 +5,7 @@
   "about": "A propos",
   "home": "Tous les arbres",
   "home-list": "Quel arbre voulez-vous parcourir?",
+
   "settings": "Paramètres",
   "login": "Connexion",
   "login-submit": "Se connecter",
@@ -12,13 +13,19 @@
   "login-email": "Par email",
   "login-pwd": "Par mot de passe",
   "logout": "Déconnexion",
+
+  "created-by": "Créé par",
   "add-a": "Ajouter un arbre",
   "name-label-a": "Comment voulez-vous nommer le nouvel arbre?",
   "add-b": "Ajouter une branche",
   "add-t": "Ajouter une discussion",
+  "delete": "Supprimer",
+  "delete-note": "Supprimer la note",
+  "key-quote-note": "Citation",
+  "key-message-note": "Commentaire",
+
   "branches": "Branches",
   "desc-a": "Description",
-  "delete": "Supprimer",
   "threads": "Discussions",
   "change-locale": "t",
   "cancel": "Annuler",

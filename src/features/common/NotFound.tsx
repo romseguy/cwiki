@@ -30,54 +30,58 @@ export const NotFound = ({
   }, []);
 
   return (
-    <Layout {...props} pageTitle={`Page introuvable`}>
-      {children ? (
-        <>
-          {message && (
-            <Row border={!message && !isRedirect ? 0 : undefined} p={3} mb={3}>
-              {message}
-            </Row>
-          )}
-          {children}
-          {isRedirect && (
-            <Row
-              border={!message && !isRedirect ? 0 : undefined}
-              p={3}
-              mt={message || children ? 3 : undefined}
-            >
-              Vous allez être redirigé vers la page d'accueil dans quelques
-              secondes...
-            </Row>
-          )}
-        </>
-      ) : message || isRedirect ? (
-        <>
-          {message && (
-            <Row border={!message && !isRedirect ? 0 : undefined} p={3}>
-              {message}
-            </Row>
-          )}
-          {isRedirect && (
-            <Row
-              border={!message && !isRedirect ? 0 : undefined}
-              p={3}
-              mt={message ? 3 : undefined}
-            >
-              Vous allez être redirigé vers la page d'accueil dans quelques
-              secondes...
-            </Row>
-          )}
-        </>
-      ) : (
-        <Flex flexDir="column" alignItems="flex-start">
+    <Layout {...props} pageTitle="404">
+      <Flex flexDir="column" alignItems="flex-start" p={3}>
+        {children ? (
+          <>
+            {message && (
+              <Row
+                border={!message && !isRedirect ? 0 : undefined}
+                p={3}
+                mb={3}
+              >
+                {message}
+              </Row>
+            )}
+            {children}
+            {isRedirect && (
+              <Row
+                border={!message && !isRedirect ? 0 : undefined}
+                p={3}
+                mt={message || children ? 3 : undefined}
+              >
+                Vous allez être redirigé vers la page d'accueil dans quelques
+                secondes...
+              </Row>
+            )}
+          </>
+        ) : message || isRedirect ? (
+          <>
+            {message && (
+              <Row border={!message && !isRedirect ? 0 : undefined} p={3}>
+                {message}
+              </Row>
+            )}
+            {isRedirect && (
+              <Row
+                border={!message && !isRedirect ? 0 : undefined}
+                p={3}
+                mt={message ? 3 : undefined}
+              >
+                Vous allez être redirigé vers la page d'accueil dans quelques
+                secondes...
+              </Row>
+            )}
+          </>
+        ) : (
           <EntityAddButton
             label={`${t("add-a")} named « ${entityName} »`}
             orgName={entityName}
             orgType={EOrgType.NETWORK}
             mb={3}
           />
-        </Flex>
-      )}
+        )}
+      </Flex>
     </Layout>
   );
 };

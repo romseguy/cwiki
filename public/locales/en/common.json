@@ -5,6 +5,7 @@
   "about": "About",
   "home": "All trees",
   "home-list": "Which tree do you want to browse?",
+
   "settings": "Settings",
   "login": "Login",
   "login-submit": "Login",
@@ -12,13 +13,19 @@
   "login-email": "By email",
   "login-pwd": "By password",
   "logout": "Logout",
+
+  "created-by": "Created by",
   "add-a": "Add a tree",
   "name-label-a": "How do you want to name the new tree?",
   "add-b": "Add a branch",
   "add-t": "Add a thread",
+  "delete": "Delete",
+  "delete-note": "Delete this note",
+  "key-quote-note": "Quote",
+  "key-message-note": "Comment",
+
   "branches": "Branchs",
   "desc-a": "Description",
-  "delete": "Delete",
   "threads": "Threads",
   "change-locale": "s",
   "cancel": "Cancel",

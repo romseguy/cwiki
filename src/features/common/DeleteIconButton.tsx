@@ -46,7 +46,7 @@ export const DeleteIconButton = ({
     <>
       <Tooltip label={label} placement={placement} hasArrow={hasArrow}>
         <IconButton
-          aria-label={props["aria-label"] || "Supprimer"}
+          aria-label={props["aria-label"] || label}
           icon={<DeleteIcon />}
           //color={isDark ? "white" : theme.colors.black}
           {...(isMobile

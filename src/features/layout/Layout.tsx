@@ -1,10 +1,8 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
-  BoxProps,
   Flex,
   HStack,
-  Icon,
   Spinner,
   Tooltip,
   useColorMode
@@ -12,22 +10,23 @@ import {
 import { css } from "@emotion/react";
 import { DarkModeSwitch, Link } from "features/common";
 import { useSession } from "hooks/useSession";
+import { IOrg } from "models/Org";
 import { useTranslation } from "next-i18next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import {
   FaExclamationCircle,
   FaLongArrowAltRight,
-  FaPlus,
   FaTree
 } from "react-icons/fa";
 import { IoIosGitBranch } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "store";
 import {
+  selectIsOffline,
   selectIsSessionLoading,
   setIsSessionLoading,
   setSession
@@ -41,16 +40,16 @@ import { localize } from "utils/localize";
 import { capitalize } from "utils/string";
 import theme, { breakpoints, rainbowBorder } from "./theme";
 
-export interface LayoutProps extends PageProps, BoxProps {
+export interface LayoutProps extends PageProps {
   pageTitle?: string;
+  org?: IOrg;
 }
 
 export const Layout = ({
   children,
   isMobile,
   pageTitle,
-  org,
-  ...props
+  org
 }: React.PropsWithChildren<LayoutProps>) => {
   //#region styling
   const { colorMode } = useColorMode();
@@ -77,13 +76,7 @@ export const Layout = ({
       locale: newLocale
     });
   };
-  const [offline, setOffline] = useState(false);
-  useEffect(() => {
-    (async () => {
-      const { status } = await api.get("check");
-      if (status !== 200) setOffline(true);
-    })();
-  }, []);
+  const offline = useSelector(selectIsOffline);
   //#endregion
 
   const dispatch = useAppDispatch();
@@ -105,7 +98,6 @@ export const Layout = ({
           margin: 0 !important;
         }
       `}
-      //{...props}
     >
       <Flex
         css={css`

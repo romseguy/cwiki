@@ -1,5 +1,6 @@
 import { marked, MarkedOptions } from "marked";
 import {
+  CheckCircleIcon,
   ChevronRightIcon,
   ChevronUpIcon,
   SmallAddIcon
@@ -14,6 +15,9 @@ import {
   HStack,
   Icon,
   IconButton,
+  Input,
+  InputGroup,
+  InputLeftAddon,
   Spinner,
   Table,
   Tbody,
@@ -81,7 +85,7 @@ import { getRunningQueriesThunk } from "features/api";
 
 const initialOrgQueryParams = (entityUrl: string) => ({
   orgUrl: entityUrl,
-  populate: "orgs orgTopics"
+  populate: "orgs orgNotes"
 });
 
 const Description = ({ description, onClick }) => {
@@ -132,20 +136,20 @@ const Description = ({ description, onClick }) => {
   );
 };
 
-const keys = [
-  { key: "actions", label: "" },
-  { key: "quote", label: "quote" },
-  { key: "message", label: "message" }
-];
-
 const TreePage = ({ ...props }: PageProps) => {
   const { data: session } = useSession();
   const { t } = useTranslation();
+  const keys = [
+    { key: "actions", label: "" },
+    { key: "createdBy", label: t("created-by") },
+    { key: "quote", label: t("key-quote-note") },
+    { key: "message", label: t("key-message-note") }
+  ];
   const toast = useToast({ position: "top" });
   const [deleteOrg] = useDeleteOrgMutation();
   const [editOrg] = useEditOrgMutation();
   const email = useSelector(selectUserEmail);
-  const subQuery = useGetSubscriptionQuery({ email });
+  //const subQuery = useGetSubscriptionQuery({ email });
 
   const router = useRouter();
   let [
@@ -155,6 +159,7 @@ const TreePage = ({ ...props }: PageProps) => {
   ] = router.query.treeName;
   const query = useGetOrgQuery(initialOrgQueryParams(entityUrl));
   const org = query.data;
+  console.log("🚀 ~ TreePage ~ org:", org);
   const orgName = localize(org?.orgName);
   const orgDescription = localize(
     org?.orgDescription || { en: "", fr: "" },
@@ -194,6 +199,9 @@ const TreePage = ({ ...props }: PageProps) => {
   );
   const [isBranchesOpen, setIsBranchesOpen] = useState(true);
   const [isNotesOpen, setIsNotesOpen] = useState(true);
+  const [comment, setComment] = useState<
+    { orgNoteId: string; orgNoteMessage?: string } | undefined
+  >();
 
   // const [isThreadsOpen, setIsThreadsOpen] = useState(true);
   // const [currentTopicName, setCurrentTopicName] = useState(entityTabItem);
@@ -201,8 +209,9 @@ const TreePage = ({ ...props }: PageProps) => {
   useEffect(() => {
     setIsBranch(router.asPath.includes("/b/"));
 
-    if (currentTabLabel === "t") setCurrentTopicName(entityTabItem);
-    else if (currentTabLabel === "b") {
+    // if (currentTabLabel === "t") setCurrentTopicName(entityTabItem);
+    // else
+    if (currentTabLabel === "b") {
     }
   }, [entityTabItem]);
 
@@ -294,14 +303,8 @@ const TreePage = ({ ...props }: PageProps) => {
                           setIsAddingDescription(false);
                           const payload: EditOrgPayload = {
                             orgDescription: {
-                              fr:
-                                router.locale === "fr"
-                                  ? description
-                                  : org.orgDescription.fr,
-                              en:
-                                router.locale === "en"
-                                  ? description
-                                  : org.orgDescription.en
+                              ...org.orgDescription,
+                              [router.locale]: description
                             }
                           };
                           await editOrg({ payload, org }).unwrap();
@@ -318,9 +321,15 @@ const TreePage = ({ ...props }: PageProps) => {
                     onClick={async (selection) => {
                       await editOrg({
                         payload: {
-                          orgNotes: (org.orgNotes || []).concat([
-                            { quote: selection }
-                          ])
+                          orgNotes: (org.orgNotes || [])
+                            .concat([
+                              {
+                                quote: selection,
+                                createdAt: new Date(),
+                                createdBy: session.user.userId
+                              }
+                            ])
+                            .map(({ _id, ...orgNote }) => orgNote)
                         },
                         org
                       }).unwrap();
@@ -410,7 +419,7 @@ const TreePage = ({ ...props }: PageProps) => {
                     <Table
                       colorScheme="white"
                       css={css`
-                        width: 60%;
+                        width: 90%;
                         th {
                           font-size: ${isMobile ? "11px" : "inherit"};
                           padding: ${isMobile ? 0 : "4px"};
@@ -433,7 +442,11 @@ const TreePage = ({ ...props }: PageProps) => {
                                 //color={isDark ? "white" : "black"}
                                 cursor="pointer"
                                 //onClick={() => setSelectedOrder(key)}
-                                {...(!label ? { w: "25px" } : {})}
+                                {...(key === "actions"
+                                  ? { w: "25px" }
+                                  : key === "message"
+                                  ? { w: comment ? "50%" : undefined }
+                                  : {})}
                               >
                                 {label}
 
@@ -459,34 +472,93 @@ const TreePage = ({ ...props }: PageProps) => {
                       </Thead>
 
                       <Tbody>
-                        {org.orgNotes.map(({ _id, quote, message }) => {
-                          return (
-                            <Tr key={`note-${_id}`}>
-                              <Td p={isMobile ? 0 : undefined}>
-                                <DeleteIconButton
-                                  size="xs"
-                                  onClick={async () => {
-                                    await editOrg({
-                                      payload: {
-                                        orgNotes: org.orgNotes.filter(
-                                          (orgNote) => orgNote._id !== _id
-                                        )
-                                      },
-                                      org
-                                    }).unwrap();
-                                  }}
-                                />
-                              </Td>
-                              <Td p={isMobile ? 0 : undefined}>
-                                <Text>{quote}</Text>
-                              </Td>
-                              <Td p={isMobile ? 0 : undefined}>
-                                <EditIconButton />
-                                <Text>{message}</Text>
-                              </Td>
-                            </Tr>
-                          );
-                        })}
+                        {org.orgNotes.map(
+                          ({ _id, quote, message, createdBy }) => {
+                            const tdProps = { p: isMobile ? 0 : undefined };
+                            return (
+                              <Tr key={`note-${_id}`}>
+                                <Td {...tdProps}>
+                                  <DeleteIconButton
+                                    label={t("delete-note")}
+                                    size="xs"
+                                    onClick={async () => {
+                                      await editOrg({
+                                        payload: {
+                                          orgNotes: org.orgNotes.filter(
+                                            (orgNote) => orgNote._id !== _id
+                                          )
+                                        },
+                                        org
+                                      }).unwrap();
+                                    }}
+                                  />
+                                </Td>
+                                <Td {...tdProps}>
+                                  {typeof createdBy === "object" &&
+                                    createdBy.userName}
+                                </Td>
+                                <Td {...tdProps}>
+                                  <Text>{quote}</Text>
+                                </Td>
+                                <Td {...tdProps}>
+                                  {comment && comment.orgNoteId === _id ? (
+                                    <InputGroup>
+                                      <InputLeftAddon
+                                        children={<CheckCircleIcon />}
+                                        onClick={async () => {
+                                          const payload: EditOrgPayload = {
+                                            orgNotes: org.orgNotes.map(
+                                              (orgNote) => {
+                                                if (
+                                                  orgNote._id ===
+                                                  comment.orgNoteId
+                                                )
+                                                  return {
+                                                    ...orgNote,
+                                                    message:
+                                                      comment.orgNoteMessage
+                                                  };
+
+                                                return orgNote;
+                                              }
+                                            )
+                                          };
+                                          await editOrg({
+                                            payload,
+                                            org
+                                          }).unwrap();
+                                          setComment(undefined);
+                                        }}
+                                      />
+                                      <Input
+                                        defaultValue={comment.orgNoteMessage}
+                                        onChange={(e) =>
+                                          setComment({
+                                            ...comment,
+                                            orgNoteMessage: e.target.value
+                                          })
+                                        }
+                                      />
+                                    </InputGroup>
+                                  ) : (
+                                    <>
+                                      <EditIconButton
+                                        label={t("edit-note")}
+                                        onClick={() => {
+                                          setComment({
+                                            orgNoteId: _id,
+                                            orgNoteMessage: message
+                                          });
+                                        }}
+                                      />
+                                      <Text>{message}</Text>
+                                    </>
+                                  )}
+                                </Td>
+                              </Tr>
+                            );
+                          }
+                        )}
                       </Tbody>
                     </Table>
                   </VStack>
