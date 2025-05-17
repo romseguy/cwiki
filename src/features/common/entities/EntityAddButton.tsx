@@ -70,7 +70,7 @@ export const EntityAddButton = ({
         onClick={(e) => {
           onClick && onClick();
           e.stopPropagation();
-          const href = `/a/${org.orgUrl}/b/add`;
+          const href = `/b/add/a/${org.orgUrl}`;
           router.push(href, href, {
             shallow: true
           });

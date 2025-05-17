@@ -16,8 +16,9 @@
 
   "created-by": "Created by",
   "add-a": "Add a tree",
-  "name-label-a": "How do you want to name the new tree?",
+  "name-label-a": "How do you want to name the tree?",
   "add-b": "Add a branch",
+  "name-label-b": "How do you want to name the branch?",
   "add-t": "Add a thread",
   "delete": "Delete",
   "delete-note": "Delete this note",

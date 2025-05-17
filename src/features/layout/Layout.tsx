@@ -8,7 +8,7 @@ import {
   useColorMode
 } from "@chakra-ui/react";
 import { css } from "@emotion/react";
-import { DarkModeSwitch, Link } from "features/common";
+import { DarkModeSwitch, Link, OfflineIcon } from "features/common";
 import { useSession } from "hooks/useSession";
 import { IOrg } from "models/Org";
 import { useTranslation } from "next-i18next";
@@ -22,6 +22,7 @@ import {
   FaLongArrowAltRight,
   FaTree
 } from "react-icons/fa";
+import { GrWifiNone } from "react-icons/gr";
 import { IoIosGitBranch } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "store";
@@ -43,13 +44,15 @@ import theme, { breakpoints, rainbowBorder } from "./theme";
 export interface LayoutProps extends PageProps {
   pageTitle?: string;
   org?: IOrg;
+  suborg?: IOrg;
 }
 
 export const Layout = ({
   children,
   isMobile,
   pageTitle,
-  org
+  org,
+  suborg
 }: React.PropsWithChildren<LayoutProps>) => {
   //#region styling
   const { colorMode } = useColorMode();
@@ -179,21 +182,22 @@ export const Layout = ({
                 </HStack>
               )}
 
-              {router.asPath.includes("/b/") && (
-                <HStack
-                  css={css`
-                    a {
-                      padding-top: 2px;
-                    }
-                  `}
-                >
-                  <FaLongArrowAltRight />
-                  <IoIosGitBranch />
-                  <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
-                    {b}
-                  </Link>
-                </HStack>
-              )}
+              {router.asPath.includes("/b/") &&
+                !router.asPath.includes("add") && (
+                  <HStack
+                    css={css`
+                      a {
+                        padding-top: 2px;
+                      }
+                    `}
+                  >
+                    <FaLongArrowAltRight />
+                    <IoIosGitBranch />
+                    <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
+                      {b}
+                    </Link>
+                  </HStack>
+                )}
             </>
           ) : (
             <HStack
@@ -223,13 +227,7 @@ export const Layout = ({
                 `}
                 pr={2}
               >
-                {offline && (
-                  <Tooltip label={t("offline")}>
-                    <span>
-                      <FaExclamationCircle />
-                    </span>
-                  </Tooltip>
-                )}
+                {offline && <OfflineIcon boxSize={4} />}
                 <Link href="/settings" shallow>
                   {t("settings")}
                 </Link>

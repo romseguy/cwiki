@@ -1,17 +1,15 @@
 import { Icon, IconProps, Tooltip, useColorMode } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "next-i18next";
 
-export const OfflineIcon = ({}: IconProps) => {
+export const OfflineIcon = ({ ...props }: IconProps) => {
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
+  const { t } = useTranslation();
 
   return (
-    <Tooltip
-      label="Connectez-vous à internet pour continuer à utiliser l'application."
-      placement="top-start"
-      hasArrow
-    >
-      <Icon viewBox="0 0 256 256" boxSize={8}>
+    <Tooltip label={t("offline")} placement="top-start" hasArrow>
+      <Icon viewBox="0 0 256 256" {...props}>
         <line
           x1="48"
           x2="208"

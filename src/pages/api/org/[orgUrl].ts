@@ -523,16 +523,13 @@ handler.put<
       }
     } else {
       if (body.orgName) {
+        const orgUrl = normalize(body.orgName.en.trim());
         body = {
           ...body,
-          orgName: { en: body.orgName.en.trim() },
-          orgUrl: normalize(body.orgName.en.trim())
+          orgName: { en: body.orgName.en.trim(), fr: body.orgName.fr.trim() },
+          orgUrl
         };
-
-        if (
-          body.orgName.en !== org.orgName.en &&
-          (await models.Org.findOne({ orgName: body.orgName.en }))
-        )
+        if (orgUrl !== org.orgUrl && (await models.Org.findOne({ orgUrl })))
           throw duplicateError();
       }
 
@@ -651,21 +648,11 @@ handler.delete<
         );
     }
 
-    if (req.query.isDeleteOrgEvents) {
-      /*const { deletedCount, n, ok } = */ await models.Event.deleteMany({
-        _id: { $in: org.orgEvents }
-      });
-    }
-
-    //  await models.Project.deleteMany({
-    //   _id: { $in: org.orgProjects }
-    // });
-    /*const { deletedCount, n, ok } = */ await models.Subscription.deleteMany({
-      _id: { $in: org.orgSubscriptions }
-    });
-    /*const { deletedCount, n, ok } = */ await models.Topic.deleteMany({
-      _id: { $in: org.orgTopics }
-    });
+    // if (req.query.isDeleteOrgEvents) {
+    //   /*const { deletedCount, n, ok } = */ await models.Event.deleteMany({
+    //     _id: { $in: org.orgEvents }
+    //   });
+    // }
 
     res.status(200).json(org);
   } catch (error) {

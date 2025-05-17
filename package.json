@@ -137,5 +137,19 @@
     "eslint-config-next": "13.5.2",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-react-refresh": "0.4.20"
+  },
+  "browserslist": {
+    "production": [
+      "chrome 64",
+      "edge 79",
+      "firefox 67",
+      "opera 51",
+      "safari 12"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

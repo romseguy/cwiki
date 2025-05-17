@@ -58,7 +58,7 @@ export * from "./Link";
 // export * from "./LocationButton";
 // export * from "./LoginButton";
 export * from "./Modal";
-// export * from "./OfflineIcon";
+export * from "./OfflineIcon";
 // export * from "./PushPinIcon";
 export * from "./NotFound";
 export * from "./Row";

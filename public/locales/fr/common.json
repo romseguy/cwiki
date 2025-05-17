@@ -16,8 +16,9 @@
 
   "created-by": "Créé par",
   "add-a": "Ajouter un arbre",
-  "name-label-a": "Comment voulez-vous nommer le nouvel arbre?",
+  "name-label-a": "Comment voulez-vous nommer l'arbre ?",
   "add-b": "Ajouter une branche",
+  "name-label-b": "Comment voulez-vous nommer la branche ?",
   "add-t": "Ajouter une discussion",
   "delete": "Supprimer",
   "delete-note": "Supprimer la note",
