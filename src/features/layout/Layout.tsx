@@ -179,21 +179,22 @@ export const Layout = ({
                 </HStack>
               )}
 
-              {router.asPath.includes("/b/") && (
-                <HStack
-                  css={css`
-                    a {
-                      padding-top: 2px;
-                    }
-                  `}
-                >
-                  <FaLongArrowAltRight />
-                  <IoIosGitBranch />
-                  <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
-                    {b}
-                  </Link>
-                </HStack>
-              )}
+              {router.asPath.includes("/b/") &&
+                !router.asPath.includes("add") && (
+                  <HStack
+                    css={css`
+                      a {
+                        padding-top: 2px;
+                      }
+                    `}
+                  >
+                    <FaLongArrowAltRight />
+                    <IoIosGitBranch />
+                    <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
+                      {b}
+                    </Link>
+                  </HStack>
+                )}
             </>
           ) : (
             <HStack

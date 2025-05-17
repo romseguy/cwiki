@@ -60,7 +60,9 @@ const IndexPage = (props: PageProps) => {
         <AppHeading>{t("welcome")}</AppHeading>
         <AppHeading smaller>{t("home-list")}</AppHeading>
         <VStack alignItems="start">
-          {!hasItems(orgs) && <EntityAddButton orgType={EOrgType.NETWORK} />}
+          {!hasItems(orgs) && (
+            <EntityAddButton orgType={EOrgType.NETWORK} label={t("add-a")} />
+          )}
           {hasItems(orgs) &&
             rows.map((row) => {
               return (
