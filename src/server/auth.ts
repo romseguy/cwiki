@@ -1,7 +1,7 @@
 import { IncomingMessage } from "http";
 import { unseal } from "@hapi/iron";
 import { NextApiRequest } from "next";
-import { Session, devSession, getAuthToken, sealOptions } from "utils/auth";
+import { Session, getAuthToken, sealOptions } from "utils/auth";
 
 export async function getSession(params: {
   req:
@@ -17,8 +17,6 @@ export async function getSession(params: {
     const user = await unseal(authToken, process.env.SECRET, sealOptions);
     session = { user };
   }
-
-  if (devSession) session = devSession;
 
   if (session?.user) {
     session.user.isAdmin =

@@ -1,24 +1,24 @@
-import { unseal } from "@hapi/iron";
-import { appWithTranslation } from "next-i18next";
 import "allsettled-polyfill";
-import { parse } from "cookie";
-import { GlobalConfig } from "features/GlobalConfig";
-import { Session } from "inspector";
 import "polyfill-object.fromentries";
-import { ThemeProvider } from "features/ThemeProvider";
+import { unseal } from "@hapi/iron";
+import { parse } from "cookie";
 import { AppProps as NextAppProps } from "next/app";
 import NextNprogress from "nextjs-progressbar";
+import { appWithTranslation } from "next-i18next";
+import React from "react";
 import {
   getSelectorsByUserAgent,
   isMobile as rddIsMobile
 } from "react-device-detect";
+import { GlobalConfig } from "features/GlobalConfig";
+import { ThemeProvider } from "features/ThemeProvider";
 import { wrapper } from "store";
-import { setSession } from "store/sessionSlice";
 import { setIsMobile } from "store/uiSlice";
 import { setUserEmail } from "store/userSlice";
-import { TOKEN_NAME, devSession, getAuthToken, sealOptions } from "utils/auth";
-import { getEnv } from "utils/env";
+import { setSession } from "store/sessionSlice";
+import { TOKEN_NAME, getAuthToken, sealOptions, Session } from "utils/auth";
 import { isServer } from "utils/isServer";
+import { getEnv } from "utils/env";
 
 interface AppProps {
   cookies?: string;
@@ -79,13 +79,6 @@ App.getInitialProps = wrapper.getInitialAppProps(
       //#region email and session handling
       let email = ctx.query.email;
       let session: Session | undefined;
-
-      if (devSession && getEnv() === "development") {
-        console.log("🚀 ~ App.getInitialProps ~ devSession:", devSession);
-        session = devSession;
-        //@ts-ignore
-        email = devSession.user.email;
-      }
 
       const cookies = headers?.cookie;
       let authToken: string | null = null;

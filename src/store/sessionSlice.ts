@@ -24,6 +24,7 @@ export const sessionSlice = createSlice({
       state.isSessionLoading = action.payload;
     },
     setSession: (state, action: PayloadAction<Session | null>) => {
+      console.log("🚀 ~ setSession ~ action:", action);
       state.session = action.payload;
     }
   },
