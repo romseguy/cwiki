@@ -23,11 +23,9 @@ declare global {
       NEXT_PUBLIC_ENV: "development" | "production";
       NEXT_PUBLIC_API: string;
       NEXT_PUBLIC_API2: string;
-      NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY: string;
       NEXT_PUBLIC_SHORT_URL: string;
       //NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: string;
       DATABASE_URL: string;
-      MAGIC_SECRET_KEY: string;
       SECRET: string;
       //WEB_PUSH_PRIVATE_KEY: string;
     }

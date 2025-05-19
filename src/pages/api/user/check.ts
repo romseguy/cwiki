@@ -40,7 +40,7 @@ handler.get<
   //   };
 
   //   const token = await seal(userToken, process.env.SECRET, sealOptions);
-  //   setTokenCookie(res, token);
+  //   setAuthToken(res, token);
   // } catch (error) {}
 });
 

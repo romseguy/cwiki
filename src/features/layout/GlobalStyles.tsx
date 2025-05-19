@@ -378,9 +378,6 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
         //#endregion
 
         //#region tinymce
-        .tox-tinymce {
-          max-height: 250px;
-        }
         ${isMobile
           ? `
             body:not(.tox-force-desktop) .tox-dialog { max-height: calc(100vh - 64px * 1.25) !important; }

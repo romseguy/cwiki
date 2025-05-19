@@ -21,7 +21,7 @@ export function getAuthToken(cookies?: Record<string, string>) {
   return cookies[TOKEN_NAME];
 }
 
-export function setTokenCookie(res: NextApiResponse, token: string) {
+export function setAuthToken(res: NextApiResponse, token: string) {
   return res.setHeader("Set-Cookie", [
     createCookie(TOKEN_NAME, token),
     createCookie("authed", token ? "true" : "false", { httpOnly: false })

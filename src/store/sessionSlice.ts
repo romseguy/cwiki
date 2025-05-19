@@ -24,17 +24,23 @@ export const sessionSlice = createSlice({
       state.isSessionLoading = action.payload;
     },
     setSession: (state, action: PayloadAction<Session | null>) => {
-      console.log("🚀 ~ setSession ~ action:", action);
       state.session = action.payload;
     }
   },
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
-      return {
-        ...state,
-        ...action.payload.session
-      };
-    }
+
+  extraReducers: (builder) => {
+    builder.addCase(
+      HYDRATE,
+      (
+        state,
+        action: PayloadAction<{ session: typeof sessionSlice }, typeof HYDRATE>
+      ) => {
+        return {
+          ...state,
+          ...action.payload.session
+        };
+      }
+    );
   }
 });
 

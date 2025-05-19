@@ -1,6 +1,6 @@
 import { Icon, IconProps, Tooltip, useColorMode } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
 import { useTranslation } from "next-i18next";
+import React, { useEffect, useState } from "react";
 
 export const OfflineIcon = ({ ...props }: IconProps) => {
   const { colorMode } = useColorMode();

@@ -1,11 +1,11 @@
 import { Flex } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import React, { PropsWithChildren, useEffect } from "react";
-import { EntityAddButton, AppHeading, Row } from "features/common";
+import { AppHeading, EntityAddButton, Row } from "features/common";
 import { Layout } from "features/layout";
 import { PageProps } from "main";
 import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
+import React, { PropsWithChildren, useEffect } from "react";
 
 export const NotFound = ({
   children,

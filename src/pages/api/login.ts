@@ -1,15 +1,13 @@
 import { seal } from "@hapi/iron";
-import { Magic } from "@magic-sdk/admin";
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
-import { NextResponse } from "next/server";
 import database, { models } from "server/database";
 import { getCurrentId } from "store/utils";
 import {
   TOKEN_NAME,
   createCookie,
   sealOptions,
-  setTokenCookie
+  setAuthToken
 } from "utils/auth";
 import { createEndpointError } from "utils/errors";
 import { normalize } from "utils/string";
@@ -22,8 +20,6 @@ type LoginPayload = {
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 handler.use(database);
-
-const magic = new Magic(process.env.MAGIC_SECRET_KEY);
 
 handler.get<NextApiRequestWithAuthorizationHeader, NextApiResponse>(
   async function login(req, res) {
@@ -41,13 +37,10 @@ handler.get<NextApiRequestWithAuthorizationHeader, NextApiResponse>(
     }
 
     try {
-      const didToken = req.headers.authorization.substr(7);
-      magic.token.validate(didToken);
-      const data = await magic.users.getMetadataByToken(didToken);
-
-      let user = await models.User.findOne({ email: data.email });
-      if (!user && data.email) {
-        let userName = normalize(data.email.replace(/@.+/, ""));
+      const email = "";
+      let user = await models.User.findOne({ email });
+      if (!user && email) {
+        let userName = normalize(email.replace(/@.+/, ""));
 
         if (await models.User.findOne({ userName })) {
           const uid = (await getCurrentId()) + 1;
@@ -55,22 +48,20 @@ handler.get<NextApiRequestWithAuthorizationHeader, NextApiResponse>(
         }
 
         user = await models.User.create({
-          email: data.email,
+          email,
           userName
         });
       }
       if (!user) throw new Error();
 
       const userToken = {
-        email: data.email,
+        email,
         userId: user._id,
         userName: user.userName
       };
 
       const token = await seal(userToken, process.env.SECRET, sealOptions);
-      return setTokenCookie(res, token)
-        .status(200)
-        .json({ authenticated: true });
+      return setAuthToken(res, token).status(200).json({ authenticated: true });
     } catch (error: any) {
       res.status(500).json(createEndpointError(error));
     }

@@ -2,49 +2,31 @@ import {
   Alert,
   AlertIcon,
   Button,
-  Checkbox,
-  Flex,
   FormControl,
   FormLabel,
-  Spinner,
-  Stack,
-  Text,
   useColorMode
 } from "@chakra-ui/react";
 import { useToast } from "hooks/useToast";
 
 import { ErrorMessage } from "@hookform/error-message";
-import { OAuthProvider } from "@magic-ext/oauth";
 import bcrypt from "bcryptjs";
 import { getUser } from "features/api/usersApi";
-import { SocialLogins } from "features/auth/SocialLogins";
 import {
-  AppHeading,
   Column,
   EmailControl,
   ErrorMessageText,
   PasswordControl
 } from "features/common";
-import theme from "features/layout/theme";
 import { useRouterLoading } from "hooks/useRouterLoading";
 import { useSession } from "hooks/useSession";
+import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaPowerOff } from "react-icons/fa";
 import { useAppDispatch } from "store";
 import api from "utils/api";
-import { TOKEN_NAME, magic } from "utils/auth";
 import { handleError } from "utils/form";
-import { useTranslation } from "next-i18next";
-
-const onLoginWithSocial = async (provider: OAuthProvider) => {
-  await magic.oauth.loginWithRedirect({
-    provider,
-    redirectURI: new URL("/callback", window.location.origin).href
-  });
-};
 
 export const LoginForm = ({ isMobile, ...props }: PageProps) => {
   const { t } = useTranslation();
@@ -113,10 +95,7 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
 
         setIsLoggingIn(false);
       } else {
-        await magic.auth.loginWithMagicLink({
-          email: form.email,
-          redirectURI: new URL("/callback", window.location.origin).href
-        });
+        // send otp
       }
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error);
@@ -156,11 +135,6 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
           my={3}
         >
           <FormLabel mt={3}>{t("login-question")}</FormLabel>
-          {/* <FormLabel mt={3}>{t("pwd")}</FormLabel>
-          <Checkbox
-            borderColor={isDark ? "white" : theme.colors.black}
-            onChange={() => setIsPassword(!isPassword)}
-          /> */}
           <Button
             colorScheme="teal"
             fontSize="sm"
@@ -200,10 +174,6 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
         >
           {isPassword ? t("login-submit") : t("login-email")}
         </Button>
-      </Column>
-
-      <Column borderRadius={isMobile ? 0 : undefined} pb={0}>
-        <SocialLogins flexDirection="column" onSubmit={onLoginWithSocial} />
       </Column>
     </form>
   );

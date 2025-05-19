@@ -1,28 +1,25 @@
-import {
-  AddOrgPayload,
-  EditOrgPayload,
-  useAddOrgMutation,
-  useEditOrgMutation,
-  useGetOrgQuery
-} from "features/api/orgsApi";
-import Creatable from "react-select/creatable";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { Button, Spinner, VStack } from "@chakra-ui/react";
+import { useGetOrgQuery } from "features/api/orgsApi";
+import { AppHeading } from "features/common";
+import { AddBranchForm } from "features/forms/AddBranchForm";
 import { Layout } from "features/layout";
+import { useSession } from "hooks/useSession";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
-import { localize } from "utils/localize";
-import { useState } from "react";
-import { EOrgType } from "models/Org";
-import { useTranslation } from "next-i18next";
-import { useToast } from "hooks/useToast";
-import { css } from "@emotion/react";
-import { Button, FormLabel, Spinner, VStack } from "@chakra-ui/react";
-import { AddBranchForm } from "features/forms/AddBranchForm";
-import { AppHeading, EntityButton } from "features/common";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { PageProps } from "pages/_app";
+import { useEffect } from "react";
 import { FaTree } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { selectIsSessionLoading } from "store/sessionSlice";
+import { localize } from "utils/localize";
 
-const AddBranchPage = ({ ...props }) => {
+const AddBranchPage = ({ ...props }: PageProps) => {
   const { t } = useTranslation();
+  const { data: session } = useSession();
+  const isSessionLoading = useSelector(selectIsSessionLoading);
+
   const router = useRouter();
   let [entityUrl] =
     "treeName" in router.query && Array.isArray(router.query.treeName)
@@ -34,6 +31,20 @@ const AddBranchPage = ({ ...props }) => {
   });
   const org = query.data;
   console.log("🚀 ~ AddBranchPage ~ org:", org);
+
+  useEffect(() => {
+    if (!isSessionLoading) {
+      if (!session) {
+        window.localStorage.setItem("path", router.asPath);
+        router.push("/login", "/login", { shallow: true });
+      } /*else if (!session.user.isAdmin) {
+        throw new Error(
+          "Vous devez être administrateur pour ajouter un événement"
+        );
+      }*/
+    }
+  }, [session, isSessionLoading]);
+  if (!session) return null;
 
   return (
     <Layout

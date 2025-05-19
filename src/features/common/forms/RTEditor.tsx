@@ -99,8 +99,7 @@ export const RTEditor = ({
       "lists",
       "media",
       //"paste",
-      "searchreplace",
-      "supercode"
+      "searchreplace"
     ],
     branding: false,
     browser_spellcheck: true,
@@ -130,6 +129,9 @@ export const RTEditor = ({
     language: "fr_FR",
     language_url: "/tinymce/langs/fr_FR.js",
     link_default_target: "_blank",
+    paste_postprocess: (editor, args) => {
+      args.node.setAttribute("target", "_blank");
+    },
     min_height: props.minHeight,
     max_height: props.maxHeight || maxHeight,
     skin: isDark ? "oxide-dark" : undefined,
@@ -150,13 +152,11 @@ export const RTEditor = ({
     contextmenu: false,
     menubar: false,
     statusbar: false,
-    supercode: { language: "markdown" },
     toolbar: [
       {
         name: "outils",
         items: [
           "fullscreen",
-          "supercode",
           "styles",
           "emoticons",
           "searchreplace",

@@ -18,7 +18,6 @@ const AddPage = ({
   const router = useRouter();
   const { data: session } = useSession();
   const isSessionLoading = useSelector(selectIsSessionLoading);
-
   useEffect(() => {
     if (!isSessionLoading) {
       if (!session) {
@@ -31,7 +30,6 @@ const AddPage = ({
       }*/
     }
   }, [session, isSessionLoading]);
-
   if (!session) return null;
 
   return (
@@ -43,7 +41,7 @@ const AddPage = ({
   );
 };
 
-export const getStaticProps = async ({ locale }) => ({
+export const getServerSideProps = async ({ locale }) => ({
   props: {
     ...(await serverSideTranslations(locale ?? "en", ["common"]))
   }

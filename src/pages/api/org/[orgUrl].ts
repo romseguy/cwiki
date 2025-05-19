@@ -400,9 +400,9 @@ handler.put<
   const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ PUT /org/[orgUrl] `;
   console.log(prefix + "query", req.query);
   logJson(prefix + "body", req.body);
-  const session = await getSession({ req });
 
-  if (!session) {
+  const session = await getSession({ req });
+  if (!session && !Array.isArray(req.body.orgNotes)) {
     return res
       .status(401)
       .json(createEndpointError(new Error("Vous devez être identifié")));
@@ -425,7 +425,7 @@ handler.put<
     let { body }: { body: EditOrgPayload } = req;
     const isCreator =
       equals(getRefId(org), session?.user.userId) || session?.user.isAdmin;
-    let canEdit = isCreator;
+    let canEdit = isCreator || Array.isArray(req.body.orgNotes);
 
     if (!Array.isArray(body)) {
       canEdit =
@@ -526,56 +526,71 @@ handler.put<
         const orgUrl = normalize(body.orgName.en.trim());
         body = {
           ...body,
-          orgName: { en: body.orgName.en.trim(), fr: body.orgName.fr.trim() },
+          orgName: {
+            en: body.orgName.en.trim(),
+            fr: (body.orgName.fr || "").trim()
+          },
           orgUrl
         };
         if (orgUrl !== org.orgUrl && (await models.Org.findOne({ orgUrl })))
           throw duplicateError();
       }
 
+      if (Array.isArray(body.orgNotes)) {
+        let i = 0;
+        for (const orgNote of body.orgNotes) {
+          if (
+            typeof orgNote.createdBy === "object" &&
+            orgNote.createdBy.userName === "anonymous"
+          ) {
+            const user = await models.User.findOne({ userName: "anonymous" });
+            if (user) body.orgNotes[i] = { ...orgNote, createdBy: user };
+          }
+          ++i;
+        }
+      }
+
       // if (body.orgs) {
       //   body = { $push: { orgs: body.orgs[0] } };
       // }
+      // if (Array.isArray(body.orgLists) && body.orgLists.length > 0) {
+      //   if (!isCreator) {
+      //     return res
+      //       .status(401)
+      //       .json(
+      //         createEndpointError(
+      //           new Error(
+      //             `Vous n'avez pas la permission ${orgTypeFull(
+      //               org.orgType
+      //             )} pour gérer les listes`
+      //           )
+      //         )
+      //       );
+      //   }
 
-      if (Array.isArray(body.orgLists) && body.orgLists.length > 0) {
-        if (!isCreator) {
-          return res
-            .status(401)
-            .json(
-              createEndpointError(
-                new Error(
-                  `Vous n'avez pas la permission ${orgTypeFull(
-                    org.orgType
-                  )} pour gérer les listes`
-                )
-              )
-            );
-        }
+      //   if (!body.orgLists[0].listName)
+      //     return res
+      //       .status(400)
+      //       .json(createEndpointError(new Error("Liste invalide")));
 
-        if (!body.orgLists[0].listName)
-          return res
-            .status(400)
-            .json(createEndpointError(new Error("Liste invalide")));
-
-        // TODO: if listName === "Abonnés"
-        // remove subscriptions.orgs.orgSubscription
-        // that were in org.orgLists
-        // but are not in body.org.orgLists
-      }
-
-      if (body.orgTopicCategories) {
-        if (!isCreator) {
-          return res
-            .status(401)
-            .json(
-              createEndpointError(
-                new Error(
-                  `Vous devez être administrateur pour effectuer cette action`
-                )
-              )
-            );
-        }
-      }
+      //   // TODO: if listName === "Abonnés"
+      //   // remove subscriptions.orgs.orgSubscription
+      //   // that were in org.orgLists
+      //   // but are not in body.org.orgLists
+      // }
+      // if (body.orgTopicCategories) {
+      //   if (!isCreator) {
+      //     return res
+      //       .status(401)
+      //       .json(
+      //         createEndpointError(
+      //           new Error(
+      //             `Vous devez être administrateur pour effectuer cette action`
+      //           )
+      //         )
+      //       );
+      //   }
+      // }
     }
 
     logJson(prefix + "update", update);

@@ -1,27 +1,25 @@
-# node modules
-/node_modules
+# Build directories
 
-# dotfiles
+.next/
+.swc/
+
+# Dependency directories
+
+node_modules/
+
+# Dotfiles
+
 .env*
 
-# build
-/.next
-/tsconfig.tsbuildinfo
+# Package managers
+
+yarn.lock
+
+# Public
+
 **/public/files/**
 **/public/workbox-*.js
 **/public/sw.js
 **/public/sw.js.map
 **/public/worker-*.js
 **/public/workbox-*.js.map
-
-# misc
-*.zip
-*.tar.gz
-/logs
-/*.mongodb.js
-/*.mongodb
-/TODO
-/stuff.json
-/stuff.js
-/.backup
-/.vercel

@@ -34,7 +34,6 @@ import {
 } from "store/sessionSlice";
 import { resetUserEmail } from "store/userSlice";
 import api from "utils/api";
-import { magic } from "utils/auth";
 import { getEnv } from "utils/env";
 import { ServerError } from "utils/errors";
 import { localize } from "utils/localize";
@@ -182,22 +181,21 @@ export const Layout = ({
                 </HStack>
               )}
 
-              {router.asPath.includes("/b/") &&
-                !router.asPath.includes("add") && (
-                  <HStack
-                    css={css`
-                      a {
-                        padding-top: 2px;
-                      }
-                    `}
-                  >
-                    <FaLongArrowAltRight />
-                    <IoIosGitBranch />
-                    <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
-                      {b}
-                    </Link>
-                  </HStack>
-                )}
+              {suborg && !router.asPath.includes("add") && (
+                <HStack
+                  css={css`
+                    a {
+                      padding-top: 2px;
+                    }
+                  `}
+                >
+                  <FaLongArrowAltRight />
+                  <IoIosGitBranch />
+                  <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
+                    {localize(suborg.orgName, router.locale)}
+                  </Link>
+                </HStack>
+              )}
             </>
           ) : (
             <HStack
@@ -229,7 +227,8 @@ export const Layout = ({
               >
                 {offline && <OfflineIcon boxSize={4} />}
                 <Link href="/settings" shallow>
-                  {t("settings")}
+                  {/* {t("settings")} */}
+                  {session.user.userName}
                 </Link>
               </HStack>
 
@@ -238,15 +237,6 @@ export const Layout = ({
                   onClick={async () => {
                     dispatch(setIsSessionLoading(true));
                     dispatch(resetUserEmail());
-                    const magicIsLoggedIn = await magic.user.isLoggedIn();
-                    console.log(
-                      "checkLoginStatus: magicIsLoggedIn",
-                      magicIsLoggedIn
-                    );
-
-                    if (magicIsLoggedIn) {
-                      await magic.user.logout();
-                    }
                     await api.get("logout");
                     dispatch(setSession(null));
                     dispatch(setIsSessionLoading(false));

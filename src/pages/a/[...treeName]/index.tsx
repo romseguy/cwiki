@@ -13,8 +13,8 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Heading,
   HStack,
+  Heading,
   Icon,
   IconButton,
   Input,
@@ -29,9 +29,11 @@ import {
   Thead,
   Tooltip,
   Tr,
-  useColorMode,
-  VStack
+  VStack,
+  useColorMode
 } from "@chakra-ui/react";
+import { css } from "@emotion/react";
+import { getRunningQueriesThunk } from "features/api";
 import {
   DeleteOrgParams,
   EditOrgPayload,
@@ -55,9 +57,12 @@ import {
   TabContainerContent,
   TabContainerHeader
 } from "features/common/TabContainer";
+import { FooterControl } from "features/common/forms/FooterControl";
 import { Layout } from "features/layout";
+import { useSession } from "hooks/useSession";
 import { useToast } from "hooks/useToast";
 import { sanitize } from "isomorphic-dompurify";
+import { getRefId } from "models/Entity";
 import { EOrgType, orgTypeFull2 } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -65,22 +70,17 @@ import { useRouter } from "next/router";
 import { PageProps } from "pages/_app";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
+import { useForm } from "react-hook-form";
 import { FaNewspaper, FaTree } from "react-icons/fa";
+import { wrapper } from "store";
+import { hasItems } from "utils/array";
+import { localize } from "utils/localize";
 import {
   MD_URL,
+  WIKI_URL,
   normalize,
-  transformRTEditorOutput,
-  WIKI_URL
+  transformRTEditorOutput
 } from "utils/string";
-import { localize } from "utils/localize";
-import { hasItems } from "utils/array";
-import { css } from "@emotion/react";
-import { useSession } from "hooks/useSession";
-import { getRefId } from "models/Entity";
-import { wrapper } from "store";
-import { getRunningQueriesThunk } from "features/api";
-import { FooterControl } from "features/common/forms/FooterControl";
-import { useForm } from "react-hook-form";
 
 const initialOrgQueryParams = (entityUrl: string) => ({
   orgUrl: entityUrl,
@@ -149,6 +149,8 @@ const TreePage = ({ ...props }: PageProps) => {
   ];
   const router = useRouter();
   const [currentTabLabel, setCurrentTabLabel] = useState("");
+  const [currentBranchAction, setCurrentBranchAction] = useState("");
+  // console.log("🚀 ~ TreePage ~ currentTabLabel:", currentTabLabel);
   const [entityTabItem, setEntityTabItem] = useState("");
 
   const [isAddingDescription, setIsAddingDescription] = useState(false);
@@ -163,10 +165,10 @@ const TreePage = ({ ...props }: PageProps) => {
 
   const query = useGetOrgQuery(initialOrgQueryParams(router.query.treeName[0]));
   const org = query.data;
-  console.log("🚀 ~ TreePage ~ org:", org);
+  // // // console.log("🚀 ~ TreePage ~ org:", org);
   const orgName = localize(org?.orgName);
   let suborg = org?.orgs?.find(({ orgUrl }) => orgUrl === entityTabItem);
-  console.log("🚀 ~ TreePage ~ suborg:", suborg);
+  // // console.log("🚀 ~ TreePage ~ suborg:", suborg);
   const orgDescription = localize(
     suborg
       ? suborg.orgDescription || { en: "", fr: "" }
@@ -175,30 +177,38 @@ const TreePage = ({ ...props }: PageProps) => {
       : { en: "", fr: "" },
     router.locale
   );
+  // // // // console.log("🚀 ~ TreePage ~ orgDescription:", orgDescription);
   const [description, setDescription] = useState<string | undefined>();
-  let notes = suborg ? suborg.orgNotes : org ? org.orgNotes : [];
+  // // // console.log("🚀 ~ TreePage ~ description:", description);
+  let notes = (suborg ? suborg.orgNotes : org ? org.orgNotes : []) || [];
 
   // const [isThreadsOpen, setIsThreadsOpen] = useState(true);
   // const [currentTopicName, setCurrentTopicName] = useState(entityTabItem);
 
   useEffect(() => {
-    console.log("🚀 ~ TreePage ~ onRouterQueryChange:", router.query);
+    // // console.log("🚀 ~ TreePage ~ onRouterQueryChange:", router.query);
     setCurrentTabLabel(router.query.treeName[1]);
     setEntityTabItem(router.query.treeName[2]);
+    setCurrentBranchAction(router.query.treeName[3]);
     if (!entityTabItem) {
       suborg = undefined;
     }
-
-    transformDescription();
+  }, [router.query]);
+  useEffect(() => {
     notes = suborg ? suborg.orgNotes : org ? org.orgNotes : [];
+    transformDescription();
     function transformDescription() {
-      const newDoc = isMobile
-        ? transformRTEditorOutput(orgDescription)
-        : new DOMParser().parseFromString(orgDescription, "text/html");
-
-      setDescription(newDoc.body.innerHTML);
+      let newDesc = "";
+      if (isMobile) {
+        newDesc = transformRTEditorOutput(orgDescription).body.innerHTML;
+      } else {
+        newDesc = new DOMParser().parseFromString(orgDescription, "text/html")
+          .body.innerHTML;
+      }
+      // // console.log("🚀 ~ transformDescription ~ newDesc:", newDesc);
+      setDescription(newDesc);
     }
-  }, [router.query, org]);
+  }, [org, suborg, router.locale]);
 
   return (
     <Layout
@@ -217,7 +227,7 @@ const TreePage = ({ ...props }: PageProps) => {
     >
       <Box m={3}>
         {query.isLoading && <Spinner />}
-        {!query.isLoading && (
+        {!query.isLoading && !!org && (
           <>
             <VStack mb={3}>
               <HStack>
@@ -249,7 +259,13 @@ const TreePage = ({ ...props }: PageProps) => {
                           <EditIconButton
                             placement="bottom"
                             onClick={() => {
-                              const href = "/a/" + org.orgUrl + "/edit";
+                              const href = suborg
+                                ? "/a/" +
+                                  org.orgUrl +
+                                  "/b/" +
+                                  suborg.orgUrl +
+                                  "/edit"
+                                : "/a/" + org.orgUrl + "/edit";
                               router.push(href, href, { shallow: true });
                             }}
                           />
@@ -273,7 +289,9 @@ const TreePage = ({ ...props }: PageProps) => {
                 <>
                   <Link
                     href={
-                      suborg ? "/" : WIKI_URL + "/" + orgName + "/" + orgName
+                      suborg
+                        ? WIKI_URL + "/" + org.orgUrl + "/" + suborg.orgUrl
+                        : WIKI_URL + "/" + org.orgUrl + "/" + org.orgUrl
                     }
                     target="_blank"
                   >
@@ -282,8 +300,8 @@ const TreePage = ({ ...props }: PageProps) => {
                   <Link
                     href={
                       suborg
-                        ? "/"
-                        : MD_URL + "/" + orgName + "/" + orgName + ".md"
+                        ? MD_URL + "/" + org.orgUrl + "/" + suborg.orgUrl
+                        : MD_URL + "/" + org.orgUrl + "/" + org.orgUrl + ".md"
                     }
                     target="_blank"
                   >
@@ -293,7 +311,7 @@ const TreePage = ({ ...props }: PageProps) => {
               )}
             </VStack>
 
-            {currentTabLabel !== "edit" && (
+            {currentTabLabel !== "edit" && currentBranchAction !== "edit" && (
               <>
                 <TabContainer
                   borderBottomRadius={isDescriptionOpen ? undefined : "lg"}
@@ -310,17 +328,18 @@ const TreePage = ({ ...props }: PageProps) => {
                     />
                     <Heading size="sm">{t("desc-a")}</Heading>
 
-                    {(suborg?.orgDescription || org?.orgDescription) && (
-                      <EditIconButton
-                        aria-label="Modifier"
-                        ml={3}
-                        {...(isMobile ? {} : {})}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsAddingDescription(true);
-                        }}
-                      />
-                    )}
+                    {(suborg?.orgDescription || org.orgDescription) &&
+                      getRefId(org) === session?.user.userId && (
+                        <EditIconButton
+                          aria-label="Modifier"
+                          ml={3}
+                          {...(isMobile ? {} : {})}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsAddingDescription(true);
+                          }}
+                        />
+                      )}
                   </TabContainerHeader>
 
                   {isDescriptionOpen && (
@@ -347,7 +366,7 @@ const TreePage = ({ ...props }: PageProps) => {
                                 const payload: EditOrgPayload = {
                                   orgDescription: {
                                     ...(suborg
-                                      ? suborg.orgDescription
+                                      ? suborg?.orgDescription
                                       : org.orgDescription),
                                     [router.locale]: description
                                   }
@@ -367,6 +386,11 @@ const TreePage = ({ ...props }: PageProps) => {
                         <Description
                           description={description}
                           onClick={async (selection) => {
+                            const createdBy = session
+                              ? {
+                                  _id: session.user.userId
+                                }
+                              : { userName: "anonymous" };
                             await editOrg({
                               payload: {
                                 orgNotes: (org.orgNotes || [])
@@ -374,7 +398,7 @@ const TreePage = ({ ...props }: PageProps) => {
                                     {
                                       quote: selection,
                                       createdAt: new Date(),
-                                      createdBy: session.user.userId
+                                      createdBy
                                     }
                                   ])
                                   .map(({ _id, ...orgNote }) => orgNote)
@@ -388,12 +412,12 @@ const TreePage = ({ ...props }: PageProps) => {
                         <Tooltip
                           placement="right"
                           label={`Ajouter une description ${orgTypeFull2(
-                            org?.orgType
+                            org.orgType
                           )}`}
                         >
                           <IconButton
                             aria-label={`Ajouter une description ${orgTypeFull2(
-                              org?.orgType
+                              org.orgType
                             )}`}
                             alignSelf="flex-start"
                             colorScheme="teal"
@@ -433,7 +457,7 @@ const TreePage = ({ ...props }: PageProps) => {
                     {isBranchesOpen && (
                       <TabContainerContent p={3}>
                         <VStack>
-                          {hasItems(org?.orgs) &&
+                          {hasItems(org.orgs) &&
                             org.orgs.map((suborg) => {
                               return (
                                 <HStack>
@@ -444,7 +468,7 @@ const TreePage = ({ ...props }: PageProps) => {
                                       try {
                                         const payload: EditOrgPayload = {
                                           orgs: org.orgs.filter(
-                                            ({ _id }) => suborg._id !== _id
+                                            ({ _id }) => suborg?._id !== _id
                                           )
                                         };
                                         await editOrg({
@@ -453,7 +477,7 @@ const TreePage = ({ ...props }: PageProps) => {
                                         }).unwrap();
 
                                         const payload2: DeleteOrgParams = {
-                                          orgId: suborg._id
+                                          orgId: suborg?._id
                                         };
                                         await deleteOrg(payload2).unwrap();
                                         query.refetch();
@@ -473,7 +497,7 @@ const TreePage = ({ ...props }: PageProps) => {
                               );
                             })}
 
-                          {!hasItems(org?.orgs) && (
+                          {!hasItems(org.orgs) && (
                             <EntityAddButton
                               org={org}
                               orgType={EOrgType.GENERIC}
@@ -560,28 +584,34 @@ const TreePage = ({ ...props }: PageProps) => {
 
                             <Tbody>
                               {notes.map(
-                                ({ _id, quote, message, createdBy }) => {
+                                ({ _id, quote, message, ...orgNote }) => {
+                                  const createdBy = orgNote.createdBy;
+                                  const createdById = getRefId(orgNote);
+                                  const isNoteCreator =
+                                    createdById === session?.user.userId;
                                   const tdProps = {
                                     p: isMobile ? 0 : undefined
                                   };
                                   return (
                                     <Tr key={`note-${_id}`}>
                                       <Td {...tdProps}>
-                                        <DeleteIconButton
-                                          label={t("delete-note")}
-                                          size="xs"
-                                          onClick={async () => {
-                                            await editOrg({
-                                              payload: {
-                                                orgNotes: org.orgNotes.filter(
-                                                  (orgNote) =>
-                                                    orgNote._id !== _id
-                                                )
-                                              },
-                                              org
-                                            }).unwrap();
-                                          }}
-                                        />
+                                        {isNoteCreator && (
+                                          <DeleteIconButton
+                                            label={t("delete-note")}
+                                            size="xs"
+                                            onClick={async () => {
+                                              await editOrg({
+                                                payload: {
+                                                  orgNotes: notes.filter(
+                                                    (orgNote) =>
+                                                      orgNote._id !== _id
+                                                  )
+                                                },
+                                                org
+                                              }).unwrap();
+                                            }}
+                                          />
+                                        )}
                                       </Td>
                                       <Td {...tdProps}>
                                         {typeof createdBy === "object" &&
@@ -636,15 +666,17 @@ const TreePage = ({ ...props }: PageProps) => {
                                           </InputGroup>
                                         ) : (
                                           <>
-                                            <EditIconButton
-                                              label={t("edit-note")}
-                                              onClick={() => {
-                                                setComment({
-                                                  orgNoteId: _id,
-                                                  orgNoteMessage: message
-                                                });
-                                              }}
-                                            />
+                                            {isNoteCreator && (
+                                              <EditIconButton
+                                                label={t("edit-note")}
+                                                onClick={() => {
+                                                  setComment({
+                                                    orgNoteId: _id,
+                                                    orgNoteMessage: message
+                                                  });
+                                                }}
+                                              />
+                                            )}
                                             <Text>{message}</Text>
                                           </>
                                         )}
@@ -663,7 +695,7 @@ const TreePage = ({ ...props }: PageProps) => {
               </>
             )}
 
-            {currentTabLabel === "edit" && (
+            {(currentTabLabel === "edit" || currentBranchAction === "edit") && (
               <EditForm org={org} suborg={suborg} />
             )}
           </>
@@ -675,14 +707,14 @@ const TreePage = ({ ...props }: PageProps) => {
 
 type FormValues = { treeName: string; formErrorMessage?: string };
 const EditForm = ({ org, suborg }) => {
-  console.log("🚀 ~ EditForm ~ org:", org);
+  // // // console.log("🚀 ~ EditForm ~ org:", org);
   const router = useRouter();
   const { t } = useTranslation();
   const toast = useToast({ position: "top" });
   const [editOrg] = useEditOrgMutation();
   const [isLoading, setIsLoading] = useState(false);
   const defaultValues = {
-    treeName: localize(org.orgName, router.locale)
+    treeName: localize(suborg ? suborg.orgName : org.orgName, router.locale)
   };
   const {
     control,
@@ -701,14 +733,17 @@ const EditForm = ({ org, suborg }) => {
     console.log("submitted", form);
     setIsLoading(true);
     try {
+      const orgName = suborg ? suborg.orgName : org.orgName;
       await editOrg({
         payload: {
-          orgName: { ...org.orgName, [router.locale]: form.treeName }
+          orgName: { ...orgName, [router.locale]: form.treeName }
         },
-        org
+        org: suborg || org
       }).unwrap();
       toast({ status: "success", title: t("success") });
       setIsLoading(false);
+      const href = "/a/" + normalize(form.treeName);
+      router.push(href, href, { shallow: true });
     } catch (error) {}
   };
   return (
@@ -721,7 +756,7 @@ const EditForm = ({ org, suborg }) => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <FormControl>
-        <FormLabel>{t("name-label-a")}</FormLabel>
+        <FormLabel>{t(suborg ? "name-label-b" : "name-label-a")}</FormLabel>
         <Input
           name="treeName"
           ref={register({

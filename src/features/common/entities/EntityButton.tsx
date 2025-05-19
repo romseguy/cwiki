@@ -3,8 +3,8 @@ import {
   Button,
   ButtonProps,
   Flex,
-  Heading,
   HStack,
+  Heading,
   Icon,
   Text,
   Tooltip,
@@ -68,9 +68,7 @@ export const EntityButton = ({
     : typeof user === "object"
     ? user.userName
     : "";
-  const href = `/a/${entityUrl}${
-    suborg ? "/b/" + localize(suborg.orgName, router.locale) : ""
-  }`;
+  const href = `/a/${entityUrl}${suborg ? "/b/" + suborg.orgUrl : ""}`;
   if (topic) {
     entityUrl = `${
       entityUrl || getRefId(topic.org) || getRefId(topic.event)

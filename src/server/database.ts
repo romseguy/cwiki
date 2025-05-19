@@ -62,9 +62,9 @@ export default async function database(
     //   bufferCommands: false
     // };
     const options = {
-      // autoIndex: false,
-      // useUnifiedTopology: true,
-      // useNewUrlParser: true
+      autoIndex: false,
+      useUnifiedTopology: true,
+      useNewUrlParser: true
     };
 
     console.log("🚀 ~ process.env.DATABASE_URL:", process.env.DATABASE_URL);

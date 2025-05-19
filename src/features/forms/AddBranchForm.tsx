@@ -2,8 +2,8 @@ import { FormLabel, HStack, Text } from "@chakra-ui/react";
 import { css } from "@emotion/react";
 import {
   AddOrgPayload,
-  useAddOrgMutation,
   EditOrgPayload,
+  useAddOrgMutation,
   useEditOrgMutation,
   useGetOrgQuery
 } from "features/api/orgsApi";
@@ -12,9 +12,9 @@ import { EOrgType } from "models/Org";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { Session } from "utils/auth";
-import Creatable from "react-select/creatable";
 import { IoIosGitNetwork } from "react-icons/io";
+import Creatable from "react-select/creatable";
+import { Session } from "utils/auth";
 
 type FormValues = { branchName: string; formErrorMessage?: string };
 

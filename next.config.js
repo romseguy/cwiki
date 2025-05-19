@@ -17,13 +17,6 @@ let plugins = [
   // })
 ];
 
-if (process.env.ANALYZE) {
-  const withBundleAnalyzer = require("@next/bundle-analyzer")({
-    enabled: true
-  });
-  plugins.unshift(withBundleAnalyzer);
-}
-
 const nextConfig = {
   experimental: {
     largePageDataBytes: 10 * 1000000
@@ -39,28 +32,38 @@ const nextConfig = {
   swcMinify: false,
   typescript: {
     ignoreBuildErrors: true
-  },
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.md$/,
-      loader: "emit-file-loader",
-      options: {
-        name: "dist/[path][name].[ext]"
-      }
-    });
-    config.module.rules.push({
-      test: /\.md$/,
-      loader: "raw-loader"
-    });
-    config.externals.push({
-      fs: "fs"
-    });
-    return config;
   }
+  // webpack(config) {
+  //   config.module.rules.push({
+  //     test: /\.md$/,
+  //     loader: "emit-file-loader",
+  //     options: {
+  //       name: "dist/[path][name].[ext]"
+  //     }
+  //   });
+  //   config.module.rules.push({
+  //     test: /\.md$/,
+  //     loader: "raw-loader"
+  //   });
+  //   config.externals.push({
+  //     fs: "fs"
+  //   });
+  //   return config;
+  // }
 };
 
 module.exports = (phase, defaultConfig) => {
-  if (phase === PHASE_PRODUCTION_SERVER || phase === PHASE_PRODUCTION_BUILD) {
+  if (phase === PHASE_DEVELOPMENT_SERVER) {
+    if (process.env.ANALYZE) {
+      const withBundleAnalyzer = require("@next/bundle-analyzer")({
+        enabled: true
+      });
+      plugins.unshift(withBundleAnalyzer);
+    }
+  } else if (
+    phase === PHASE_PRODUCTION_SERVER ||
+    phase === PHASE_PRODUCTION_BUILD
+  ) {
     plugins.unshift(withPWA);
   }
   const config = plugins.reduce(

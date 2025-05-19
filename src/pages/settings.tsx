@@ -32,7 +32,6 @@ import { useAppDispatch } from "store";
 import { setSession } from "store/sessionSlice";
 import { resetUserEmail } from "store/userSlice";
 import api from "utils/api";
-import { magic } from "utils/auth";
 import { handleError } from "utils/form";
 import { PageProps } from "./_app";
 
@@ -107,9 +106,6 @@ const Settings = ({ ...props }: PageProps & {}) => {
 
       dispatch(resetUserEmail());
       dispatch(setSession(null));
-      if (await magic.user.isLoggedIn()) {
-        await magic.user.logout();
-      }
       await api.get("logout");
       router.push("/login", "/login", { shallow: false });
 
@@ -226,7 +222,7 @@ const Settings = ({ ...props }: PageProps & {}) => {
   );
 };
 
-export const getStaticProps = async ({ locale }) => ({
+export const getServerSideProps = async ({ locale }) => ({
   props: {
     ...(await serverSideTranslations(locale ?? "en", ["common"]))
   }
