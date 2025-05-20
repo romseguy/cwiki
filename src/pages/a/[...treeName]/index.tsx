@@ -227,7 +227,7 @@ const TreePage = ({ ...props }: PageProps) => {
     >
       <Box m={3}>
         {query.isLoading && <Spinner />}
-        {!query.isLoading && !!org && (
+        {!query.isLoading && org && (
           <>
             <VStack mb={3}>
               <HStack>
@@ -700,6 +700,7 @@ const TreePage = ({ ...props }: PageProps) => {
             )}
           </>
         )}
+        {!query.isLoading && !org && <>sfj</>}
       </Box>
     </Layout>
   );
@@ -772,21 +773,47 @@ const EditForm = ({ org, suborg }) => {
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (ctx) => {
     if (
-      Array.isArray(ctx.query.name) &&
-      typeof ctx.query.name[0] === "string"
+      Array.isArray(ctx.query.treeName) &&
+      typeof ctx.query.treeName[0] === "string"
     ) {
-      const entityUrl = ctx.query.name[0];
-      const normalizedEntityUrl = normalize(entityUrl);
-      if (entityUrl !== normalizedEntityUrl)
+      const treeName = ctx.query.treeName[0];
+      const branchName = ctx.query.treeName[2];
+      const normalizedTreeName = normalize(treeName);
+      const normalizedBranchName = normalize(branchName);
+      if (treeName.toLowerCase() !== normalizedTreeName.toLowerCase())
         return {
-          redirect: { permanent: false, destination: "/" + normalizedEntityUrl }
+          redirect: {
+            permanent: false,
+            destination: "/" + normalizedTreeName
+          }
         };
 
-      store.dispatch(getOrg.initiate(initialOrgQueryParams(entityUrl)));
+      if (
+        branchName &&
+        branchName.toLowerCase() !== normalizedBranchName.toLowerCase()
+      )
+        return {
+          redirect: {
+            permanent: false,
+            destination: "/" + normalizedTreeName + "/" + normalizedBranchName
+          }
+        };
+
+      store.dispatch(getOrg.initiate(initialOrgQueryParams(treeName)));
 
       const [orgQuery] = await Promise.all(
         store.dispatch(getRunningQueriesThunk())
       );
+
+      if (orgQuery.error && orgQuery.error.status === 404) {
+        return {
+          redirect: {
+            permanent: false,
+            destination:
+              "https://casswiki-quartz.pages.dev/" + treeName + "/" + branchName
+          }
+        };
+      }
     }
 
     const { locale } = ctx;

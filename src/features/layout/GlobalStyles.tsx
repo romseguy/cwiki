@@ -351,6 +351,9 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
             margin-bottom: 1.5rem;
             margin-left: 1.5rem;
             padding-left: 1rem;
+            padding-top: var(--chakra-space-3);
+            padding-bottom: var(--chakra-space-3);
+            background: rgb(190, 227, 248);
           }
           h1 {
             font-size: 1.5em;
