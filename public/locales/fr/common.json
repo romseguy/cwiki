@@ -15,15 +15,23 @@
   "logout": "Déconnexion",
 
   "created-by": "Créé par",
+
+  "label-a": "Arbre",
   "add-a": "Ajouter un arbre",
   "name-label-a": "Comment voulez-vous nommer l'arbre ?",
+  "not-found-a": "L'arbre n'a pas pu être trouvé",
+
+  "label-b": "Branche",
   "add-b": "Ajouter une branche",
   "name-label-b": "Comment voulez-vous nommer la branche ?",
+  "add-d": "Ajouter une description",
+  "add-n": "Ajouter une note",
   "add-t": "Ajouter une discussion",
   "delete": "Supprimer",
-  "delete-note": "Supprimer la note",
-  "key-quote-note": "Citation",
-  "key-message-note": "Commentaire",
+  "delete-n": "Supprimer cette note",
+  "edit-n": "Modifier cette note",
+  "key-quote-n": "Citation",
+  "key-message-n": "Commentaire",
 
   "branches": "Branches",
   "desc-a": "Description",

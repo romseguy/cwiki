@@ -3,9 +3,9 @@ import type mongoose, { Model } from "mongoose";
 
 export type Models = {
   Org: Model<IOrg, {}, {}>;
-  Setting: Model<ISetting, {}, {}>;
-  Subscription: Model<ISubscription, {}, {}>;
-  Topic: Model<ITopic, {}, {}>;
+  //Setting: Model<ISetting, {}, {}>;
+  //Subscription: Model<ISubscription, {}, {}>;
+  //Topic: Model<ITopic, {}, {}>;
   User: Model<IUser, {}, {}>;
 };
 
@@ -13,9 +13,15 @@ declare global {
   namespace NodeJS {
     interface Global {
       mongo: {
-        conn: mongoose.Connection | null;
+        conn: {
+          client: MongoClient;
+          db: Db;
+        } | null;
         models: Models | null;
-        promise: Promise<mongoose.Connection> | null;
+        promise: Promise<{
+          client: MongoClient;
+          db: Db;
+        }> | null;
       };
     }
     interface ProcessEnv {

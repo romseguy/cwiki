@@ -1,8 +1,10 @@
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, SettingsIcon, SmallAddIcon } from "@chakra-ui/icons";
 import {
   Box,
+  Button,
   Flex,
   HStack,
+  IconButton,
   Spinner,
   Tooltip,
   useColorMode
@@ -18,9 +20,13 @@ import { PageProps } from "pages/_app";
 import { ReactNode } from "react";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import {
+  FaCodeBranch,
   FaExclamationCircle,
+  FaHome,
   FaLongArrowAltRight,
-  FaTree
+  FaPowerOff,
+  FaTree,
+  FaUser
 } from "react-icons/fa";
 import { GrWifiNone } from "react-icons/gr";
 import { IoIosGitBranch } from "react-icons/io";
@@ -56,6 +62,9 @@ export const Layout = ({
   //#region styling
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
+  const borderLeft = `border-left: 1px solid ${
+    isDark ? "white" : theme.colors.black
+  };`;
   const borderRight = `border-right: 1px solid ${
     isDark ? "white" : theme.colors.black
   };`;
@@ -88,8 +97,293 @@ export const Layout = ({
     process.env.NEXT_PUBLIC_SHORT_URL
   }`;
 
-  const main = (c: ReactNode) => (
+  const header = () => (
     <Flex
+      css={css`
+        align-items: center;
+        justify-content: space-between;
+        background-color: ${isDark ? theme.colors.black : "white"};
+        border-bottom: 8px solid ${isDark ? "white" : theme.colors.black};
+        svg {
+          height: 12px !important;
+        }
+      `}
+    >
+      {/* Left */}
+      <HStack spacing={isMobile ? 0 : 2}>
+        {/* Buttons */}
+        <HStack spacing={isMobile ? 0 : 0}>
+          {!isMobile && <DarkModeSwitch />}
+
+          <Button
+            css={css`
+              ${borderLeft}
+              ${borderRight}
+            `}
+            borderRadius={0}
+            onClick={() => onToggleLanguageClick(changeTo)}
+          >
+            {router.locale === "fr" ? (
+              <img src="/icons/en.png" />
+            ) : (
+              <img src="/icons/fr.png" />
+            )}
+          </Button>
+        </HStack>
+
+        {/* Home */}
+        <HStack
+          spacing={isMobile ? 0 : 1}
+          css={css`
+            a {
+              padding-top: 2px;
+            }
+            ${isMobile ? "text-wrap: nowrap" : "padding-right: 0px"}
+          `}
+        >
+          {isMobile && (
+            <IconButton
+              aria-label={t("home")}
+              css={css`
+                ${borderRight};
+                padding: 0 6px;
+              `}
+              borderRadius={0}
+              icon={
+                <>
+                  <FaLongArrowAltRight />
+                  <FaHome />
+                </>
+              }
+              onClick={() => {
+                router.push("/", "/", { shallow: true });
+              }}
+            />
+          )}
+          {!isMobile && (
+            <>
+              {router.asPath === "/" && <FaLongArrowAltRight />}
+              <Link onClick={() => router.push("/", "/", { shallow: true })}>
+                {t("home")}
+              </Link>
+            </>
+          )}
+        </HStack>
+
+        {org && (
+          <>
+            {/* Tree name */}
+            <HStack
+              spacing={isMobile ? 0 : 1}
+              css={css`
+                ${isMobile
+                  ? "padding: 0 8px; text-wrap: nowrap; a { padding-top: 3px; }"
+                  : "a { padding-top: 2px; }"}
+              `}
+            >
+              <FaLongArrowAltRight />
+              <FaTree />
+              <Link href={"/a/" + org.orgUrl} shallow>
+                {localize(org.orgName, router.locale)}
+              </Link>
+            </HStack>
+
+            {/* Add Branch */}
+            {!router.asPath.includes("/b/") && (
+              <>
+                {isMobile && (
+                  <>
+                    <IconButton
+                      aria-label={t("add-b")}
+                      css={css`
+                        ${borderLeft}
+                        ${borderRight}
+                      `}
+                      borderRadius={0}
+                      icon={
+                        <>
+                          <SmallAddIcon />
+                          {/* <FaCodeBranch /> */}
+                          <IoIosGitBranch />
+                        </>
+                      }
+                      onClick={() => {
+                        const href = router.asPath.includes("/b/add")
+                          ? "#"
+                          : `/b/add${router.asPath}`;
+                        router.push(href, href, { shallow: true });
+                      }}
+                    />
+                  </>
+                )}
+                {!isMobile && (
+                  <HStack spacing={0}>
+                    {router.asPath.includes("add") && <FaLongArrowAltRight />}
+                    <SmallAddIcon />
+                    <Box pt={0.5}>
+                      <Link
+                        href={
+                          router.asPath.includes("/b/add")
+                            ? "#"
+                            : `/b/add${router.asPath}`
+                        }
+                        shallow
+                      >
+                        {t("add-b")}
+                      </Link>
+                    </Box>
+                  </HStack>
+                )}
+              </>
+            )}
+
+            {/* Branch name */}
+            {suborg && !router.asPath.includes("add") && (
+              <HStack
+                spacing={isMobile ? 0 : 1}
+                css={css`
+                  a {
+                    padding-top: 2px;
+                  }
+                `}
+              >
+                <FaLongArrowAltRight />
+                <IoIosGitBranch />
+                <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
+                  {localize(suborg.orgName, router.locale)}
+                </Link>
+              </HStack>
+            )}
+          </>
+        )}
+
+        {!org && (
+          <HStack
+            spacing={isMobile ? 0 : 1}
+            css={css`
+              a {
+                padding-top: 2px;
+              }
+            `}
+          >
+            {isMobile && (
+              <IconButton
+                aria-label={t("add-a")}
+                css={css`
+                  ${borderRight}
+                  padding: 0 12px;
+                `}
+                borderRadius={0}
+                icon={
+                  <>
+                    <SmallAddIcon />
+                    <FaTree />
+                  </>
+                }
+                onClick={() => {
+                  router.push("/add", "/add", { shallow: true });
+                }}
+              />
+            )}
+            {!isMobile && (
+              <>
+                <SmallAddIcon />
+                <FaTree />
+                {router.asPath.includes("add") && <FaLongArrowAltRight />}
+                <Link href="/add" shallow>
+                  {t("add-a")}
+                </Link>
+              </>
+            )}
+          </HStack>
+        )}
+      </HStack>
+
+      <HStack spacing={isMobile ? 0 : 0}>
+        {session ? (
+          <>
+            {isMobile && (
+              <>
+                <DarkModeSwitch
+                  css={css`
+                    ${borderLeft}
+                    ${borderRight}
+                  `}
+                  borderRadius={0}
+                />
+                <IconButton
+                  aria-label={t("settings")}
+                  borderRadius={0}
+                  icon={<SettingsIcon />}
+                />
+              </>
+            )}
+            {!isMobile && (
+              <HStack spacing={0}>
+                {offline && <OfflineIcon boxSize={4} />}
+                <HStack spacing={1} px={3}>
+                  <FaLongArrowAltRight />
+                  <FaUser />
+                  <Link href="/settings" shallow>
+                    {/* {t("settings")} */}
+                    {session.user.userName}
+                  </Link>
+                </HStack>
+                <HStack spacing={1}>
+                  <FaPowerOff />
+                  <Link
+                    onClick={async () => {
+                      dispatch(setIsSessionLoading(true));
+                      dispatch(resetUserEmail());
+                      await api.get("logout");
+                      dispatch(setSession(null));
+                      dispatch(setIsSessionLoading(false));
+                    }}
+                  >
+                    {!isSessionLoading ? t("logout") : <Spinner size="sm" />}
+                  </Link>
+                </HStack>
+              </HStack>
+            )}
+          </>
+        ) : (
+          <Link href="/login">
+            {!isSessionLoading ? (
+              "Login"
+            ) : (
+              <Spinner size={isMobile ? "xs" : "sm"} />
+            )}
+          </Link>
+        )}
+      </HStack>
+    </Flex>
+  );
+
+  const main = (c: ReactNode) => (
+    <div
+      css={css`
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        background: ${isDark
+          ? "linear-gradient( to bottom, #14161c 0%, #14161c 25%, #344155 50%, #2c323b 75%, #1a202c 100%)"
+          : "linear-gradient( to bottom, #cffffe 0%, #cffffe 25%, #fafafa 50%, #fafafa 75%, #fafafa 100%)"};
+
+        @media (min-width: ${breakpoints["xl"]}) {
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          ${rainbowBorder(isDark)}
+        }
+      `}
+    >
+      {c}
+    </div>
+  );
+
+  const page = (c: ReactNode) => (
+    <Flex
+      as="main"
       css={css`
         height: 100%;
         max-width: 1050px;
@@ -101,182 +395,10 @@ export const Layout = ({
         }
       `}
     >
-      <Flex
-        css={css`
-          align-items: center;
-          justify-content: space-between;
-          background-color: ${isDark ? theme.colors.black : "white"};
-          border-bottom: 8px solid ${isDark ? "white" : theme.colors.black};
-        `}
-      >
-        <HStack>
-          <HStack css={css(borderRight)} pl={1} pr={2}>
-            <DarkModeSwitch size="xs" bg="transparent" />
-
-            <button onClick={() => onToggleLanguageClick(changeTo)}>
-              {router.locale === "fr" ? (
-                <img src="/icons/en.png" />
-              ) : (
-                <img src="/icons/fr.png" />
-              )}
-            </button>
-          </HStack>
-
-          <HStack
-            css={css`
-              ${borderRight}
-              a {
-                padding-top: 2px;
-              }
-            `}
-            pr={2}
-          >
-            {router.asPath === "/" && <FaLongArrowAltRight pr={0} />}
-            <Link onClick={() => router.push("/", "/", { shallow: true })}>
-              {t("home")}
-            </Link>
-          </HStack>
-
-          {org ? (
-            <>
-              <HStack
-                css={css`
-                  a {
-                    padding-top: 2px;
-                  }
-                `}
-                pr={2}
-              >
-                <FaLongArrowAltRight />
-                <FaTree />
-                <Link href={"/a/" + org.orgUrl} shallow>
-                  {localize(org.orgName, router.locale)}
-                </Link>
-              </HStack>
-
-              {/* Add Branch */}
-              {!router.asPath.includes("/b/") && (
-                <HStack>
-                  {router.asPath.includes("add") && <FaLongArrowAltRight />}
-                  <AddIcon boxSize={3} />
-                  <Box ml={1} pt={0.5}>
-                    <Link
-                      href={
-                        router.asPath.includes("/b/add")
-                          ? "#"
-                          : `/b/add${router.asPath}`
-                      }
-                      shallow
-                    >
-                      {t("add-b")}
-                    </Link>
-                    {/* {router.locale === "en" ? (
-                        <>to the tree {org.orgName.en}</>
-                      ) : (
-                        <>
-                          à <FaTree /> {localize(org.orgName, router.locale)}
-                        </>
-                      )} */}
-                  </Box>
-                </HStack>
-              )}
-
-              {suborg && !router.asPath.includes("add") && (
-                <HStack
-                  css={css`
-                    a {
-                      padding-top: 2px;
-                    }
-                  `}
-                >
-                  <FaLongArrowAltRight />
-                  <IoIosGitBranch />
-                  <Link href={"/a/" + entityUrl + "/b/" + b} shallow>
-                    {localize(suborg.orgName, router.locale)}
-                  </Link>
-                </HStack>
-              )}
-            </>
-          ) : (
-            <HStack
-              css={css`
-                a {
-                  padding-top: 2px;
-                }
-              `}
-              pr={2}
-            >
-              <AddIcon boxSize={3} />
-              <FaTree />
-              {router.asPath.includes("add") && <FaLongArrowAltRight />}
-              <Link href="/add" shallow>
-                {t("add-a")}
-              </Link>
-            </HStack>
-          )}
-        </HStack>
-
-        <HStack pl={1}>
-          {session ? (
-            <>
-              <HStack
-                css={css`
-                  ${borderRight}
-                `}
-                pr={2}
-              >
-                {offline && <OfflineIcon boxSize={4} />}
-                <Link href="/settings" shallow>
-                  {/* {t("settings")} */}
-                  {session.user.userName}
-                </Link>
-              </HStack>
-
-              <HStack>
-                <Link
-                  onClick={async () => {
-                    dispatch(setIsSessionLoading(true));
-                    dispatch(resetUserEmail());
-                    await api.get("logout");
-                    dispatch(setSession(null));
-                    dispatch(setIsSessionLoading(false));
-                  }}
-                >
-                  {!isSessionLoading ? t("logout") : <Spinner size="sm" />}
-                </Link>
-              </HStack>
-            </>
-          ) : (
-            <Link href="/login">
-              {!isSessionLoading ? "Login" : <Spinner size="sm" />}
-            </Link>
-          )}
-        </HStack>
-      </Flex>
-
-      <div
-        css={css`
-          height: 100%;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          background: ${isDark
-            ? "linear-gradient( to bottom, #14161c 0%, #14161c 25%, #344155 50%, #2c323b 75%, #1a202c 100%)"
-            : "linear-gradient( to bottom, #cffffe 0%, #cffffe 25%, #fafafa 50%, #fafafa 75%, #fafafa 100%)"};
-
-          @media (min-width: ${breakpoints["xl"]}) {
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            ${rainbowBorder(isDark)}
-          }
-        `}
-      >
-        {c}
-      </div>
+      {header()}
+      {main(c)}
     </Flex>
   );
-
-  const page = (c: ReactNode) => <main>{main(c)}</main>;
 
   const Fallback = ({
     error,

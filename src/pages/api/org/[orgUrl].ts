@@ -47,14 +47,8 @@ handler.get<
     const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ GET /org/${orgUrl} `;
     console.log(prefix);
 
-    const select = `+orgPassword ${
-      populate.includes("orgLogo") ? "+orgLogo" : ""
-    } ${populate.includes("orgBanner") ? "+orgBanner" : ""} ${
-      populate.includes("orgDescription") ? "+orgDescription" : ""
-    }`;
-
-    let org = await models.Org.findOne({ orgUrl }, select);
-    if (!org) org = await models.Org.findOne({ _id: orgUrl }, select);
+    let org = await models.Org.findOne({ orgUrl });
+    if (!org) org = await models.Org.findOne({ _id: orgUrl });
     if (!org)
       return res
         .status(404)
@@ -77,61 +71,6 @@ handler.get<
     const isCreator =
       equals(getRefId(org), session?.user.userId) || session?.user.isAdmin;
 
-    if (!isCreator) {
-      if (org.orgPassword) {
-        if (!hash) {
-          org = await org.populate("createdBy", "_id userName").execPopulate();
-          return res.status(200).json({
-            orgName: org.orgName,
-            orgSalt: org.orgSalt,
-            orgStyles: org.orgStyles,
-            orgType: org.orgType,
-            orgUrl: org.orgUrl,
-            createdAt: org.createdAt,
-            createdBy: org.createdBy
-          });
-        }
-
-        if (org.orgPassword !== hash)
-          return res
-            .status(403)
-            .json(createEndpointError(new Error("Mot de passe incorrect")));
-
-        org.orgPassword = undefined;
-      } else if (
-        org.orgType === EOrgType.GENERIC ||
-        org.orgType === EOrgType.TREETOOLS
-      ) {
-        const privateNetworks = await models.Org.find(
-          {
-            orgType: EOrgType.NETWORK,
-            orgVisibility: EOrgVisibility.PRIVATE
-          },
-          "+orgPassword"
-        ).populate("orgs");
-        const orgNetwork = privateNetworks.find(
-          ({ orgs }) => !!orgs.find(({ orgName }) => orgName === org!.orgName)
-        );
-        const orgBelongsToAtLeastOnePrivateNetwork = !!orgNetwork;
-
-        if (orgBelongsToAtLeastOnePrivateNetwork) {
-          if (!hash)
-            return res.status(200).json({
-              orgName: org.orgName,
-              orgSalt: orgNetwork.orgSalt,
-              orgStyles: org.orgStyles,
-              orgType: org.orgType,
-              orgUrl: org.orgUrl
-            });
-
-          if (orgNetwork.orgPassword !== hash)
-            return res
-              .status(403)
-              .json(createEndpointError(new Error("Mot de passe incorrect")));
-        }
-      }
-    }
-
     for (const modelKey of populate
       .split(/(\s+)/)
       .filter((e) => e.trim().length > 0)) {
@@ -150,213 +89,16 @@ handler.get<
       }
 
       if (modelKey === "orgNotes") {
-        org = await org
-          .populate({
-            path: "orgNotes",
-            populate: [{ path: "createdBy", select: "_id userName" }]
-          })
-          .execPopulate();
+        org = org.populate({
+          path: "orgNotes",
+          populate: [{ path: "createdBy", select: "_id userName" }]
+        });
       }
 
       if (modelKey === "orgs") {
         org = org.populate({
           path: "orgs",
-          populate: [
-            //{ path: "createdBy" },
-            {
-              path: "orgTopics",
-              select:
-                "topicName topicMessages.createdAt topicMessages.updatedAt"
-            }
-          ]
-        });
-      }
-
-      if (modelKey === "orgEvents") {
-        org = await org
-          .populate({
-            path: "orgEvents",
-            populate: [
-              { path: "createdBy", select: "_id userName" },
-              { path: "eventOrgs" },
-              {
-                path: "eventTopics",
-                select:
-                  "topicName topicMessages.createdAt topicMessages.updatedAt"
-              }
-            ]
-          })
-          .execPopulate();
-
-        // for (const orgEvent of org.orgEvents) {
-        //   if (orgEvent.forwardedFrom?.eventId) {
-        //     const event = await models.Event.findOne({
-        //       _id: orgEvent.forwardedFrom.eventId
-        //     });
-        //     if (event) {
-        //       orgEvent.forwardedFrom.eventUrl = orgEvent._id;
-        //       orgEvent.eventName = event.eventName;
-        //       orgEvent.eventUrl = event.eventUrl;
-        //     }
-        //   }
-        // }
-
-        if (!isCreator) {
-          const subscription = await models.Subscription.findOne({
-            user: session?.user.userId
-          });
-          const isFollowed = !!getEntitySubscription({
-            org,
-            subscription: subscription as ISubscription
-          });
-
-          org.orgEvents = org.orgEvents.filter(
-            ({ eventVisibility }) =>
-              eventVisibility === EEventVisibility.PUBLIC ||
-              (eventVisibility === EEventVisibility.FOLLOWERS && isFollowed)
-          );
-        }
-      }
-
-      if (modelKey === "orgLists") {
-        org = await org
-          .populate({
-            path: "orgLists",
-            populate: {
-              path: "subscriptions",
-              select: "+email +phone",
-              populate: {
-                path: "user",
-                select: "+email +phone"
-              }
-            }
-          })
-          .execPopulate();
-
-        org = await org
-          .populate({
-            path: "orgSubscriptions",
-            select: "+email +phone",
-            populate: {
-              path: "user",
-              select: "+email +phone"
-            }
-          })
-          .execPopulate();
-        org.orgLists = getLists(org);
-        // wtf was that?
-        // if (!isCreator) {
-        //   const subscription = await models.Subscription.findOne({
-        //     user: session?.user.userId
-        //   });
-
-        //   org.orgLists = subscription
-        //     ? org.orgLists.filter(
-        //         ({ subscriptions }) =>
-        //           !!subscriptions.find(({ _id }) =>
-        //             equals(_id, subscription._id)
-        //           )
-        //       )
-        //     : [];
-        // }
-      }
-
-      if (modelKey === "orgGalleries") {
-        org = org.populate({
-          path: "orgGalleries",
-          populate: [
-            {
-              path: "galleryDocuments",
-              populate: [{ path: "createdBy", select: "_id userName" }]
-            },
-            { path: "createdBy", select: "_id userName" }
-          ]
-        });
-      }
-
-      if (modelKey === "orgTopics") {
-        org = await org
-          .populate({
-            path: "orgTopics",
-            populate: [
-              {
-                path: "topicMessages",
-                populate: { path: "createdBy", select: "_id userName" }
-              },
-              { path: "createdBy", select: "_id userName" },
-              {
-                path: "org",
-                select: "orgUrl"
-              },
-              { path: "event", select: "eventUrl" }
-            ]
-          })
-          .execPopulate();
-
-        // for (const orgTopic of org.orgTopics) {
-        //   for (const topicMessage of orgTopic.topicMessages) {
-        //     if (typeof topicMessage.createdBy === "object") {
-        //       if (
-        //         !topicMessage.createdBy.userName &&
-        //         topicMessage.createdBy.email
-        //       ) {
-        //         topicMessage.createdBy.userName =
-        //           topicMessage.createdBy.email.replace(/@.+/, "");
-        //       }
-        //       // todo: check this
-        //       // topicMessage.createdBy.email = undefined;
-        //     }
-        //   }
-        // }
-
-        // if (!isCreator) {
-        //   org = await org.execPopulate();
-
-        //   const subscription = session
-        //     ? await models.Subscription.findOne({
-        //         user: session.user.userId
-        //       })
-        //     : null;
-
-        //   org.orgTopics = subscription
-        //     ? org.orgTopics.filter(({ topicVisibility }) => {
-        //         if (!hasItems(topicVisibility)) return true;
-
-        //         for (const listName of topicVisibility) {
-        //           if (listName === "Abonnés") {
-        //             if (
-        //               getFollowerSubscription({
-        //                 org: org as IOrg,
-        //                 subscription
-        //               })
-        //             ) {
-        //               return true;
-        //             }
-        //           }
-
-        //           const orgList = org?.orgLists.find(
-        //             (orgList) => orgList.listName === listName
-        //           );
-
-        //           return !!orgList?.subscriptions?.find(({ _id }) =>
-        //             equals(_id, subscription._id)
-        //           );
-        //         }
-        //       })
-        //     : org.orgTopics.filter(
-        //         ({ topicVisibility }) => !hasItems(topicVisibility)
-        //       );
-        // }
-      }
-
-      if (modelKey === "orgSubscriptions") {
-        org = org.populate({
-          path: "orgSubscriptions",
-          select: isCreator ? "+email +phone" : undefined,
-          populate: {
-            path: "user",
-            select: isCreator ? "+email" : undefined
-          }
+          populate: [{ path: "createdBy" }]
         });
       }
     }

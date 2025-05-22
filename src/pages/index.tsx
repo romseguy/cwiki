@@ -51,7 +51,7 @@ const IndexPage = (props: PageProps) => {
 
   return (
     <Layout pageTitle={t("home")} {...props}>
-      <VStack>
+      <VStack textAlign="center">
         <AppHeading>{t("welcome")}</AppHeading>
         <AppHeading smaller>{t("home-list")}</AppHeading>
         <VStack alignItems="start">
@@ -64,7 +64,7 @@ const IndexPage = (props: PageProps) => {
             orgs.map((org) => {
               return (
                 <HStack key={org._id}>
-                  <EntityButton org={org} />
+                  <EntityButton org={org} hasTooltip={false} />
                 </HStack>
               );
             })}

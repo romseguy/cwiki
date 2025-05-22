@@ -23,7 +23,7 @@ export function getAuthToken(cookies?: Record<string, string>) {
 
 export function setAuthToken(res: NextApiResponse, token: string) {
   return res.setHeader("Set-Cookie", [
-    createCookie(TOKEN_NAME, token),
-    createCookie("authed", token ? "true" : "false", { httpOnly: false })
+    createCookie(TOKEN_NAME, token)
+    //createCookie("authed", token ? "true" : "false", { httpOnly: false })
   ]);
 }

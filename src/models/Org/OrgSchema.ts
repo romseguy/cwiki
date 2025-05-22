@@ -56,10 +56,10 @@ export const OrgSchema = new Schema<IOrg>(
     //   ],
     //   default: []
     // },
-    orgTopics: {
-      type: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
-      default: []
-    },
+    // orgTopics: {
+    //   type: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
+    //   default: []
+    // },
     orgPassword: { type: String, select: false },
     orgSalt: String,
     orgTabs: {

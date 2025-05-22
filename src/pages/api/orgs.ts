@@ -98,6 +98,7 @@ handler.post<NextApiRequest & { body: AddOrgPayload }, NextApiResponse>(
     console.log(prefix, req.body);
 
     const session = await getSession({ req });
+    console.log("🚀 ~ addOrg ~ session:", session);
 
     if (!session) {
       return res
@@ -114,9 +115,7 @@ handler.post<NextApiRequest & { body: AddOrgPayload }, NextApiResponse>(
         return res
           .status(400)
           .json(
-            createEndpointError(
-              new Error(`Ce nom d'organisation n'est pas autorisé`)
-            )
+            createEndpointError(new Error(`Ce nom d'arbre n'est pas autorisé`))
           );
       }
 

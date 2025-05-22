@@ -15,15 +15,23 @@
   "logout": "Logout",
 
   "created-by": "Created by",
+
+  "label-a": "Tree",
   "add-a": "Add a tree",
   "name-label-a": "How do you want to name the tree?",
+  "not-found-a": "The tree could not be found",
+
+  "label-b": "Branch",
   "add-b": "Add a branch",
   "name-label-b": "How do you want to name the branch?",
+  "add-d": "Add a description",
+  "add-n": "Add a note",
   "add-t": "Add a thread",
   "delete": "Delete",
-  "delete-note": "Delete this note",
-  "key-quote-note": "Quote",
-  "key-message-note": "Comment",
+  "delete-n": "Delete this note",
+  "edit-n": "Edit this note",
+  "key-quote-n": "Quote",
+  "key-message-n": "Comment",
 
   "branches": "Branchs",
   "desc-a": "Description",

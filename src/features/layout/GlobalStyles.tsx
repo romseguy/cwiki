@@ -328,7 +328,7 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
           /* font-family: -apple-system-ui-serif, ui-serif, Spectral, Georgia,
             serif; */
           font-family: ${theme.fonts.spectral};
-          font-size: ${isMobile ? "12px" : "14px"};
+          font-size: ${isMobile ? "13px" : "14px"};
           text-align: justify;
           a {
             color: ${isDark ? "lightblue" : "blue"};
@@ -351,6 +351,7 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
             margin-bottom: 1.5rem;
             margin-left: 1.5rem;
             padding-left: 1rem;
+            padding-right: 1rem;
             padding-top: var(--chakra-space-3);
             padding-bottom: var(--chakra-space-3);
             background: rgb(190, 227, 248);

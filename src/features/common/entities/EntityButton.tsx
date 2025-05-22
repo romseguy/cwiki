@@ -36,7 +36,7 @@ export const EntityButton = ({
   suborg,
   topic,
   user,
-  hasTooltip = false,
+  hasTooltip = true,
   onClick,
   tooltipProps,
   ...props

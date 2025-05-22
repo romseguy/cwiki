@@ -99,7 +99,7 @@ handler.post<NextApiRequest & { body: LoginPayload }, NextApiResponse>(
       const token = await seal(userToken, process.env.SECRET, sealOptions);
       res.setHeader("Set-Cookie", [
         createCookie(TOKEN_NAME, token),
-        createCookie("authed", "true", { httpOnly: false })
+        //createCookie("authed", "true", { httpOnly: false })
       ]);
       return res.status(200).json({ authenticated: true });
     } catch (error: any) {

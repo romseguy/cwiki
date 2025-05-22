@@ -169,7 +169,9 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
           type="submit"
           colorScheme="green"
           isLoading={isLoading}
-          isDisabled={isLoading || Object.keys(errors).length > 0}
+          isDisabled={
+            !isPassword || isLoading || Object.keys(errors).length > 0
+          }
           fontSize="sm"
         >
           {isPassword ? t("login-submit") : t("login-email")}
