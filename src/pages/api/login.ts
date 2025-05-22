@@ -1,4 +1,5 @@
 import { seal } from "@hapi/iron";
+import { Magic } from "@magic-sdk/admin";
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
 import database, { models } from "server/database";
@@ -21,6 +22,8 @@ type LoginPayload = {
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 handler.use(database);
 
+const magic = new Magic(process.env.MAGIC_SECRET_KEY);
+
 handler.get<NextApiRequestWithAuthorizationHeader, NextApiResponse>(
   async function login(req, res) {
     const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ GET /login `;
@@ -37,8 +40,12 @@ handler.get<NextApiRequestWithAuthorizationHeader, NextApiResponse>(
     }
 
     try {
-      const email = "";
+      const didToken = req.headers.authorization.substr(7);
+      magic.token.validate(didToken);
+      const data = await magic.users.getMetadataByToken(didToken);
+      const email = data.email;
       let user = await models.User.findOne({ email });
+
       if (!user && email) {
         let userName = normalize(email.replace(/@.+/, ""));
 
@@ -52,7 +59,7 @@ handler.get<NextApiRequestWithAuthorizationHeader, NextApiResponse>(
           userName
         });
       }
-      if (!user) throw new Error();
+      if (!user) throw new Error("could not create user");
 
       const userToken = {
         email,
@@ -98,7 +105,7 @@ handler.post<NextApiRequest & { body: LoginPayload }, NextApiResponse>(
       };
       const token = await seal(userToken, process.env.SECRET, sealOptions);
       res.setHeader("Set-Cookie", [
-        createCookie(TOKEN_NAME, token),
+        createCookie(TOKEN_NAME, token)
         //createCookie("authed", "true", { httpOnly: false })
       ]);
       return res.status(200).json({ authenticated: true });

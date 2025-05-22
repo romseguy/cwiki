@@ -7,4 +7,5 @@ export const sealOptions = {
 };
 
 export * from "./cookie";
+export * from "./client";
 export * from "./session";

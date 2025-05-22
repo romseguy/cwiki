@@ -3,13 +3,13 @@ import {
   AlertIcon,
   Button,
   FormControl,
-  FormLabel,
-  useColorMode
+  FormLabel
 } from "@chakra-ui/react";
-import { useToast } from "hooks/useToast";
-
 import { ErrorMessage } from "@hookform/error-message";
 import bcrypt from "bcryptjs";
+import { useTranslation } from "next-i18next";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { getUser } from "features/api/usersApi";
 import {
   Column,
@@ -18,31 +18,18 @@ import {
   PasswordControl
 } from "features/common";
 import { useRouterLoading } from "hooks/useRouterLoading";
-import { useSession } from "hooks/useSession";
-import { useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
+import { useToast } from "hooks/useToast";
 import { PageProps } from "pages/_app";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { useAppDispatch } from "store";
 import api from "utils/api";
+import { client } from "utils/auth";
 import { handleError } from "utils/form";
 
 export const LoginForm = ({ isMobile, ...props }: PageProps) => {
   const { t } = useTranslation();
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === "dark";
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const routerLoading = useRouterLoading();
-  const {
-    data: session,
-    loading: isSessionLoading,
-    setSession,
-    setIsSessionLoading
-  } = useSession();
   const toast = useToast({ position: "top" });
-  //const [postResetPasswordMail] = usePostResetPasswordMailMutation();
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const isLoading = isLoggingIn || routerLoading.isLoading;
@@ -64,9 +51,7 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
 
     try {
       if (form.password) {
-        const { data: user } = await dispatch(
-          getUser.initiate({ slug: form.email })
-        );
+        const { data: user } = dispatch(getUser.initiate({ slug: form.email }));
 
         if (!user) throw new Error("Identifiants incorrects");
 
@@ -81,28 +66,20 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
               title: "This email address does not match the password"
             });
           } else {
-            // if (res.data.authenticated) {
-            //   dispatch(
-            //     setSession({
-            //       user: userToken,
-            //       [TOKEN_NAME]: authToken
-            //     })
-            //   );
-            // }
             window.location.replace("/");
           }
         }
 
         setIsLoggingIn(false);
       } else {
-        // send otp
+        await client.auth.loginWithMagicLink({
+          email: form.email,
+          redirectURI: new URL("/callback", window.location.origin).href
+        });
       }
     } catch (error) {
-      console.log("🚀 ~ onSubmit ~ error:", error);
       setIsLoggingIn(false);
       handleError(error, (message, field) => {
-        console.log("🚀 ~ handleError ~ message:", message);
-        console.log("🚀 ~ handleError ~ field:", field);
         setError(field || "formErrorMessage", {
           type: "manual",
           message
@@ -120,7 +97,6 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
           control={control}
           errors={errors}
           register={register}
-          //label={t("email")}
           placeholder={t("email-placeholder")}
           isDisabled={isLoggingIn}
           isMultiple={false}
@@ -170,7 +146,7 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
           colorScheme="green"
           isLoading={isLoading}
           isDisabled={
-            !isPassword || isLoading || Object.keys(errors).length > 0
+            /*!isPassword ||*/ isLoading || Object.keys(errors).length > 0
           }
           fontSize="sm"
         >

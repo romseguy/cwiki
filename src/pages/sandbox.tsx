@@ -1,6 +1,6 @@
 import { Button } from "@chakra-ui/react";
 import { marked } from "marked";
-import { Component, PropsWithChildren, useState } from "react";
+import { Component, PropsWithChildren, useEffect, useState } from "react";
 import onClickOutside from "react-onclickoutside";
 
 class SelectionPopover extends Component<
@@ -139,26 +139,39 @@ All ‘Books’ topics
 
 `;
 const SandboxPage = () => {
-  const [showPopover, setShowPopover] = useState(false);
-  const SP = onClickOutside(SelectionPopover);
-  return (
-    <div>
-      <div data-selectable>
-        <p>This is the first selectable paragraph. Looking pretty good.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
-      </div>
-      <SP
-        showPopover={showPopover}
-        onSelect={() => {
-          setShowPopover(true);
-        }}
-        onDeselect={() => {
-          setShowPopover(false);
-        }}
-      >
-        <Button>Add a note with this selection</Button>
-      </SP>
-    </div>
-  );
+  let html = ``;
+  useEffect(() => {
+    function decodeHTMLEntities(text) {
+      var textArea = document.createElement("textarea");
+      textArea.innerHTML = text;
+      return textArea.value;
+    }
+
+    console.log(decodeHTMLEntities(html));
+  }, []);
+  return null;
 };
+// const SandboxPage = () => {
+//   const [showPopover, setShowPopover] = useState(false);
+//   const SP = onClickOutside(SelectionPopover);
+//   return (
+//     <div>
+//       <div data-selectable>
+//         <p>This is the first selectable paragraph. Looking pretty good.</p>
+//         <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
+//       </div>
+//       <SP
+//         showPopover={showPopover}
+//         onSelect={() => {
+//           setShowPopover(true);
+//         }}
+//         onDeselect={() => {
+//           setShowPopover(false);
+//         }}
+//       >
+//         <Button>Add a note with this selection</Button>
+//       </SP>
+//     </div>
+//   );
+// };
 export default SandboxPage;
