@@ -13,7 +13,7 @@ self.addEventListener("push", function (event) {
       //actions: [{ action: "Ouvrir", title: "Ouvrir" }],
       data: data.url,
       body: data.message,
-      icon: "/icons/maskable-192-192.png"
+      icon: "/icons/maskable-192x192.png"
     })
   );
 });

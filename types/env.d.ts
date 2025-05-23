@@ -27,6 +27,7 @@ declare global {
     interface ProcessEnv {
       NODE_ENV: "development" | "production";
       NEXT_PUBLIC_ENV: "development" | "production";
+      NEXT_PUBLIC_ADMIN_EMAILS: string;
       NEXT_PUBLIC_API: string;
       NEXT_PUBLIC_API2: string;
       NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY: string;

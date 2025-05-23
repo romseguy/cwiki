@@ -94,8 +94,10 @@ App.getInitialProps = wrapper.getInitialAppProps(
 
           if (user) {
             const isAdmin =
-              typeof process.env.ADMIN_EMAILS === "string"
-                ? process.env.ADMIN_EMAILS.split(",").includes(user.email)
+              typeof process.env.NEXT_PUBLIC_ADMIN_EMAILS === "string"
+                ? process.env.NEXT_PUBLIC_ADMIN_EMAILS.split(",").includes(
+                    user.email
+                  )
                 : false;
 
             session = {

@@ -22,7 +22,7 @@ type LoginPayload = {
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 handler.use(database);
 
-const magic = new Magic(process.env.MAGIC_SECRET_KEY);
+const magic = new Magic(process.env.MAGIC_SECRET);
 
 handler.get<NextApiRequestWithAuthorizationHeader, NextApiResponse>(
   async function login(req, res) {

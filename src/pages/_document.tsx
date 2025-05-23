@@ -21,40 +21,40 @@ export default class Document extends NextDocument {
           />
 
           <link
-            href="/favicon-16x16.png"
+            href="/favicon-16x16.jpg"
             rel="icon"
-            type="image/png"
+            type="image/jpg"
             sizes="16x16"
           />
           <link
-            href="/favicon-32x32.png"
+            href="/favicon-32x32.jpg"
             rel="icon"
-            type="image/png"
+            type="image/jpg"
             sizes="32x32"
           />
 
           <link
-            href="/icons/android-chrome-192x192.png"
+            href="/icons/android-chrome-192x192.jpg"
             rel="icon"
-            type="image/png"
+            type="image/jpg"
             sizes="192x192"
           />
           <link
-            href="/icons/android-chrome-512x512.png"
+            href="/icons/android-chrome-512x512.jpg"
             rel="icon"
-            type="image/png"
+            type="image/jpg"
             sizes="512x512"
           />
           <link
             href="/icons/maskable-192x192.png"
             rel="icon"
-            type="image/png"
+            type="image/jpg"
             sizes="192x192"
           />
           <link
             href="/icons/maskable-512x512.png"
             rel="icon"
-            type="image/png"
+            type="image/jpg"
             sizes="512x512"
           />
 
@@ -62,41 +62,41 @@ export default class Document extends NextDocument {
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="black" />
           <meta name="apple-mobile-web-app-title" content="Kolik" />
-          <link rel="apple-touch-icon" href="/icons/apple-icon-180.png" />
+          <link rel="apple-touch-icon" href="/icons/apple-icon-180.jpg" />
           <link rel="mask-icon" href="/icons/icon.svg" color="#000000" />
           <link
             rel="apple-touch-startup-image"
-            href="/icons/apple-splash-2048.png"
+            href="/icons/apple-splash-2048.jpg"
             sizes="2048x2732"
           />
           <link
             rel="apple-touch-startup-image"
-            href="/icons/apple-splash-1668.png"
+            href="/icons/apple-splash-1668.jpg"
             sizes="1668x2224"
           />
           <link
             rel="apple-touch-startup-image"
-            href="/icons/apple-splash-1536.png"
+            href="/icons/apple-splash-1536.jpg"
             sizes="1536x2048"
           />
           <link
             rel="apple-touch-startup-image"
-            href="/icons/apple-splash-1125.png"
+            href="/icons/apple-splash-1125.jpg"
             sizes="1125x2436"
           />
           <link
             rel="apple-touch-startup-image"
-            href="/icons/apple-splash-1242.png"
+            href="/icons/apple-splash-1242.jpg"
             sizes="1242x2208"
           />
           <link
             rel="apple-touch-startup-image"
-            href="/icons/apple-splash-750.png"
+            href="/icons/apple-splash-750.jpg"
             sizes="750x1334"
           />
           <link
             rel="apple-touch-startup-image"
-            href="/icons/apple-splash-640.png"
+            href="/icons/apple-splash-640.jpg"
             sizes="640x1136"
           />
           {/* {getEnv() === "production" && (

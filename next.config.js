@@ -64,7 +64,7 @@ module.exports = (phase, defaultConfig) => {
     phase === PHASE_PRODUCTION_SERVER ||
     phase === PHASE_PRODUCTION_BUILD
   ) {
-    //plugins.unshift(withPWA);
+    plugins.unshift(withPWA);
   }
   const config = plugins.reduce(
     (acc, plugin) => {
