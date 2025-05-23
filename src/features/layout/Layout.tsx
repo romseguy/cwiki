@@ -366,7 +366,6 @@ export const Layout = ({
   const main = (c: ReactNode) => (
     <div
       css={css`
-        height: 100%;
         width: 100%;
         display: flex;
         flex-direction: column;

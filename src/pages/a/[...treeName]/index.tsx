@@ -75,12 +75,7 @@ import { FaNewspaper, FaTree } from "react-icons/fa";
 import { wrapper } from "store";
 import { hasItems } from "utils/array";
 import { localize } from "utils/localize";
-import {
-  MD_URL,
-  WIKI_URL,
-  normalize,
-  transformRTEditorOutput
-} from "utils/string";
+import { MD_URL, WIKI_URL, normalize } from "utils/string";
 
 const initialOrgQueryParams = (entityUrl: string) => ({
   orgUrl: entityUrl,
@@ -153,7 +148,7 @@ const TreePage = ({ ...props }: PageProps) => {
   const router = useRouter();
   const [currentTabLabel, setCurrentTabLabel] = useState("");
   const [currentBranchAction, setCurrentBranchAction] = useState("");
-  // console.log("🚀 ~ TreePage ~ currentTabLabel:", currentTabLabel);
+  // // console.log("🚀 ~ TreePage ~ currentTabLabel:", currentTabLabel);
   const [entityTabItem, setEntityTabItem] = useState("");
 
   const [isAddingDescription, setIsAddingDescription] = useState(false);
@@ -168,17 +163,17 @@ const TreePage = ({ ...props }: PageProps) => {
 
   const query = useGetOrgQuery(initialOrgQueryParams(router.query.treeName[0]));
   const org = query.data;
-  console.log("🚀 ~ TreePage ~ org:", org);
+  // console.log("🚀 ~ TreePage ~ org:", org);
   const orgName = localize(org?.orgName);
   const isCreator = getRefId(org) === session?.user.userId;
-  console.log(
-    "🚀 ~ TreePage ~ isCreator:",
-    isCreator,
-    getRefId(org),
-    session?.user.userId
-  );
+  // console.log(
+  // "🚀 ~ TreePage ~ isCreator:",
+  // isCreator,
+  // getRefId(org),
+  // session?.user.userId
+  // );
   let suborg = org?.orgs?.find(({ orgUrl }) => orgUrl === entityTabItem);
-  console.log("🚀 ~ TreePage ~ suborg:", suborg);
+  // console.log("🚀 ~ TreePage ~ suborg:", suborg);
   const orgDescription = localize(
     suborg
       ? suborg.orgDescription || { en: "", fr: "" }
@@ -187,16 +182,17 @@ const TreePage = ({ ...props }: PageProps) => {
       : { en: "", fr: "" },
     router.locale
   );
-  // // // // console.log("🚀 ~ TreePage ~ orgDescription:", orgDescription);
+  // // // // // console.log("🚀 ~ TreePage ~ orgDescription:", orgDescription);
   const [description, setDescription] = useState<string | undefined>();
-  // // // console.log("🚀 ~ TreePage ~ description:", description);
+  const [html, setHtml] = useState("");
+  // // // // console.log("🚀 ~ TreePage ~ description:", description);
   let notes = (suborg ? suborg.orgNotes : org ? org.orgNotes : []) || [];
 
   // const [isThreadsOpen, setIsThreadsOpen] = useState(true);
   // const [currentTopicName, setCurrentTopicName] = useState(entityTabItem);
 
   useEffect(() => {
-    // // console.log("🚀 ~ TreePage ~ onRouterQueryChange:", router.query);
+    // // // console.log("🚀 ~ TreePage ~ onRouterQueryChange:", router.query);
     setCurrentTabLabel(router.query.treeName[1]);
     setEntityTabItem(router.query.treeName[2]);
     setCurrentBranchAction(router.query.treeName[3]);
@@ -208,15 +204,38 @@ const TreePage = ({ ...props }: PageProps) => {
     notes = suborg ? suborg.orgNotes : org ? org.orgNotes : [];
     transformDescription();
     function transformDescription() {
-      let newDesc = "";
+      const doc = new DOMParser().parseFromString(orgDescription, "text/html");
+
+      // const regex = /\[([^\]]+)]\(\[\[([^\|\]]+)]]\)/gi;
+      // const matches = doc.body.innerHTML.matchAll(regex);
+      // for (const m of matches) {
+      //   const [yy, fr, en] = m;
+      //   let branchUrl = en.replaceAll(" ", "-");
+      //   doc.body.innerHTML = doc.body.innerHTML.replace(
+      //     yy,
+      //     `<a href="${WIKI_URL}/${branchUrl}">${fr}</a>`
+      //   );
+      // }
+
       if (isMobile) {
-        newDesc = transformRTEditorOutput(orgDescription).body.innerHTML;
+        const links = (doc.firstChild as HTMLElement).getElementsByTagName("a");
+        for (let i = 0; i < links.length; i++) {
+          const link = links[i];
+
+          if (!link.innerText.includes("http")) {
+            link.setAttribute("title", link.innerText);
+
+            if (link.href.includes("http") || link.href.includes("mailto:")) {
+              link.classList.add("clip");
+
+              if (link.href.includes("mailto:"))
+                link.innerText = "@" + link.innerText;
+            }
+          }
+        }
       } else {
-        newDesc = new DOMParser().parseFromString(orgDescription, "text/html")
-          .body.innerHTML;
       }
-      // // console.log("🚀 ~ transformDescription ~ newDesc:", newDesc);
-      setDescription(newDesc);
+      setDescription(doc.body.innerHTML);
     }
   }, [org, suborg, router.locale]);
 
@@ -366,7 +385,7 @@ const TreePage = ({ ...props }: PageProps) => {
                           <RTEditor
                             defaultValue={orgDescription}
                             onChange={({ html }) => {
-                              setDescription(html);
+                              setHtml(html);
                             }}
                           />
                           <HStack justifyContent="space-between" mt={3}>
@@ -379,6 +398,7 @@ const TreePage = ({ ...props }: PageProps) => {
                             <Button
                               colorScheme="green"
                               onClick={async () => {
+                                setDescription(html);
                                 setIsAddingDescription(false);
                                 const payload: EditOrgPayload = {
                                   orgDescription: {
@@ -429,7 +449,7 @@ const TreePage = ({ ...props }: PageProps) => {
                           }}
                         />
                       ) : isCreator ? (
-                        <Tooltip placement="right" label={t("add-n")}>
+                        <Tooltip placement="right" label={t("add-d")}>
                           <IconButton
                             aria-label={t("add-n")}
                             alignSelf="flex-start"
@@ -447,10 +467,14 @@ const TreePage = ({ ...props }: PageProps) => {
                       ) : (
                         <Text fontStyle="italic">
                           Aucune description.{" "}
-                          <Link href="/login" variant="underline">
-                            Connectez-vous
-                          </Link>{" "}
-                          pour en écrire une.
+                          {!session && (
+                            <>
+                              <Link href="/login" variant="underline">
+                                Connectez-vous
+                              </Link>{" "}
+                              pour en écrire une.
+                            </>
+                          )}
                         </Text>
                       )}
                     </TabContainerContent>
@@ -534,10 +558,14 @@ const TreePage = ({ ...props }: PageProps) => {
                           {!hasItems(org.orgs) && !isCreator && (
                             <Text fontStyle="italic">
                               Aucune branches.{" "}
-                              <Link href="/login" variant="underline">
-                                Connectez-vous
-                              </Link>{" "}
-                              pour en ajouter une.
+                              {!session && (
+                                <>
+                                  <Link href="/login" variant="underline">
+                                    Connectez-vous
+                                  </Link>{" "}
+                                  pour en ajouter une.
+                                </>
+                              )}
                             </Text>
                           )}
                         </VStack>
@@ -957,7 +985,7 @@ const TreePage = ({ ...props }: PageProps) => {
 
 type FormValues = { treeName: string; formErrorMessage?: string };
 const EditForm = ({ org, suborg }) => {
-  // // // console.log("🚀 ~ EditForm ~ org:", org);
+  // // // // console.log("🚀 ~ EditForm ~ org:", org);
   const router = useRouter();
   const { t } = useTranslation();
   const toast = useToast({ position: "top" });

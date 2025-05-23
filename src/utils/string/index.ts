@@ -86,23 +86,7 @@ export function transformRTEditorOutput(str: string): Document {
   const parser = new DOMParser();
   //const doc = parser.parseFromString(str.replace(/&nbsp;/g, " "), "text/html");
   const doc = parser.parseFromString(str, "text/html");
-  const links = (doc.firstChild as HTMLElement).getElementsByTagName("a");
   //const paragraphs = (doc.firstChild as HTMLElement).getElementsByTagName("p");
-
-  for (let i = 0; i < links.length; i++) {
-    const link = links[i];
-
-    if (!link.innerText.includes("http")) {
-      link.setAttribute("title", link.innerText);
-
-      if (link.href.includes("http") || link.href.includes("mailto:")) {
-        link.classList.add("clip");
-
-        if (link.href.includes("mailto:"))
-          link.innerText = "@" + link.innerText;
-      }
-    }
-  }
 
   // for (let i = 0; i < paragraphs.length; i++) {
   //   const paragraph = paragraphs[i];
