@@ -24,10 +24,12 @@ import { useAppDispatch } from "store";
 import api from "utils/api";
 import { client } from "utils/auth";
 import { handleError } from "utils/form";
+import { useRouter } from "next/router";
 
 export const LoginForm = ({ isMobile, ...props }: PageProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const routerLoading = useRouterLoading();
   const toast = useToast({ position: "top" });
 
@@ -51,14 +53,15 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
 
     try {
       if (form.password) {
-        const { data: user } = dispatch(getUser.initiate({ slug: form.email }));
+        const { data: user } = await dispatch(
+          getUser.initiate({ slug: form.email })
+        );
 
         if (!user) throw new Error("Identifiants incorrects");
 
-        if (user?.passwordSalt) {
+        if (user.passwordSalt) {
           const hash = await bcrypt.hash(form.password, user.passwordSalt);
           const res = await api.post("login", { email: form.email, hash });
-          console.log("🚀 ~ onSubmit ~ res:", res);
 
           if (res.status !== 200) {
             toast({
@@ -66,7 +69,8 @@ export const LoginForm = ({ isMobile, ...props }: PageProps) => {
               title: "This email address does not match the password"
             });
           } else {
-            window.location.replace("/");
+            router.push("/", "/", { shallow: true });
+            return;
           }
         }
 

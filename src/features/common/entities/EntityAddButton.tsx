@@ -7,6 +7,7 @@ import React from "react";
 import { FaGlobeEurope, FaTree } from "react-icons/fa";
 import { IoIosGitNetwork } from "react-icons/io";
 import { localize } from "utils/localize";
+import { removeProps } from "utils/object";
 
 export const EntityAddButton = ({
   label,
@@ -17,6 +18,7 @@ export const EntityAddButton = ({
 }: ButtonProps & {
   label?: string;
   org?: Partial<IOrg>;
+  orgName?: string;
   orgType?: EOrgType;
   onClick?: () => void;
 }) => {
@@ -46,7 +48,7 @@ export const EntityAddButton = ({
           });
         }}
         data-cy="org-add-button"
-        {...props}
+        {...removeProps(props, ["orgName"])}
       >
         {label || "Ajouter un arbre"}
       </Button>

@@ -38,6 +38,7 @@ import {
   setIsSessionLoading,
   setSession
 } from "store/sessionSlice";
+import { selectScreenHeight } from "store/uiSlice";
 import { resetUserEmail } from "store/userSlice";
 import api from "utils/api";
 import { client } from "utils/auth";
@@ -92,6 +93,7 @@ export const Layout = ({
   //#endregion
 
   const dispatch = useAppDispatch();
+  const screenHeight = useSelector(selectScreenHeight);
   const { data: session } = useSession();
   const isSessionLoading = useSelector(selectIsSessionLoading);
   const title = `${pageTitle ? capitalize(pageTitle) : "Loading..."} – ${
@@ -178,7 +180,7 @@ export const Layout = ({
               spacing={isMobile ? 0 : 1}
               css={css`
                 ${isMobile
-                  ? "padding: 0 8px; text-wrap: nowrap; a { padding-top: 3px; }"
+                  ? "text-align: center; padding: 0 8px; a { padding-top: 3px; }"
                   : "a { padding-top: 2px; }"}
               `}
             >
@@ -363,16 +365,14 @@ export const Layout = ({
     </Flex>
   );
 
-  const main = (c: ReactNode) => (
+  const content = (c: ReactNode) => (
     <div
       css={css`
-        width: 100%;
-        display: flex;
-        flex-direction: column;
+        min-height: ${screenHeight}px;
+
         background: ${isDark
           ? "linear-gradient( to bottom, #14161c 0%, #14161c 25%, #344155 50%, #2c323b 75%, #1a202c 100%)"
           : "linear-gradient( to bottom, #cffffe 0%, #cffffe 25%, #fafafa 50%, #fafafa 75%, #fafafa 100%)"};
-
         @media (min-width: ${breakpoints["xl"]}) {
           border-left: 8px solid transparent;
           border-right: 8px solid transparent;
@@ -388,10 +388,9 @@ export const Layout = ({
     <Flex
       as="main"
       css={css`
-        height: 100%;
+        flex-direction: column;
         max-width: 1050px;
         margin: 0 auto;
-        flex-direction: column;
         background-color: ${isDark ? "#2D3748" : "#FAFAFA"};
         svg {
           margin: 0 !important;
@@ -399,7 +398,7 @@ export const Layout = ({
       `}
     >
       {header()}
-      {main(c)}
+      {content(c)}
     </Flex>
   );
 

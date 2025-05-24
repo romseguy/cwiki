@@ -17,7 +17,8 @@ module.exports = {
   debug: false,
   i18n: {
     defaultLocale: "fr",
-    locales: ["en", "fr"]
+    locales: ["en", "fr"],
+    localeDetection: true
   },
   react: { useSuspense: false },
   /** To avoid issues when deploying to some paas (vercel...) */

@@ -28,7 +28,7 @@ export const makeStore = () =>
         api.middleware,
         settingApi.middleware
       ]),
-    devTools: getEnv() !== "production"
+    devTools: getEnv() === "development"
   });
 
 export const store = makeStore();

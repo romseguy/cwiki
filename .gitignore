@@ -1,7 +1,8 @@
-# Build directories
+# Build
 
 .next/
 .swc/
+tsconfig.tsbuildinfo
 
 # Dependency directories
 

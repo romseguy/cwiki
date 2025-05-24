@@ -36,17 +36,14 @@ handler.get<
   },
   NextApiResponse
 >(async function getOrg(req, res) {
-  const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ GET /org/[orgUrl] `;
-  console.log(prefix + "query", req.query);
-
   let {
     query: { orgUrl, hash, populate = "" }
   } = req;
 
-  try {
-    const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ GET /org/${orgUrl} `;
-    console.log(prefix);
+  const prefix = `🚀 ~ ${new Date().toLocaleString()} ~ GET /org/${orgUrl} `;
+  console.log(prefix);
 
+  try {
     let org = await models.Org.findOne({ orgUrl });
     if (!org) org = await models.Org.findOne({ _id: orgUrl });
     if (!org)
@@ -116,7 +113,7 @@ handler.get<
     //   ++i;
     // }
 
-    logJson(prefix, org);
+    //logJson(prefix, org);
     res.status(200).json(org);
   } catch (error: any) {
     console.log(prefix + "ERROR", error);

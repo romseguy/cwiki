@@ -34,12 +34,6 @@ export const GlobalStyles = ({ isMobile }: { isMobile: boolean }) => {
         //#endregion
 
         //#region elements
-        html,
-        body,
-        #__next,
-        main {
-          height: 100%;
-        }
         body {
           font-size: 12px;
           overflow-x: ${isMobile ? "hidden" : "auto"};
