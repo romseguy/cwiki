@@ -1,5 +1,7 @@
 import type { MongoClient, Db } from "mongodb";
-import type mongoose, { Model } from "mongoose";
+import type { Model } from "mongoose";
+import type { IOrg } from "../src/models/Org";
+import type { IUser } from "../src/models/User";
 
 export type Models = {
   Org: Model<IOrg, {}, {}>;
@@ -25,7 +27,6 @@ declare global {
       };
     }
     interface ProcessEnv {
-      NODE_ENV: "development" | "production";
       NEXT_PUBLIC_ENV: "development" | "production";
       NEXT_PUBLIC_ADMIN_EMAILS: string;
       NEXT_PUBLIC_API: string;

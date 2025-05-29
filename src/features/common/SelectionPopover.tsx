@@ -74,7 +74,7 @@ class SP extends Component<
     this.props.onDeselect();
   };
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.showPopover === true && nextProps.showPopover === false) {
       clearSelection();
     }

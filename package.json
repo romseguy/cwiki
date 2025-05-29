@@ -12,7 +12,7 @@
     "prebuild": "kill-port --port 4000",
     "build": "next build",
     "postbuild": "kill-port --port 4000",
-    "start": "NODE_OPTIONS='http-server-default-timeout=0' forever ./node_modules/.bin/next start -p 4000",
+    "start": "NODE_OPTIONS='http-server-default-timeout=0' ./node_modules/.bin/next start -p 4000",
     "build:size": "ANALYZE=true next build",
     "compile": "tsc --build",
     "compile:w": "tsc --build --watch",

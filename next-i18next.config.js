@@ -16,8 +16,8 @@ module.exports = {
   //debug: process.env.NODE_ENV === "development",
   debug: false,
   i18n: {
-    defaultLocale: "fr",
-    locales: ["en", "fr"],
+    locales: ["default", "en", "fr"],
+    defaultLocale: "default",
     localeDetection: true
   },
   react: { useSuspense: false },
