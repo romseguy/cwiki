@@ -38,6 +38,7 @@ import { sanitize } from "isomorphic-dompurify";
 import { useSession } from "hooks/useSession";
 import forest from "store/forest.json";
 import { WIKI_URL } from "utils/string";
+import { formatStringToWikiUrl } from "utils/string/case";
 
 const Description = ({ description, onClick }) => {
   const { colorMode } = useColorMode();
@@ -136,10 +137,9 @@ export const DescriptionContainer = ({
         doc.body.innerHTML = doc.body.innerHTML.replace(
           yy,
           treeName
-            ? `<a href="${WIKI_URL}/${treeName.replaceAll(
-                " ",
-                "-"
-              )}/${en.replaceAll(" ", "-")}">${fr}</a>`
+            ? `<a href="${WIKI_URL}/${formatStringToWikiUrl(
+                treeName
+              )}/${formatStringToWikiUrl(en)}">${fr}</a>`
             : fr
         );
       }

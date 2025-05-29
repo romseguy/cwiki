@@ -2,7 +2,7 @@ import DOMPurify from "isomorphic-dompurify";
 export * from "./base64ToUint8Array";
 export * from "./capitalize";
 export * from "./equals";
-export * from "./formatStringToCamelCase";
+export * from "./case";
 export * from "./getStyleObjectFromString";
 export * from "./normalize";
 export * from "./toast";

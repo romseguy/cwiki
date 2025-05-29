@@ -1,3 +1,4 @@
+import { css } from "@emotion/react";
 import { AddIcon, SettingsIcon, SmallAddIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -9,7 +10,6 @@ import {
   Tooltip,
   useColorMode
 } from "@chakra-ui/react";
-import { css } from "@emotion/react";
 import { DarkModeSwitch, Link, OfflineIcon } from "features/common";
 import { useSession } from "hooks/useSession";
 import { IOrg } from "models/Org";
@@ -41,7 +41,7 @@ import {
 import { selectScreenHeight } from "store/uiSlice";
 import { resetUserEmail } from "store/userSlice";
 import api from "utils/api";
-import { client } from "utils/auth";
+import { client, createCookie } from "utils/auth";
 import { getEnv } from "utils/env";
 import { ServerError } from "utils/errors";
 import { localize } from "utils/localize";
@@ -80,14 +80,16 @@ export const Layout = ({
       : [];
   const { t } = useTranslation();
   const changeTo = router.locale === "en" ? "fr" : "en";
-  // const clientSideLanguageChange = (newLocale: string) => {
-  //   i18n.changeLanguage(newLocale);
+  // const clientSideLanguageChange = (nextLocale: string) => {
+  //   i18n.changeLanguage(nextLocale);
   // };
-  const onToggleLanguageClick = (newLocale: string) => {
-    const { pathname, asPath, query } = router;
-    router.push({ pathname, query }, asPath, {
-      locale: newLocale
-    });
+  const onToggleLanguageClick = (nextLocale: string) => {
+    document.cookie = createCookie("NEXT_LOCALE", nextLocale);
+    router.push(
+      { pathname: router.pathname, query: router.query },
+      router.asPath,
+      { locale: nextLocale }
+    );
   };
   const offline = useSelector(selectIsOffline);
   //#endregion

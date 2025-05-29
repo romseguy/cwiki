@@ -1,2 +1,6 @@
 import { NotFound } from "features/common";
-export default NotFound;
+import { useTranslation } from "next-i18next";
+export default () => {
+  const { t } = useTranslation();
+  return <NotFound message={t("not-found")} />;
+};

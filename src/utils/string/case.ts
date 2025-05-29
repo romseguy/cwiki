@@ -9,3 +9,11 @@ export function formatStringToCamelCase(str: string) {
       .join("")
   );
 }
+
+export function formatStringToWikiUrl(str: string) {
+  return str.replaceAll(" ", "-");
+}
+
+export function formatStringToMdUrl(str: string) {
+  return str.replaceAll(" ", "-");
+}

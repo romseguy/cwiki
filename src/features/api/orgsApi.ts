@@ -81,11 +81,11 @@ export const orgApi = api.injectEndpoints({
     }),
     getOrg: build.query<IOrg, GetOrgParams>({
       query: ({ orgUrl, ...query }) => {
-        //console.groupCollapsed("getOrg");
-        //console.log("orgUrl", orgUrl);
-        //console.log("hash", query.hash);
-        //console.log("populate", query.populate);
-        //console.groupEnd();
+        console.groupCollapsed("getOrg");
+        console.log("orgUrl", orgUrl);
+        console.log("hash", query.hash);
+        console.log("populate", query.populate);
+        console.groupEnd();
 
         return {
           url: `org/${orgUrl}${

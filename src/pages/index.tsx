@@ -74,10 +74,13 @@ const IndexPage = (props: PageProps) => {
   );
 };
 
-export const getServerSideProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? "en", ["common"]))
-  }
-});
+export const getServerSideProps = async ({ locale }) => {
+  console.log("🚀 ~ getServerSideProps ~ locale:", locale);
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"]))
+    }
+  };
+};
 
 export default IndexPage;

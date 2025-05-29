@@ -24,7 +24,23 @@ import {
   databaseErrorCodes,
   duplicateError
 } from "utils/errors";
-import { equals, logJson, normalize } from "utils/string";
+import { equals, logJson, MD_URL, normalize } from "utils/string";
+import { formatStringToMdUrl, formatStringToWikiUrl } from "utils/string/case";
+
+import axios from "axios";
+import https from "https";
+import { marked } from "marked";
+const agent = new https.Agent({
+  rejectUnauthorized: false,
+  requestCert: false
+});
+const client = axios.create({
+  baseURL:
+    "https://raw.githubusercontent.com/rao10/casswiki_quartz/refs/heads/v4/content",
+  responseType: "json",
+  withCredentials: true,
+  httpsAgent: agent
+});
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>();
 
@@ -44,16 +60,37 @@ handler.get<
   console.log(prefix);
 
   try {
-    let org = await models.Org.findOne({ orgUrl });
-    if (!org) org = await models.Org.findOne({ _id: orgUrl });
-    if (!org)
-      return res
-        .status(404)
-        .json(
-          createEndpointError(
-            new Error(`L'arbre ${orgUrl} n'a pas pu être trouvé`)
-          )
-        );
+    let org;
+    if (orgUrl.length === 24) {
+      org = await models.Org.findOne({ _id: orgUrl });
+    } else {
+      org = await models.Org.findOne({ orgUrl });
+    }
+
+    if (!org) {
+      const session = await getSession({ req });
+      if (session) {
+        const mdUrl = orgUrl + "/" + orgUrl + ".md";
+        const { data: md } = await client.get<string>(mdUrl);
+        const html = marked.parse(md);
+        org = await models.Org.create({
+          orgName: orgUrl,
+          orgUrl: normalize(orgUrl),
+          orgType: EOrgType.NETWORK,
+          orgDescription: { en: html, fr: html },
+          createdBy: session.user.userId
+        });
+        return res.status(200).json(org);
+      } else {
+        return res
+          .status(404)
+          .json(
+            createEndpointError(
+              new Error(`L'arbre ${orgUrl} n'a pas pu être trouvé`)
+            )
+          );
+      }
+    }
 
     //logEvent({
     //   type: ServerEventTypes.API_CALL,

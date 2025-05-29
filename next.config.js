@@ -25,10 +25,6 @@ const nextConfig = {
     ignoreDuringBuilds: true
   },
   i18n,
-  // i18n: {
-  //   locales: ["fr-FR"],
-  //   defaultLocale: "fr-FR"
-  // },
   swcMinify: false,
   typescript: {
     ignoreBuildErrors: true
